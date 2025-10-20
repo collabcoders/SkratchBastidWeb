@@ -1,0 +1,55 @@
+<div class="mb-8 mx-4 md:mx-10 my-8">
+  <div class="flex justify-between items-center pr-4 mb-4">
+    <div class="flex items-center gap-2">
+      <img [src]="section().icon" [alt]="section().title" class="w-6 h-6" />
+      <h2 class="text-[18px] font-bold text-gray-800">{{ section().title }}</h2>
+    </div>
+    <div>
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#000" stroke="black" class="w-4 h-4">
+          <path
+            d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z">
+          </path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Record Carousel Container -->
+  <div class="relative">
+    <!-- Navigation Buttons -->
+    <button (click)="scrollLeft()"
+      class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-50 transition-colors duration-200 md:flex items-center justify-center cursor-pointer"
+      style="width: 40px; height: 40px; margin-left: -15px">
+      <svg viewBox="0 0 24 24" class="w-5 h-5 text-black">
+        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" fill="currentColor" />
+      </svg>
+    </button>
+
+    <button (click)="scrollRight()"
+      class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-50 transition-colors duration-200 md:flex items-center justify-center cursor-pointer"
+      style="width: 40px; height: 40px; margin-right: -15px">
+      <svg viewBox="0 0 24 24" class="w-5 h-5 text-black">
+        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" fill="currentColor" />
+      </svg>
+    </button>
+
+    <!-- Carousel Content -->
+    <div #carousel class="overflow-x-auto scrollbar-hidden"
+      style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+      <div class="flex space-x-8 pb-4" style="width: max-content">
+        @for (record of section().records; track record.href) {
+        <a [href]="record.href" class="hover:opacity-75 transition-opacity duration-200"
+          style="flex-shrink: 0; scroll-snap-align: start">
+          <img [src]="record.image" [alt]="record.title" loading="lazy"
+            class="rounded-lg aspect-square object-cover w-full" />
+          <div class="mt-2">
+            <div class="font-bold text-[16px]">{{ record.title }}</div>
+            <div class="text-[12px]">{{ record.artist }}</div>
+          </div>
+        </a>
+        }
+      </div>
+    </div>
+  </div>
+</div>

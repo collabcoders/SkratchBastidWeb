@@ -1,0 +1,67 @@
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.vue-horizontal {
+  position: relative;
+  display: flex;
+}
+
+.v-hl-container {
+  display: flex;
+  width: 100%;
+  margin: 0px 0px -30px;
+  padding: 0px 0px 30px;
+  border: none;
+  box-sizing: content-box;
+  overflow: scroll hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  clip-path: inset(0px 0px 30px);
+}
+
+.v-hl-btn {
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  display: flex;
+  align-self: center;
+  z-index: 1;
+  align-items: center;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  padding-bottom: 30px;
+  margin-bottom: -30px;
+  clip-path: inset(0px 0px 30px);
+}
+
+.v-hl-btn-next {
+  right: 0px;
+  transform: translateX(50%);
+}
+
+.v-hl-svg {
+  width: 40px;
+  height: 40px;
+  margin: 6px;
+  padding: 6px;
+  border-radius: 20px;
+  box-sizing: border-box;
+  background: white;
+  color: black;
+  fill: currentcolor;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.event {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  min-height: 1px;
+  scroll-snap-align: start;
+}

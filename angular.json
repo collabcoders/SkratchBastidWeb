@@ -1,0 +1,118 @@
+{
+  "cli": {
+    "analytics": "6ede79a9-99fb-44c6-a531-270f86fb24d5"
+  },
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "skratchbastid": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": false
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/skratchbastid",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": ["moment","plyr","hls.js","videojs-vtt.js",
+            "safe-json-parse/tuple","mux.js/lib/utils/clock","mux.js/lib/tools/parse-sidx",
+            "keycode","global/window","global/document","@videojs/xhr","wavesurfer.js","jw-paginate","videojs-contrib-quality-levels","lodash"
+          ],
+            "assets": [
+              "src/favicon.png",
+              "src/logo.png",
+              "src/assets",
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "node_modules/video.js/dist/video-js.css",
+              "src/styles.scss",
+              "node_modules/plyr/dist/plyr.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css"
+            ],
+            "scripts": [
+              "node_modules/video.js/dist/video.js",
+              "node_modules/plyr/dist/plyr.js",
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "node_modules/popper.js/dist/umd/popper.min.js",
+              "node_modules/@fortawesome/fontawesome-free/js/all.min.js",
+              "node_modules/bootbox/bootbox.js"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb", 
+                  "maximumError": "20mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "20kb",
+                  "maximumError": "40kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": false,
+              "sourceMap": true,
+              "extractLicenses": false,
+              "namedChunks": false,
+              "aot": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "skratchbastid:build:production"
+            },
+            "development": {
+              "buildTarget": "skratchbastid:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "buildTarget": "skratchbastid:build"
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "skratchbastid"
+}

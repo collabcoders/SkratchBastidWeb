@@ -1,0 +1,42 @@
+<div class="w-full min-h-[100vh] bg-[#F7FAFC] flex flex-col items-center justify-center">
+  <div class="w-full h-full flex items-center justify-center">
+    <div class="bg-white rounded shadow-xl p-12 w-11/12 sm:w-8/12 lg:w-[35%] flex flex-col">
+      <span class="font-semibold text-2xl">Sign into your account</span>
+
+      <!-- Optional Alert Message -->
+      <div class="hidden bg-green-100 text-green-700 text-sm my-3 p-3">
+        We're in the process of a major site upgrade - if you have any issues, please email
+        <a class="underline" href="mailto:holler@skratchbastid.com">holler&#64;skratchbastid.com</a>
+        and we'll get you sorted out!
+      </div>
+
+      <form (ngSubmit)="onLogin()" class="flex flex-col">
+        <!-- Email Field -->
+        <div class="flex flex-col mb-6">
+          <label for="email">
+            <span class="text-sm font-semibold text-slate-600 mb-2 inline-block">Email</span>
+          </label>
+          <input [(ngModel)]="email" id="email" name="email" type="email"
+            class="w-full border border-1 p-3 rounded-lg bg-white" required />
+        </div>
+
+        <!-- Password Field -->
+        <div class="flex flex-col mb-6">
+          <label for="password">
+            <span class="text-sm font-semibold text-slate-600 mb-2 inline-block">Password</span>
+          </label>
+          <input [(ngModel)]="password" id="password" name="password" type="password"
+            class="w-full border border-1 p-3 rounded-lg bg-white" required />
+        </div>
+
+        <!-- Login Button -->
+        <button type="submit" class="w-full bg-[#FF5941] text-white p-2 rounded-lg">
+          <span>Login</span>
+        </button>
+      </form>
+
+      <!-- Forgot Password Link -->
+      <a href="/forgot-password" class="text-sm text-slate-600 mt-4">Forgot your password?</a>
+    </div>
+  </div>
+</div>

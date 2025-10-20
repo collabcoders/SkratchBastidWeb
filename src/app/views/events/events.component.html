@@ -1,0 +1,32 @@
+<app-header></app-header>
+
+<div class="mt-[58px]">
+  <div class="bg-white bg-cover bg-no-repeat w-full min-h-[95vh]">
+    <div class="mb-8 mx-4 md:mx-10 mt-12 pt-8">
+      <h1 class="text-[18px] font-bold text-gray-800">Upcoming Shows</h1>
+      <div class="">
+        @for (event of upcomingEvents; track event.ticketsLink) {
+        <app-event-card [event]="event"></app-event-card>
+        }
+
+        @if (upcomingEvents.length === 0) {
+        <div class="text-center py-12 px-4">
+          <p class="text-gray-500 text-lg">No upcoming events at this time.</p>
+          <p class="text-gray-400 mt-2">Check back soon for new show announcements!</p>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Free Trial Form -->
+    <app-free-trial-form></app-free-trial-form>
+
+    <!-- Bottom Image Section -->
+    <div class="bg-white relative">
+      <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+    </div>
+
+    <!-- Footer -->
+    <app-footer></app-footer>
+  </div>
+</div>

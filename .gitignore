@@ -1,0 +1,23 @@
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Private Node Modules
+.angular/
+package-lock.json
+node_modules/
+
+# Local History for Visual Studio Code
+.history/
+
+# Distribution / packaging
+dist
+build
+
+# Mac/OSX
+.DS_Store
+/.DS_Store

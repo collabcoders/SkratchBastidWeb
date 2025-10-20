@@ -1,0 +1,275 @@
+@import "../../../../theme.scss";
+
+/*LOGIN MODAL*/
+.modal-login-container {
+    //max-width: 350px;
+}
+
+.modal-login {
+    color: $dark;
+}
+
+.modal-login h4 {
+    text-align: center;
+    font-size: 26px;
+}
+
+.signin-logo {
+    width: 150px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+
+    >img {
+        width: 100%;
+    }
+}
+
+/*SIGNUP MODAL*/
+.signup-top-row {
+    margin-top: 15px;
+}
+
+.expiration {
+    border: 1px solid #bbbbbb;
+    background-color: #262626;
+}
+
+.expiration input,
+.expiration input:focus,
+.expiration input:active,
+.expiration>input,
+.expiration>input:focus,
+.expiration>input:active {
+    width: 35px;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.card-number {
+    width: 30%;
+}
+
+.cvc {
+    max-width: 15% !important;
+}
+
+.sms {
+    padding: 5px 20px 0 40px !important;
+}
+
+hr {
+    color: #ccc;
+}
+
+.left-error-tip {
+    margin-left: 40px;
+    border-radius: 5px !important;
+}
+
+.right-error-tip {
+    margin-left: 250px;
+    border-radius: 5px !important;
+}
+
+.center-error-tip {
+    margin-left: 175px;
+    border-radius: 5px !important;
+}
+
+.menu-tip {
+    font-family: $title-font;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+#file-input {
+    display: none;
+}
+
+.pic-preview {
+    cursor: pointer;
+    max-width: 150px !important;
+    border-radius: 50% !important;
+}
+
+.img-text {
+    position: absolute;
+    margin: -42px auto;
+    color: #fff;
+    text-shadow: 1px 1px 10px $dark, 1px 1px 10px $dark;
+    font-size: 13px;
+    text-align: center;
+    margin-left: 21px;
+}
+
+.subscription-text {
+    color: $contrast-light;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.cancel-btn,
+.cancel-btn:visited {
+    color: $secondary2 !important;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.cancel-btn:hover,
+.cancel-btn:focus,
+.cancel-btn:active {
+    color: $secondary3 !important;
+    text-decoration: none;
+}
+
+.cancel-body {
+    color: #fff;
+    margin-top: -25px;
+}
+
+.cancel-footer {
+    padding: 10px !important;
+}
+
+.left-inline-box {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+
+/* FAVORITES */
+.custom-modal {
+    background: #000 !important;
+}
+
+.fav-body {
+    padding: 0 40px 40px 30px !important;
+}
+
+.card-title {
+    color: $secondary-dark;
+}
+
+.card-sub-title {
+    color: #262626;
+}
+
+.fav-image {
+    filter: brightness(50%);
+}
+
+.fav-image:hover,
+.fav-image:active {
+    filter: brightness(100%);
+}
+
+.fav-play-container {
+    position: absolute;
+    z-index: 8;
+    width: 100px;
+    height: 100px;
+    margin-top: 28%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
+    display: block;
+}
+
+.fav-play {
+    filter: drop-shadow(1px 1px 1px #000) !important;
+    font-size: 100px;
+    line-height: 100px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.fav-play-audio {
+    top: calc(50% - 200px);
+    /* 50% - 3/4 of icon height */
+}
+
+.fav-play:hover,
+.fav-play:active {
+    color: $secondary2;
+}
+
+.fav-list-active {
+    cursor: pointer;
+    width: 40;
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.fav-list-active i:first-child,
+.fav-list-active svg:first-child {
+    color: $secondary3;
+    //color: #fff;
+}
+
+.fav-list-active i:last-child,
+.fav-list-active svg:last-child {
+    color: #fff;
+}
+
+.fav-footer {
+    height: 150px;
+}
+
+// VIDEO MODAL
+
+.video-modal-header {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.video-modal-body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+// EVENTS
+.event-card>img {
+    height: intrinsic !important;
+}
+
+.event-card {
+    background: #000;
+    border: 1px solid #fff;
+    border-radius: 6px;
+
+    >img:hover,
+    >img:active {
+        filter: brightness(50%);
+    }
+}
+
+.event-card-body {
+    >h4 {
+        color: #FFFFFF;
+    }
+
+    >h5 {
+        color: #cb034b;
+    }
+
+    padding-bottom: 0 !important;
+}
+
+.event-card-footer {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.event-details {
+    //display: none;
+    //float: left;
+    //position: absolute !important;
+    // top: 50%; 
+    // left: 50%; 
+    // transform: translate(-50%, -50%);
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px 10px 5px 10px;
+    text-align: center;
+}

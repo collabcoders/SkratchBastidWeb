@@ -1,0 +1,79 @@
+<!-- Free Trial Form Section -->
+<div [class]="containerClasses() + (showTopMargin() ? ' mt-8' : '')">
+  <div class="relative z-10 text-center mb-8">
+    <h1 class="text-3xl font-bold uppercase mb-2 text-black">Try it for free</h1>
+    <p class="text-gray-600 text-base mb-6 mx-auto max-w-xs">
+      Wanna have a taste of the Top Grillin' Experience? Sign up for a free trial (no card info
+      required).
+      <a href="#" class="underline text-[#FF5941]">Privacy Policy</a>. By clicking above, you agree
+      we may process your info per these terms.
+    </p>
+  </div>
+
+  <!-- Angular Form -->
+  <form (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
+    <div>
+      <label for="email" class="block text-left mb-2 font-semibold text-black">Email</label>
+      <input
+        [(ngModel)]="email"
+        id="email"
+        name="email"
+        type="email"
+        placeholder="Enter an email..."
+        autocomplete="email"
+        required
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+      />
+    </div>
+
+    <div>
+      <label for="firstName" class="block text-left mb-2 font-semibold text-black"
+        >First Name</label
+      >
+      <input
+        [(ngModel)]="firstName"
+        id="firstName"
+        name="firstName"
+        type="text"
+        placeholder="Enter a first name..."
+        autocomplete="given-name"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+      />
+    </div>
+
+    <div>
+      <label for="lastName" class="block text-left mb-2 font-semibold text-black">Last Name</label>
+      <input
+        [(ngModel)]="lastName"
+        id="lastName"
+        name="lastName"
+        type="text"
+        placeholder="Enter a last name..."
+        autocomplete="family-name"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+      />
+    </div>
+
+    <div>
+      <label for="phoneNumber" class="block text-left mb-2 font-semibold text-black"
+        >Phone Number</label
+      >
+      <input
+        [(ngModel)]="phoneNumber"
+        id="phoneNumber"
+        name="phoneNumber"
+        type="tel"
+        placeholder="Enter a phone number..."
+        autocomplete="tel"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class=" w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
+    >
+      Start your free trial
+    </button>
+  </form>
+</div>

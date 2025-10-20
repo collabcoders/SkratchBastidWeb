@@ -1,0 +1,30 @@
+/* Audio Carousel Component Styles */
+.hover-effect {
+  transition: transform 0.3s ease;
+}
+
+.hover-effect:hover {
+  transform: scale(1.05);
+}
+
+/* Custom scrollbar hiding */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+  /* WebKit */
+}
+
+/* Navigation button styles */
+button {
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

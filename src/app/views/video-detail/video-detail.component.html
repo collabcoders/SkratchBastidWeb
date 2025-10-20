@@ -1,0 +1,121 @@
+<app-header></app-header>
+
+<div class="mt-[58px]">
+  <div class="bg-white">
+    <div class="px-6 py-6">
+      <!-- Back to Videos Link -->
+      <div class="mb-4">
+        <a (click)="goBack()" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 cursor-pointer">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          <span class="text-sm font-medium">Back to Videos</span>
+        </a>
+      </div>
+
+      <!-- Video Player -->
+      <div class="relative w-full" style="padding-bottom: 56.25%;">
+        <iframe [src]="vimeoEmbedUrl" class="absolute top-0 left-0 w-full h-full" frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Video Player"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <!-- Audio Available Button -->
+      @if (hasAudio) {
+      <div class="mt-4">
+        <a href="#"
+          class="inline-flex items-center gap-2 bg-[#FF5941] hover:bg-[#ff6e58] text-white px-4 py-2 rounded-lg transition-colors">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 3.33334V16.6667M10 3.33334L3.33333 10M10 3.33334L16.6667 10" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="text-sm font-bold uppercase">Audio available</span>
+        </a>
+      </div>
+      }
+
+      <!-- Video Title and Date -->
+      <div class="mt-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ videoTitle }}</h1>
+        <p class="text-sm text-gray-500">{{ videoDate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- New in Top Grillin Section -->
+  <div class="mb-8 mx-4 md:mx-10 my-8">
+    <div class="flex justify-between items-center pr-4 mb-4">
+      <div class="flex items-center gap-2">
+        <img src="/img/videosImg.png" alt="New in Top Grillin" class="w-6 h-6" />
+        <h2 class="text-[18px] font-bold text-gray-800">New in Top Grillin</h2>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto md:overflow-visible">
+        <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8" style="scroll-snap-type: x mandatory">
+        @for (video of topGrillinVideos; track $index) {
+        <a [href]="video.href" class="shrink-0 w-[70vw] md:w-auto" style="scroll-snap-align: start">
+          <div class="relative overflow-hidden rounded-lg w-full aspect-video">
+            <img [src]="video.thumbnail"
+              class="rounded-lg drop-shadow-lg w-full h-full object-cover transition-transform duration-300 transform hover:scale-110"
+              loading="lazy" [alt]="video.title" />
+          </div>
+          <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
+          <div class="text-xs font-light">{{ video.timeAgo }}</div>
+        </a>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Member Favourites Section -->
+  <div class="mb-8 mx-4 md:mx-10 my-8">
+    <div class="flex justify-between items-center pr-4 mb-4">
+      <div class="flex items-center gap-2">
+        <img src="/img/videosImg.png" alt="Member Favourites" class="w-6 h-6" />
+        <h2 class="text-[18px] font-bold text-gray-800">Member Favourites</h2>
+      </div>
+    </div>
+
+    <div class="vue-horizontal ml-0 md:mr-10" style="position: relative; display: flex">
+      <div class="v-hl-container" style="
+          display: flex;
+          width: 100%;
+          margin: 0px 0px -30px;
+          padding: 0px 0px 30px;
+          border: none;
+          box-sizing: content-box;
+          overflow: scroll hidden;
+          scroll-snap-type: x mandatory;
+          scrollbar-width: none;
+          clip-path: inset(0px 0px 30px);
+        ">
+        @for (video of memberFavouritesVideos; track $index) {
+        <a [href]="video.href"
+          class="relative flex flex-col w-[23rem] md:w-4/12 lg:w-1/4 mr-2 md:mr-4 group cursor-pointer"
+          style="flex-shrink: 0; box-sizing: border-box; min-height: 1px; scroll-snap-align: start">
+          <div class="relative overflow-hidden rounded-lg w-full aspect-video">
+            <img [src]="video.thumbnail"
+              class="rounded-lg drop-shadow-lg h-full object-cover transition-transform duration-300 transform hover:scale-110"
+              loading="lazy" [alt]="video.title" />
+          </div>
+          <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
+          <div class="text-xs font-light">{{ video.timeAgo }}</div>
+        </a>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Free Trial Form -->
+  <app-free-trial-form [showTopMargin]="true"></app-free-trial-form>
+
+  <div class="bg-white relative">
+    <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+  </div>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

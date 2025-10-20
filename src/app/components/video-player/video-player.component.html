@@ -1,0 +1,187 @@
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModal" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
+    <div class="modal-content custom-modal">
+      <div class="modal-header px-5 flex justify-between items-center">
+        <h2 class="font-semibold text-center flex-1" style="font-size: 24px">Video Archive</h2>
+        <button (click)="closeModal()" type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          aria-label="Close">
+          ×
+        </button>
+      </div>
+      <div class="model-body fav-body px-5">
+        <div class="row mt-5">
+          <div class="col-lg-8" [class.col-lg-12]="!largescreen">
+            <div class="v-small">
+              <div class="rounded-4 overflow-hidden position-relative">
+                <a href="javascript:;" (click)="ChangeVideoSize()"
+                  class="position-absolute z-index bottom-0 end-0 mb-2 resize">
+                  expand
+                  <!-- <img src="../../assets/images/expand.png"
+                    alt="Icon"> -->
+                </a>
+                <video id="videoPlay" class="video-js vjs-fluid vjs-default-skin vjs-live" controls
+                  [poster]="videoPoster" data-setup='{"controls": true, "autoplay": true, "preload": "auto"}'>
+                  <source [src]="videohls" type="application/x-mpegURL" />
+                </video>
+              </div>
+            </div>
+
+            <!-- Bookmarks Section -->
+            <div class="row my-4">
+              <div class="col-12 mt-2">
+                <div class="position-relative">
+                  <input type="text" [(ngModel)]="bookmarkobj.title"
+                    class="form-control bg-light2 border-0 form-control-lg ps-4 bookmark-caption"
+                    placeholder="Bookmark Caption..." />
+                  <a (click)="addupdatebookmark()" class="rounded-3 py-2 px-3 fw-bold position-absolute top-0 b-mark"
+                    tooltip="Save Bookmark">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              <div class="col-12 mt-2">
+                <div class="mb-4 mt-2">
+                  @for (item of bookmarklst; track $index) {
+                  <div class="bookmarks float-start position-relative">
+                    <button class="text-white bg-success py-2 ps-3 pe-5 rounded-pill border-0 me-2 mt-2 d-block"
+                      (click)="editbookmark(item.time)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"
+                        stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                      </svg>
+                      {{ item.title }}
+                      ({{ changetimeformate(item.time) }})
+                    </button>
+
+                    @if (memId == 10 || item.memberId == memId) {
+                    <button data-bs-toggle="collapse"
+                      data-bs-target="#collapseWidthExample" aria-expanded="false" aria-controls="collapseWidthExample"
+                      (click)="delbookmarkId = item.bookmarkId" tooltip="Bookmark Delete"
+                      class="text-white position-absolute end-0 top-0 mt-2 me-4 close btn p-0 border-0 fs-5">
+                      &times;
+                    </button>
+                    }
+                  </div>
+                  }
+                  <div class="clearfix"></div>
+                </div>
+                <h2 class="h3 fw-bold mt-2 mb-2 text-capitalize">{{ videotitle }}</h2>
+              </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <!-- Comments Section -->
+            <div class="row mt-5">
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <h3 class="h4 fw-bold">Comments</h3>
+                </div>
+                <div class="position-relative rounded-pill shadow">
+                  <input type="text" [(ngModel)]="commentobj.comment"
+                    class="form-control form-control-lg ps-4 rounded-pill border-0 py-3 mt-4 mb-5 comment-input"
+                    placeholder="Add a Comment" />
+                  <a (click)="addcomment()" class="rounded-3 py-4 px-4 fw-bold position-absolute top-1 b-mark r-pills"
+                    tooltip="Add Comment">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                  </a>
+                </div>
+                @for (item of commentlst; track $index) {
+                <div class="comment-box mb-3 bg-black rounded-2 p-3">
+                  <img [src]="item.image" alt="Image" class="float-start me-3 rounded-circle border" />
+                  <div class="overflow-hidden">
+                    <h5 class="h5 fw-bold float-start text-capitalize">{{ item.name }}</h5>
+                    <small class="float-end text-white ms-2">{{ item.date | date }}</small>
+                    @if (memId == 10 || item.memberId == memId) {
+                    <a href="javascript:;"
+                      class="text-danger fs-12 px-1 py-0 ms-1 mt-0 float-end text-decoration-none fw-bold"
+                      tooltip="Delete Comment" (click)="deleteComment(item.commentId)">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <polyline points="3,6 5,6 21,6"></polyline>
+                        <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2">
+                        </path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                      </svg>
+                      Delete
+                    </a>
+                    }
+                    <div class="clearfix"></div>
+                    @if (editablecomRow !== item.commentId) {
+                      <p class="line-h1 text-white mb-0">{{ item.comment }}</p>
+                    } @else {
+                      <!-- (keyup.enter)="updateComment(item)" -->
+                      <input type="text" [(ngModel)]="item.comment"
+                        class="form-control rounded-pill py-3 ps-4 bg-secondary" />
+                    }
+                  </div>
+                  <div class="clearfix"></div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Videos Sidebar -->
+          <div class="col-lg-4" [class.mt-4]="!largescreen">
+            <div class="d-flex justify-content-between">
+              <h3 class="h4 fw-bold text-capitalize">Related Videos</h3>
+            </div>
+            <div class="show" id="relatedVideos">
+              @for (item of relatedvideos; track $index) {
+              <div
+                class="card bg-none border-0 rounded-2 mt-4 video-list overflow-hidden cursor-pointer">
+                <div class="row g-0" (click)="showreldetails(item, false)">
+                  <div class="col-5 ps-md-0">
+                    <div class="position-relative img-containers">
+                      <img class="cover img-fluid" [src]="item.screenshot" [attr.id]="'img_' + item.videoId"
+                        (error)="errorImage($event, item)" (load)="checkImage($event, item)"
+                        (mouseover)="showGif($event, item)" (mouseout)="showScreenshot($event, item.screenshot)"
+                        [attr.alt]="item.title" />
+                      <span
+                        class="py-1 px-2 text-white rounded-pill d-inline-block position-absolute z-index end-0 bottom-0 me-1 mb-1">{{ item.duration }}</span>
+                    </div>
+                  </div>
+                  <div class="col-7 pe-md-0">
+                    <div class="card-body py-0 pe-0">
+                      <h5 class="fw-bold mb-2 mt-0 text-capitalize mt-2 pe-2">
+                        <a href="javascript:;" class="text-decoration-none">{{ item.title }}</a>
+                      </h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="toast-container position-fixed bottom-0 end-0 top-0 start-0 d-flex justify-content-center align-items-center p-3 mx-auto">
+  <div class="collapse collapse-horizontal toast" id="collapseWidthExample">
+    <div class="toast-header bg-dark">
+      <strong class="me-auto">Delete Confirmation</strong>
+    </div>
+    <div class="toast-body bg-dark text-white">
+      <p>Are you Sure you Want delete this bookmark?</p>
+      <button type="button" class="btn btn-secondary mx-1 btn-sm" data-bs-dismiss="toast">
+        No
+      </button>
+      <button type="button" class="btn btn-success mx-1 btn-sm" data-bs-dismiss="toast" (click)="deletebookmark()">
+        Yes
+      </button>
+    </div>
+  </div>
+</div>

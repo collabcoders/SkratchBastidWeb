@@ -1,0 +1,90 @@
+// Navigation link styles (only for nav menu, not auth buttons)
+.link-container .nav-link {
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+// Link container with hover image effect
+.link-container {
+  position: relative;
+  display: inline-block;
+
+  .link-image {
+    &.show {
+      display: block;
+    }
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    width: auto;
+    max-width: 120px;
+    height: auto;
+    max-height: 80px;
+    object-fit: contain;
+    z-index: 1000;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+  }
+
+  &:hover .link-image {
+    display: block;
+  }
+}
+
+// Mobile navigation
+.mobile-nav {
+  margin-left: 1rem;
+  overflow-y: hidden;
+
+  .link-container {
+    width: max-content;
+  }
+}
+
+// Dark mode support
+:host-context(.dark) {
+  .link-container {
+    color: #fff;
+  }
+}
+
+// Hide scrollbar for mobile menu
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Sliding side-nav overlay */
+.sb-overlay {
+  background: rgba(0, 0, 0, 0.45);
+  display: block;
+  transition: opacity 0.25s ease;
+  opacity: 1;
+}
+
+.sb-overlay:not(.open) {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sb-drawer {
+  transform: translateX(-100%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.sb-drawer.open {
+  transform: translateX(0);
+}
+
+/* Ensure overlay and drawer are on top */
+.sb-overlay,
+.sb-drawer {
+  z-index: 9999;
+}

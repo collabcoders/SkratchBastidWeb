@@ -1,0 +1,124 @@
+<div class="modal fade" id="courseModal" tabindex="-1" aria-labelledby="courseModalLabel" data-bs-backdrop="static"
+    data-bs-keyboard="false" aria-hidden="true">
+    @if (purchaseForm) {
+        <form [formGroup]="purchaseForm.form" (ngSubmit)="purchase()" class="needs-validation" novalidate>
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content modal-login">
+
+                <div class="modal-header">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <h4 class="modal-title" id="courseModalLabel">Get The Course ($99)</h4>
+
+                    <iframe width="100%" height="262px"
+                        src="https://www.youtube.com/embed/NytZbRGVu-w?si=bknT5ndBVf3DAe9t" title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+
+                    <div class="input-group mb-3 has-validation signup-top-row">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        <input type="text" formControlName="firstName" aria-label="First Name"
+                            class="form-control left-inline-box"
+                            [ngClass]="invalidCss(purchaseForm.form.controls['firstName'])" placeholder="First Name">
+                        @if (invalid(purchaseForm.form.controls['firstName'])) {
+                            <div class="invalid-tooltip left-error-tip">First name required</div>
+                        }
+                        <input type="text" formControlName="lastName" aria-label="Last Name" class="form-control"
+                            [ngClass]="invalidCss(purchaseForm.form.controls['lastName'])" placeholder="Last Name">
+                        @if (invalid(purchaseForm.form.controls['lastName'])) {
+                            <div class="invalid-tooltip right-error-tip">Last name required</div>
+                        }
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
+                        <input type="text" class="form-control" formControlName="address1" placeholder="Billing Address"
+                            aria-label="Billing Address" [ngClass]="invalidCss(purchaseForm.form.controls['address1'])">
+                        @if (invalid(purchaseForm.form.controls['address1'])) {
+                            <div class="invalid-tooltip left-error-tip">Billing Address required</div>
+                        }
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                        <input type="text" formControlName="city" aria-label="City" class="form-control"
+                            placeholder="City" [ngClass]="invalidCss(purchaseForm.form.controls['city'])">
+                        @if (invalid(purchaseForm.form.controls['city'])) {
+                            <div class="invalid-tooltip left-error-tip">City is required</div>
+                        }
+                        <input type="text" formControlName="state" aria-label="State" class="form-control"
+                            placeholder="State" [ngClass]="invalidCss(purchaseForm.form.controls['state'])">
+                        @if (invalid(purchaseForm.form.controls['state'])) {
+                            <div class="invalid-tooltip center-error-tip">State is required</div>
+                        }
+                        <input type="text" formControlName="zip" aria-label="Zip" class="form-control"
+                            placeholder="Zip Code" [ngClass]="invalidCss(purchaseForm.form.controls['zip'])">
+                        @if (invalid(purchaseForm.form.controls['zip'])) {
+                            <div class="invalid-tooltip right-error-tip">Zip/Postal is required</div>
+                        }
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                        <select class="form-select" formControlName="country"
+                            [ngClass]="invalidCss(purchaseForm.form.controls['country'])">
+                            <option value="" selected>Country</option>
+                            @for (country of countries; track $index) {
+                            <option [value]="country.code">{{country.name}}</option>
+                            }
+                        </select>
+                        @if (invalid(purchaseForm.form.controls['country'])) {
+                            <div class="invalid-tooltip left-error-tip">Country is required</div>
+                        }
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                        <input type="text" aria-label="Credit Card Number" formControlName="cc"
+                            class="form-control card-number" placeholder="Credit Card Number"
+                            [ngClass]="invalidCss(purchaseForm.form.controls['cc'])">
+                        @if (invalid(purchaseForm.form.controls['cc'])) {
+                            <div class="invalid-tooltip left-error-tip">Invalid credit card number</div>
+                        }
+                        <span class="expiration form-control" [ngClass]="invalidCss(purchaseForm.form.controls['ccMo'])"
+                            [ngClass]="invalidCss(purchaseForm.form.controls['ccYr'])">
+                            <input type="text" name="month" formControlName="ccMo" placeholder="MM" maxlength="2"
+                                size="2" />
+                            <span>/</span>
+                            <input type="text" name="year" formControlName="ccYr" placeholder="YY" maxlength="2"
+                                size="2" />
+                        </span>
+                        @if (invalid(purchaseForm.form.controls['ccMo']) || invalid(purchaseForm.form.controls['ccYr'])) {
+                            <div class="invalid-tooltip right-error-tip">2 digit month and 2 digit year required.</div>
+                        }
+                        <input type="password" aria-label="CVC" formControlName="cvc" class="form-control cvc"
+                            placeholder="CVC" [ngClass]="invalidCss(purchaseForm.form.controls['cvc'])">
+                        @if (invalid(purchaseForm.form.controls['cvc'])) {
+                            <div class="invalid-tooltip right-error-tip">3 digit CVC number required</div>
+                        }
+                    </div>
+
+                    <div class="input-group mb-3 form-text">
+                        Terms: By clicking the Purchase button below, you agree to a one-time payment of $99.00 for the
+                        purchase of Skratchbastid's Beat Making Course.
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <input type="hidden" formControlName="memberId">
+                    <!-- <input type="hidden" formControlName="customerId"> -->
+                    <button type="submit" class="btn btn-primary center" [disabled]="processingPurchase">
+                        @if (processingPurchase) {
+                            <i class="fas fa-circle-notch fa-spin"></i>
+                        }
+                        &nbsp; Purchase
+                    </button>
+                </div>
+            </div>
+        </div>
+        </form>
+    }
+</div>

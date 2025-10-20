@@ -1,0 +1,40 @@
+<div class="py-6 bg-white mt-8 px-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center pr-4 mb-4">
+        <div class="flex items-center gap-2">
+            <img src="/img/storeImg.png" alt="New in Top Grillin" class="w-6 h-6">
+            <h2 class="text-[18px] font-bold text-gray-800">Bastid's store</h2>
+        </div>
+        <div>
+            <a href="https://shop.skratchbastid.com/" rel="noopener noreferrer" target="_blank"
+                class="text-white hover:text-black hover:bg-white text-sm py-1">
+                <div class="flex items-center">
+                    <span class="text-[14px] font-bold text-black uppercase tracking-wide text-[14px]">Store
+                        &nbsp;</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill="#000" stroke="black"
+                        class="w-4 h-4">
+                        <path
+                            d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z">
+                        </path>
+                    </svg>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products">
+        @for (product of products; track $index) {
+        <div class="product-card">
+            <a [href]="product.link" target="_blank" rel="noopener noreferrer">
+                <div style="position: relative;">
+                    <img [src]="product.image" [alt]="product.title" class="product-image">
+                    <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+                </div>
+                <h2 class="product-title">{{ product.title }}</h2>
+                <p class="product-price">{{ product.price }}</p>
+            </a>
+        </div>
+        }
+    </div>
+</div>

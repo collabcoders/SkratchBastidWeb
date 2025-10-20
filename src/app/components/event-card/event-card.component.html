@@ -1,0 +1,28 @@
+<div class="flex w-full items-center my-4 bg-[#F7F7F7] px-6 py-4 rounded-xl">
+  <!-- Date Section -->
+  <div class="text-center text-[#FF5941]">
+    <div class="uppercase text-xs font-light">{{ event().month }}</div>
+    <div class="text-center text-sm md:text-2xl font-bold">{{ event().day }}</div>
+  </div>
+
+  <!-- Event Details -->
+  <div class="flex flex-col lg:flex-row flex-grow md:flex-grow-0 w-9/12 items-center justify-center">
+    <div class="font-black uppercase md:w-2/3 md:text-2xl text-center">{{ event().location }}</div>
+    <div class="md:w-1/2 text-center">
+      <div class="text-sm text-[#687787] md:text-lg md: mb-1">
+        {{ event().details }}
+      </div>
+      @if (event().venue) {
+      <div class="text-xs text-blue-600 font-bold uppercase">{{ event().venue }}</div>
+      }
+    </div>
+  </div>
+
+  <!-- Tickets Button -->
+  <div class="ml-auto">
+    <a [href]="event().ticketsLink" target="_blank" rel="noopener noreferrer"
+      class="uppercase text-white text-xs md:text-base px-3 py-3 md:px-5 rounded-xl font-bold bg-[#FF5941]">
+      Tickets
+    </a>
+  </div>
+</div>

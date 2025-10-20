@@ -1,0 +1,182 @@
+@if (!isMobileDevice) {
+    <div class="player-footer" #container [ngStyle]="{ visibility: (music) ? 'visible' : 'hidden' }">
+        <div class="player">
+            @if ((playerState$ | async) == 'playing') {
+                <div class="player-play">
+                    <a href (click)="playPause($event)" class="player-play-icon" tooltip="PAUSE" placement="top">
+                        <i class="far fa-pause-circle"></i>
+                    </a>
+                </div>
+            } @else if ((playerState$ | async) == 'paused' || (playerState$ | async) == 'stopped') {
+                <div class="player-play">
+                    <a href (click)="playPause($event)" class="player-play-icon" tooltip="PLAY" placement="top">
+                        <i class="far fa-play-circle"></i>
+                    </a>
+                </div>
+            } @else {
+                <div class="player-play">
+                    <span class="player-play-icon player-loading">
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                    </span>
+                </div>
+            }
+
+            @if (music != null) {
+                <div class="player-img">
+                    <img [src]="music.image | imageUrl:180:180:true" [alt]="music.title" (error)="errorImage($event)" />
+                </div>
+            } @else {
+                <div class="player-img">
+                    <img src="/assets/images/audio.png" alt="Album Cover" />
+                </div>
+            }
+
+            <div class="player-controls-container">
+                @if (music != null) {
+                    <div class="player-details">
+                        <ngx-marquee>
+                            <mark class="marquee">
+                                <h5>{{music.title}}</h5>
+                                <p>{{music.artist}}</p>
+                            </mark>
+                        </ngx-marquee>
+                    </div>
+
+                    <div class="player-controls">
+                        <div class="player-control">
+                            <span [attr.id]="'fav-' + music.musicId" class="fa-stack fav-icon fav-active"
+                                (click)="fav($event, music.genre, music.musicId)" tooltip="UPDATE FAVORITES"
+                                [attr.data-fav-id]="$any(favoriteId$ | async)">
+                                <i id="fav-audio-icon"
+                                    [ngStyle]="{ visibility: ($any(favoriteId$ | async) > 0) ? 'visible' : 'hidden' }"
+                                    class="fas fa-heart fa-2x fa-stack-1x"></i>
+                                <i class="far fa-heart fa-2x fa-stack-1x"></i>
+                            </span>
+                        </div>
+
+                        @if (music) {
+                            <div (click)="openShare(music)" class="share-audio-desktop player-control cursor-pointer">
+                                <i class="fa fa-share fa-2x cursor-pointer"></i>
+                            </div>
+                        }
+
+                        <div class="player-control">
+                            <div class="player-jump" (click)="seekTo($event,'back')" tooltip="BACK 30 SECS" placement="top">
+                                <svg width="32" height="12" viewBox="0 0 32 12" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M7.99 0l1.1 1.75L3.92 5h20.1c5.42-.17 7.95 1.46 8.04 6.86V12h-2c0-4.43-1.57-5.07-5.71-5.01H3.82l5.27 3.3-1.1 1.75-7.99-5 .03-.05H0v-2h.02L8 0z"
+                                        fill="#FFFFFF" fill-rule="evenodd"></path>
+                                </svg>
+                                <div class="player-jump-secs">30s</div>
+                            </div>
+                        </div>
+
+                        <div class="player-control float-end">
+                            <div class="player-time">{{currentFormattedTime$ | async}}</div>
+                            <div class="player-jump" (click)="seekTo($event,'forward')" tooltip="FWD 30 SECS" placement="top">
+                                <svg width="32" height="12" viewBox="0 0 32 12" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M24.07 0l-1.1 1.75L28.14 5H8.03C2.62 4.82.09 6.45 0 11.85V12h2c0-4.43 1.57-5.07 5.71-5.01h20.53l-5.27 3.3 1.1 1.75 7.99-5-.03-.05h.03v-2h-.02L24.07 0z"
+                                        fill="#FFFFFF" fill-rule="evenodd"></path>
+                                </svg>
+                                <div class="player-jump-secs">30s</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="player-wave">
+                <div #waveform id="waveform"></div>
+            </div>
+
+            <div class="player-close" tooltip="CLOSE" placement="top">
+                <a href class="player-close-container" (click)="previewClose($event)">
+                    <i class="far fa-times-circle fa-2x"></i>
+                </a>
+                <span class="total-time">{{totalTime}}</span>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isMobileDevice) {
+    <div class="{{ isMobileDevices ? 'music-modal-mobile' : 'music-modal' }}" [ngStyle]="{ visibility: (music) ? 'visible' : 'hidden' }">
+        <div class="modal2-content modal-audio">
+            <div class="modal2-header" style="justify-content: center; position: relative">
+                @if (music) {
+                    <div class="title-modal-audio">{{ music.title }}</div>
+                }
+                <button type="button" class="button-audio btn-close btn-close-white" data-bs-dismiss="modal"
+                    (click)="previewClose($event)" aria-label="Close"></button>
+            </div>
+
+            <div class="modal2-body">
+                @if (music != null) {
+                    <div class="player-audio-img">
+                        <img [src]="music.image | imageUrl:1000:1000:true" [alt]="music.title" (error)="errorImage($event)" />
+                    </div>
+                } @else {
+                    <div class="player-audio-img">
+                        <img src="/assets/images/audio.png" alt="Album Cover" />
+                    </div>
+                }
+
+                @if (music) {
+                    <div class="info-audio">
+                        <div>
+                            <div class="title-audio">{{ music.title }}</div>
+                            <div class="artist-audio">{{ music.artist }}</div>
+                        </div>
+
+                        @if (music && loadFav) {
+                            <div class="player-control">
+                                <span [attr.id]="'fav-' + music.musicId" class="fa-stack fav-icon fav-active"
+                                    (click)="fav($event, music.genre, music.musicId)" tooltip="UPDATE FAVORITES"
+                                    [attr.data-fav-id]="$any(favoriteId$ | async)">
+                                    <i id="fav-audio-icon-mobile"
+                                        [ngStyle]="{ visibility: ($any(favoriteId$ | async) > 0) ? 'visible' : 'hidden' }"
+                                        class="fas fa-heart fa-2x fa-stack-1x"></i>
+                                    <i class="far fa-heart fa-2x fa-stack-1x"></i>
+                                </span>
+                                <div (click)="openShare(music)">
+                                    <i class="fa fa-share fa-2x cursor-pointer"></i>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+                <div class="player-wave-audio">
+                    <div class="player-info">
+                        <div class="player-audio text-center">
+                            @if ((playerState$ | async) == 'playing') {
+                                <div class="player-play">
+                                    <a href (click)="playPause($event)" class="player-play-icon" tooltip="PAUSE" placement="top">
+                                        <i class="far fa-pause-circle"></i>
+                                    </a>
+                                </div>
+                            } @else if ((playerState$ | async) == 'paused' || (playerState$ | async) == 'stopped') {
+                                <div class="player-play">
+                                    <a href (click)="playPause($event)" class="player-play-icon" tooltip="PLAY" placement="top">
+                                        <i class="far fa-play-circle"></i>
+                                    </a>
+                                </div>
+                            } @else {
+                                <div class="player-play">
+                                    <span class="player-play-icon player-loading">
+                                        <i class="fas fa-circle-notch fa-spin"></i>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div #waveform id="waveform" style="width: 100%"></div>
+                    <div class="player-time-audio-start">{{currentFormattedTime$ | async}}</div>
+                    <div class="player-time-audio-end">{{totalTime}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

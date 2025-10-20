@@ -1,0 +1,62 @@
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}
+
+.product-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+}
+
+.rotating-banner {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  object-fit: cover;
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.product-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+  color: #1f2937;
+}
+
+.product-price {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 8px;
+  color: #4b5563;
+}

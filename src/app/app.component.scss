@@ -1,0 +1,11 @@
+@import "../theme.scss";
+
+#page-container {
+  position: relative !important;
+  min-height: 100vh !important;
+  overflow: none;
+}
+
+#content-wrap {
+  padding-bottom: $footer-height !important;
+}

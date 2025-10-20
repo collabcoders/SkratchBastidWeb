@@ -1,0 +1,38 @@
+// Video Hero Component Styles
+
+.video-hero {
+  position: relative;
+  overflow: hidden;
+
+  video {
+    pointer-events: none; // Prevent video controls from interfering
+  }
+
+  // Ensure video covers the entire container
+  video {
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+  }
+
+  // Backdrop blur for better button visibility
+  .backdrop-blur-sm {
+    backdrop-filter: blur(4px);
+  }
+
+  // Smooth transitions for all interactive elements
+  button {
+    transition: all 0.3s ease;
+  }
+
+  // Hover effects for control buttons
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  // Loading state for video
+  video:not([src]) {
+    background-color: #000;
+  }
+}

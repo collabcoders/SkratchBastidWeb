@@ -1,0 +1,166 @@
+<form [formGroup]="signupForm.form" (ngSubmit)="saveSignUp()" class="needs-validation" [hidden]="submitted" novalidate>
+    <div [hidden]="!validToken">
+        <div class="modal-content upgrade-content">
+
+            <div class="modal-header title-container">
+                <h4 class="white">MAG MOB VIP UPGRADE</h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="wise-iframe-wrapper">
+                    <iframe width="100%" height="262px" src="https://www.youtube.com/embed/UVxYuw0h8aY"
+                        title="YouTube video player" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </div>
+                <hr class="form-line">
+                <h5 class="white title-container subtitle-container">{{accountName}}</h5>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-star"></i></span>
+                    <select class="form-select" (change)="changePlan($event)" formControlName="plan"
+                        [ngClass]="invalidCss(signupForm.form.controls['plan'])">
+                        <option value="" selected>Subscription Plan</option>
+                        @for (plan of plans; track $index) {
+                        <option [value]="plan.value">{{plan.text}}</option>
+                        }
+                    </select>
+                    @if (invalid(signupForm.form.controls['plan'])) {
+                        <div class="invalid-tooltip left-error-tip">Subscription plan is required</div>
+                    }
+                </div>
+                <div class="input-group mb-3 has-validation">
+                    <span class="input-group-text"><i class="fas fa-map-marker"></i></span>
+                    <input type="text" class="form-control" formControlName="address1" placeholder="Billing Address"
+                        aria-label="Billing Address" [ngClass]="invalidCss(signupForm.form.controls['address1'])">
+                    @if (invalid(signupForm.form.controls['address1'])) {
+                        <div class="invalid-tooltip left-error-tip">Billing Address required</div>
+                    }
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                    <input type="text" formControlName="city" aria-label="City" class="form-control" placeholder="City"
+                        [ngClass]="invalidCss(signupForm.form.controls['city'])">
+                    @if (invalid(signupForm.form.controls['city'])) {
+                        <div class="invalid-tooltip left-error-tip">City is required</div>
+                    }
+                    <input type="text" formControlName="state" aria-label="State" class="form-control"
+                        placeholder="State" [ngClass]="invalidCss(signupForm.form.controls['state'])">
+                    @if (invalid(signupForm.form.controls['state'])) {
+                        <div class="invalid-tooltip center-error-tip">State is required</div>
+                    }
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                    <input type="text" formControlName="zip" aria-label="Zip" class="form-control"
+                        placeholder="Zip Code" [ngClass]="invalidCss(signupForm.form.controls['zip'])">
+                    @if (invalid(signupForm.form.controls['zip'])) {
+                        <div class="invalid-tooltip right-error-tip">Zip/Postal is required</div>
+                    }
+                    <select class="form-select" formControlName="country"
+                        [ngClass]="invalidCss(signupForm.form.controls['country'])">
+                        <option value="" selected>Country</option>
+                        @for (country of countries; track $index) {
+                        <option [value]="country.code">{{country.name}}</option>
+                        }
+                    </select>
+                    @if (invalid(signupForm.form.controls['country'])) {
+                        <div class="invalid-tooltip left-error-tip">Country is required</div>
+                    }
+                </div>
+
+                <hr class="form-line">
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
+                    <input type="text" aria-label="Credit Card Number" formControlName="cc" class="form-control"
+                        placeholder="Credit Card Number" [ngClass]="invalidCss(signupForm.form.controls['cc'])">
+                    @if (invalid(signupForm.form.controls['cc'])) {
+                        <div class="invalid-tooltip left-error-tip">Invalid credit card number</div>
+                    }
+                </div>
+
+                <div class="input-group mb-3">
+                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                    <span class="expiration expiration1 form-control"
+                        [ngClass]="invalidCss(signupForm.form.controls['ccMo'])"
+                        [ngClass]="invalidCss(signupForm.form.controls['ccYr'])">
+                        <input type="text" name="month" formControlName="ccMo" placeholder="MM" maxlength="2"
+                            size="2" />
+                        <span>/</span>
+                        <input type="text" name="year" formControlName="ccYr" placeholder="YY" maxlength="2" size="2" />
+                    </span>
+                    @if (invalid(signupForm.form.controls['ccMo']) || invalid(signupForm.form.controls['ccYr'])) {
+                        <div class="invalid-tooltip right-error-tip">2 digit month and 2 digit year required.</div>
+                    }
+                    <input type="password" aria-label="CVC" formControlName="cvc" class="form-control cvc1"
+                        placeholder="CVC" [ngClass]="invalidCss(signupForm.form.controls['cvc'])">
+                    @if (invalid(signupForm.form.controls['cvc'])) {
+                        <div class="invalid-tooltip right-error-tip">3 digit CVC number required</div>
+                    }
+                </div>
+
+                @if (selectedPrice != '') {
+                    <div class="input-group mb-3 form-text">
+                        Terms: By clicking the "Upgrade" button below you agree to an
+                        initial subscription payment of
+                        {{selectedPrice}} and billed {{selectedFrequency}} with the option to cancel any time.
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <input type="hidden" formControlName="memberId">
+                <input type="hidden" formControlName="customerId">
+                <input type="hidden" formControlName="firstName">
+                <input type="hidden" formControlName="lastName">
+                <input type="hidden" formControlName="email">
+                <input type="hidden" formControlName="phone">
+                <input type="hidden" formControlName="sms">
+                <input type="hidden" formControlName="password">
+                <button type="submit" class="btn btn-primary center" [disabled]="processingSignup">
+                    @if (processingSignup) {
+                        <i class="fas fa-circle-notch fa-spin"></i>
+                    }
+                    &nbsp; Upgrade
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div [hidden]="!submitted">
+    <div class="modal-content upgrade-content">
+        <div class="modal-header">
+            Welcome to the Mag Mob VIP!
+        </div>
+        <div class="modal-body">
+            <div class="signin-logo">
+                <img src="../../../../assets/images/signup-logo.png" alt="Mag Mob VIP logo" />
+            </div>
+            <br>
+            <p class="white">{{confirmation}}</p>
+        </div>
+        <div class="modal-footer" style="background: #303030;">
+        </div>
+    </div>
+</div>
+
+<div class="modal-content upgrade-content" [hidden]="validToken">
+    <div class="modal-header">
+        App Upgrade Unavailable
+    </div>
+    <div class="modal-body">
+        <div class="signin-logo">
+            <img src="../../../../assets/images/signup-logo.png" alt="Mag Mob VIP logo" />
+        </div>
+        <br>
+        <p class="white">Sorry, upgrades are currently unavilable through the app. However, you can still upgrade by visiting
+            the Skratchbastid webstie &#64; <a href="https://skratchbastid.com" target="_blank">https://skratchbastid.com</a>.
+            Once you upgrade, simply come back to the app, sign out of the app, then sign back in, and you will have
+            full access. Sorry for the inconvience, we are working having this fixed ASAP.
+            Thank you for the support!</p>
+    </div>
+    <div class="modal-footer" style="background: #303030;">
+    </div>
+</div>

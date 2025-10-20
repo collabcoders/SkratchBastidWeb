@@ -1,0 +1,138 @@
+<app-header></app-header>
+
+<div class="">
+  <!-- Hero Section -->
+  <div class="bg-[#142129] text-white md:px-12 px-6 py-28 flex flex-col items-center md:flex-row gap-24">
+    <div class="flex-1 md:w-70 flex flex-col gap-4">
+      <img src="/img/services2.png" alt="Image 1" class="rounded-lg w-full h-[334px] object-cover" />
+      <img src="/img/services1.png" alt="Image 2" class="rounded-lg w-full h-[334px] object-cover" />
+    </div>
+    <div class="flex-1 md:w-30">
+      <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">Welcome to</h1>
+      <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">TOP GRILLIN'</h1>
+      <h2 class="text-2xl mt-2 font-bold">As a VIP, you'll enjoy</h2>
+      <p class="mt-2 text-gray-300">
+        Access to Skratch Bastid's DJ Streams – Get up close and personal with epic sets you won't
+        hear anywhere else.
+      </p>
+      <div class="mt-4 border-l-4 border-[#FF5941] pl-8 p-4 mt-8 mb-8">
+        <ul class="list-disc list-inside text-gray-300">
+          <li class="mb-6">
+            Complete Archive of Twitch Streams – Access over 500 hours of Skratch Bastid's streaming
+            content, including Tuesday Morning Coffee sessions, Pop-Up events, and more.
+          </li>
+          <li class="mb-6">
+            Private Virtual Performances – Experience intimate, members-only shows from the man
+            himself.
+          </li>
+          <li class="mb-6">
+            Merch Discounts – Score deals on Bastid-branded gear to rep your love for music and
+            flavor.
+          </li>
+          <li>
+            Early Access to Everything Skratch Bastid – Be the first to know about new music,
+            events, and more!
+          </li>
+        </ul>
+      </div>
+      <a href="/join"
+        class="mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
+        JOIN NOW
+      </a>
+    </div>
+  </div>
+
+  <!-- Video Section -->
+  <app-video-carousel [section]="videoSection"></app-video-carousel>
+
+  <!-- Platform Section -->
+  <div class="bg-[#142129] text-white md:px-12 px-6 py-12 flex flex-col items-center md:flex-row gap-24">
+    <div class="flex-1 md:w-30">
+      <h2 class="text-3xl font-bold">Platform</h2>
+      <p class="mt-2 text-gray-300">
+        Join our private server and community for exclusive access to Skratch Bastid's world.
+      </p>
+      <div class="mt-4 border-l-4 border-[#FF5941] pl-8 p-4 mt-8 mb-8">
+        <ul class="list-none pl-0 text-gray-300">
+          @for (feature of platformFeatures; track feature.number) {
+          <li class="mb-8 flex items-center" [class.mb-0]="$last">
+            <span
+              class="w-8 h-8 mr-4 rounded-full border-2 border-white text-white text-center flex items-center justify-center p-6 text-[30px]">
+              {{ feature.number }}
+            </span>
+            <div>
+              <h3 class="text-white font-bold text-[20px]">{{ feature.title }}</h3>
+              <p class="text-[14px]">{{ feature.description }}</p>
+            </div>
+          </li>
+          }
+        </ul>
+      </div>
+      <p class="mt-2 text-gray-300">Become a Top Griller today!</p>
+      <a href="/newsletter"
+        class="mt-6 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
+        START NOW
+      </a>
+    </div>
+    <div class="flex-1 md:w-70 flex flex-col gap-4">
+      <img src="/img/platformimg.png" alt="Image 1" class="rounded-lg w-full h-100 object-cover" />
+    </div>
+  </div>
+
+  <!-- Pricing Section -->
+  <div class="bg-[#fff] text-white md:px-12 px-6 py-12 items-center md:flex-row gap-24">
+    <h2 class="text-3xl text-[#142129] font-bold text-center">Become a VIP Top Griller now</h2>
+    <p class="mt-2 text-[#142129] text-center">Our membership offerings</p>
+    <div
+      class="md:max-w-[30%] ml-auto mr-auto flex flex-col-reverse md:flex-row justify-center items-stretch gap-16 mt-8">
+      <div class="flex-1 rounded-xl p-6 flex flex-col border-2 border-[#c0c0c05e] md:w-[35%] mb-2">
+        <div class="relative mb-4">
+          <h3 class="text-left font-bold text-2xl text-[#142129]">Join now</h3>
+        </div>
+        <ul class="text-left mb-8 flex-grow">
+          @for (feature of pricingFeatures; track feature) {
+          <li class="flex items-end mb-2">
+            <div class="w-6 h-6 flex-shrink-0 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
+                role="img" class="icon w-full h-full text-[#FF5941]" width="1em" height="1em" viewBox="0 0 24 24">
+                <path fill="currentColor" fill-rule="evenodd"
+                  d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094z"
+                  clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <span class="flex-grow text-[14px] font-light text-[#5F5F5F]">{{ feature }}</span>
+          </li>
+          }
+        </ul>
+        <div class="flex items-center justify-center mb-4">
+          <span class="text-sm font-medium text-[#5F5F5F] mr-2" [class.font-bold]="!isAnnual">Monthly</span>
+          <button (click)="togglePricing()"
+            class="relative w-12 h-6 flex items-center rounded-full transition duration-300"
+            [class.bg-[#FF5941]]="isAnnual" [class.bg-gray-300]="!isAnnual">
+            <div class="absolute left-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300"
+              [class.translate-x-5]="isAnnual" [class.translate-x-0]="!isAnnual"></div>
+          </button>
+          <span class="text-sm font-medium text-[#5F5F5F] ml-2" [class.font-bold]="isAnnual">Annual</span>
+        </div>
+        <div class="text-[20px] font-bold mb-0 text-[#142129]">
+          ${{ currentPrice }}<span class="text-[14px] font-light">{{ currentPeriod }}</span>
+        </div>
+        <a [href]="signupLink"
+          class="text-center mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
+          SELECT
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Free Trial Form -->
+  <app-free-trial-form></app-free-trial-form>
+
+  <!-- Bottom Image Section -->
+  <div class="bg-white relative">
+    <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+  </div>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

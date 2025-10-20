@@ -1,0 +1,162 @@
+@import "../../theme.scss";
+
+body {
+    overflow-x: hidden !important;
+    overflow-y: scroll !important;
+}
+
+.signup-top-row {
+    margin-top: 15px;
+}
+
+.expiration1 {
+    border: 1px solid #bbbbbb;
+    background-color: #262626;
+}
+
+.expiration1 input,
+.expiration1 input:focus,
+.expiration1 input:active,
+.expiration1>input,
+.expiration1>input:focus,
+.expiration1>input:active {
+    width: 45px;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.cvc1 {
+    max-width: 25% !important;
+}
+
+hr {
+    color: #ccc;
+}
+
+.left-error-tip {
+    margin-left: 40px;
+    border-radius: 5px !important;
+}
+
+.right-error-tip {
+    margin-left: 250px;
+    border-radius: 5px !important;
+}
+
+.center-error-tip {
+    margin-left: 175px;
+    border-radius: 5px !important;
+}
+
+.menu-tip {
+    font-family: $title-font;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+#file-input {
+    display: none;
+}
+
+.pic-preview {
+    cursor: pointer;
+    max-width: 150px !important;
+    border-radius: 50% !important;
+}
+
+.img-text {
+    position: absolute;
+    margin: -42px auto;
+    color: #fff;
+    text-shadow: 1px 1px 10px $dark, 1px 1px 10px $dark;
+    font-size: 13px;
+    text-align: center;
+    margin-left: 21px;
+}
+
+.subscription-text {
+    color: $contrast-light;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.cancel-btn,
+.cancel-btn:visited {
+    color: $secondary2 !important;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.cancel-btn:hover,
+.cancel-btn:focus,
+.cancel-btn:active {
+    color: $secondary3 !important;
+    text-decoration: none;
+}
+
+.cancel-body {
+    color: #fff;
+    margin-top: -25px;
+}
+
+.cancel-footer {
+    padding: 10px !important;
+}
+
+.upgrade-content {
+    margin-top: 12px !important;
+    padding: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border-radius: 10px !important;
+}
+
+.needs-validation {
+    margin: 0 !important;
+}
+.signin-logo {
+    width: 150px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+
+    >img {
+        width: 100%;
+    }
+}
+
+.wise-iframe-wrapper {
+    position: relative;
+    padding-bottom: 56.10%;
+    height: 0;
+    overflow: hidden;
+}
+ 
+.wise-iframe-wrapper iframe,
+.wise-iframe-wrapper object,
+.wise-iframe-wrapper embed {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.white {
+    padding: 0;
+    color: #fff;
+}
+
+.title-container {
+    padding-bottom:0;
+    padding-top:0;
+    margin-top:0;
+    margin-bottom:0;
+}
+
+.subtitle-container {
+    padding-bottom:0;
+    padding-top:0;
+    margin-top:0;
+    margin-bottom:10px;
+}

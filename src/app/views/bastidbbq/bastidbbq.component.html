@@ -1,0 +1,70 @@
+<div class="min-h-screen bg-white">
+  <app-header />
+
+  <!-- Hero Section -->
+  <div class="relative h-screen flex items-center justify-center text-white bg-cover bg-center"
+    style="background-image: url('/img/bbqimage5.jpeg')">
+    <div class="absolute inset-0 bg-black opacity-60 z-0"></div>
+    <div class="relative z-10 w-full md:flex md:items-center md:justify-between md:px-12 px-6 m-auto">
+      <div class="text-left md:w-[60vw] md:ml-20" style="
+          font-family: 'Blur Bold', 'Impact', 'Franklin Gothic Bold', 'Arial Black', sans-serif;
+          font-weight: 900;
+        ">
+        <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">GOOD MUSIC,</h1>
+        <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">GOOD FOOD,</h1>
+        <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">GOOD PEOPLE.</h1>
+      </div>
+      <div style="display: flex">
+        <button class="md:mt-0 mt-12 md:mt-0 md:mr-44 m-auto cursor-pointer" (click)="openYouTubeOverlay()">
+          <img src="/img/play.png" alt="Play" class="w-32" />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ticket Section -->
+  <div class="bg-[#142129] text-white px-6 py-12 items-center justify-center gap-8" id="signup">
+    <div class="justify-center mb-6 md:flex gap-8">
+      <div style="display: grid">
+        <a href="https://link.dice.fm/gaf9af5bce9d" rel="noopener noreferrer">
+          <img src="/img/bbq_lv.jpg" alt="Image 1" class="rounded-lg md:w-[30vw] h-auto" />
+        </a>
+        <a href="https://link.dice.fm/gaf9af5bce9d" rel="noopener noreferrer"
+          class="mt-4 m-auto inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
+          BUY TICKETS
+        </a>
+      </div>
+    </div>
+    <div class="justify-center mb-6 md:flex gap-8 mt-12">
+      <div class="mt-8 md:mt-0" style="display: grid"></div>
+    </div>
+  </div>
+
+  <!-- Signup Form Section -->
+  <app-bbq-signup-form />
+
+  <!-- Apple Music Section -->
+  <app-audio-carousel [titleColor]="'light'" [section]="appleMusicSection" />
+
+  <!-- BBQ Recaps Section -->
+  <app-bbq-recap-carousel [section]="bbqRecapsSection" />
+
+  <app-footer />
+
+  <!-- YouTube Overlay -->
+  @if (showYouTubeOverlay) {
+  <div class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+    (click)="closeYouTubeOverlay()">
+    <div class="relative bg-white rounded-lg shadow-xl" style="width: 768px; height: 600px"
+      (click)="$event.stopPropagation()">
+      <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold z-10"
+        (click)="closeYouTubeOverlay()">
+        ×
+      </button>
+      <iframe src="https://www.youtube.com/embed/ZyCh60l7fr4?autoplay=1&start=6" width="768" height="600"
+        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen class="rounded-lg"></iframe>
+    </div>
+  </div>
+  }
+</div>

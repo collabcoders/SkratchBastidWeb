@@ -1,0 +1,31 @@
+<app-header></app-header>
+
+<!-- Full-screen Video Hero Section -->
+<app-video-hero></app-video-hero>
+
+<div>
+  <!-- Video Carousel Section -->
+  <app-video-carousel [section]="featuredVideosSection"></app-video-carousel>
+
+  <!-- Store Products Section -->
+  <app-store-products></app-store-products>
+
+  <!-- New in Top Grillin Section -->
+  <app-video-carousel [section]="topGrillinSection"></app-video-carousel>
+
+  <!-- Mixes Section -->
+  <app-mixes-slider [section]="mixesSection"></app-mixes-slider>
+
+  <!-- BBQ CTA Section -->
+  <app-bbq-cta></app-bbq-cta>
+
+  <!-- Free Trial Form -->
+  <app-free-trial-form [showTopMargin]="true"></app-free-trial-form>
+
+  <div class="bg-white relative">
+    <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+  </div>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

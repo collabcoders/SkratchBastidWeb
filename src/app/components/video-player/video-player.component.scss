@@ -1,0 +1,469 @@
+$primary: #212529;
+$body-bg: #060606;
+$secondary: #FB5343;
+$secondary1: #6549D5;
+$secondary2: #ff3333;
+$secondary3: #bd0000;
+$secondary-dark: #190b50;
+$dark: #000000;
+$contrast: #059DFF;
+$contrast1: #E33FA1;
+$contrast-light: #36C6F0;
+$link: #00d3e6;
+
+// Gradient circles for background effects
+.rn-gradient-circle {
+  position: fixed;
+  left: -250px;
+  top: 250px;
+  right: auto;
+  bottom: auto;
+  z-index: 0;
+  width: 500px;
+  height: 500px;
+  border-radius: 1000px;
+  background-image: linear-gradient(45deg, $contrast, $contrast-light);
+  opacity: 0.25;
+  -webkit-filter: blur(100px);
+  filter: blur(100px);
+}
+
+.rn-gradient-circle.theme-pink {
+  left: auto;
+  top: -100px;
+  right: -250px;
+  bottom: auto;
+  z-index: 0;
+  background-image: linear-gradient(45deg, $secondary, $secondary1);
+}
+
+/* FAVORITES & VIDEO MODAL */
+.modal {
+  z-index: 1055 !important;
+}
+
+.modal-backdrop {
+  z-index: 1050 !important;
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.custom-modal {
+  background: #000 !important;
+  color: white !important;
+}
+
+.fav-body {
+  padding: 0 40px 40px 30px !important;
+}
+
+.model-body {
+  background: #000 !important;
+  color: white !important;
+}
+
+.modal-header {
+  background: #000 !important;
+  color: white !important;
+  border-bottom: none !important;
+}
+
+.modal-header h2 {
+  color: white !important;
+  font-weight: bold;
+}
+
+.video-modal-header {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.video-modal-body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+// Bookmark styling
+.bookmark-caption {
+  background: #333 !important;
+  color: white !important;
+  border: 1px solid #555 !important;
+}
+
+.bookmark-caption::placeholder {
+  color: #ccc !important;
+}
+
+.b-mark {
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.b-mark:hover {
+  background-color: $contrast-light !important;
+  border-color: $contrast-light !important;
+}
+
+// Comment styling
+.comment-input {
+  background: #333 !important;
+  color: white !important;
+  border: 1px solid #555 !important;
+}
+
+.comment-input::placeholder {
+  color: #ccc !important;
+}
+
+.r-pills {
+  right: 10px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+.r-pills:hover {
+  background-color: $contrast-light !important;
+  border-color: $contrast-light !important;
+}
+
+/* Video Card Styles */
+.card {
+  background-color: #000;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+
+.card-body>h5 {
+  color: #fff;
+}
+
+.card-body>span {
+  color: #fff;
+}
+
+.cover {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom: 0;
+}
+
+/* Play Icon */
+.fav-play-container {
+  position: absolute;
+  z-index: 8;
+  width: 100px;
+  height: 100px;
+  margin-top: 28%;
+  left: 50%;
+  transform: translate3d(-50%, -50%, 0);
+  display: block;
+}
+
+.fav-play {
+  filter: drop-shadow(1px 1px 1px #000) !important;
+  font-size: 100px;
+  line-height: 100px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.fav-play:hover,
+.fav-play:active {
+  color: #cb034b;
+}
+
+/* Comment Box */
+.comment-box {
+  background: #222 !important;
+  border: 1px solid #444 !important;
+
+  img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+  }
+
+  h5 {
+    color: white !important;
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  p {
+    color: #ccc !important;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+  }
+
+  small {
+    color: #999 !important;
+    font-size: 12px;
+  }
+
+  .text-danger {
+    color: $secondary2 !important;
+    font-size: 12px;
+  }
+
+  .form-control {
+    background: #333 !important;
+    color: white !important;
+    border: 1px solid #555 !important;
+  }
+}
+
+/* Video List */
+.video-list {
+  background: transparent !important;
+  border: none !important;
+  margin-bottom: 15px !important;
+  transition: all 0.3s ease;
+
+  .img-containers {
+    height: 80px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+
+    img {
+      object-fit: cover;
+      height: 100%;
+      width: 100%;
+      border-radius: 8px;
+    }
+  }
+
+  .card-body {
+    padding: 0 0 0 10px !important;
+    display: flex;
+    align-items: center;
+    height: 80px;
+  }
+
+  h5 {
+    color: white !important;
+    font-size: 14px !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    font-weight: bold !important;
+  }
+
+  a {
+    color: white !important;
+    text-decoration: none !important;
+  }
+
+  a:hover {
+    color: $contrast-light !important;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px;
+  }
+
+  // Duration badge
+  span {
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: white !important;
+    font-size: 11px !important;
+    padding: 2px 6px !important;
+    border-radius: 12px !important;
+  }
+}
+
+.cover {
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom: 0;
+  width: 750px;
+}
+
+.v-small {
+  // Add any specific styling for v-small class if needed
+}
+
+.hidden-time {
+  display: none !important;
+}
+
+/* Bookmarks */
+.bookmarks {
+  button {
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  .close {
+    background: transparent;
+
+    &:hover {
+      color: #ff4444 !important;
+    }
+  }
+}
+
+// Custom close button
+.btn-custom-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.btn-custom-close:hover {
+  color: $secondary2;
+}
+
+// Toast notification styling
+.toast-container {
+  z-index: 9999 !important;
+}
+
+.toast {
+  background: #333 !important;
+  border: 1px solid #555 !important;
+  color: white !important;
+}
+
+.toast-header {
+  background: #222 !important;
+  color: white !important;
+  border-bottom: 1px solid #555 !important;
+}
+
+.toast-body {
+  color: white !important;
+}
+
+// Form controls
+.form-control:focus {
+  border-color: $contrast !important;
+  box-shadow: 0 0 0 0.2rem rgba(5, 157, 255, 0.25) !important;
+}
+
+.btn-primary {
+  background-color: $contrast !important;
+  border-color: $contrast !important;
+}
+
+.btn-primary:hover {
+  background-color: $contrast-light !important;
+  border-color: $contrast-light !important;
+}
+
+// Related Videos section styling
+.col-lg-4 h3 {
+  color: white !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  margin-bottom: 20px !important;
+}
+
+// Utility classes
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.line-h1 {
+  line-height: 1.4;
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+.bg-light2 {
+  background-color: #333 !important;
+}
+
+.text-muted-override {
+  color: #999 !important;
+}
+
+.z-index {
+  z-index: 10;
+}
+
+// Clear float
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+// SVG Icon Styling
+svg {
+  display: inline-block;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+// Close button SVG
+.btn-custom-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-custom-close:hover svg {
+  stroke: $secondary2;
+}
+
+// Bookmark button SVG
+.b-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+// Comment button SVG
+.r-pills svg {
+  width: 16px;
+  height: 16px;
+}
+
+// Bookmark list item SVG
+.bookmarks svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+// Delete comment SVG
+.text-danger svg {
+  width: 12px;
+  height: 12px;
+}
+
+.text-danger:hover svg {
+  stroke: #ff4444;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991px) {
+  .fav-body {
+    padding: 0 20px 20px 20px !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .bookmarks button {
+    font-size: 12px;
+    padding: 8px 12px 8px 8px !important;
+  }
+
+  .comment-box {
+    padding: 15px !important;
+  }
+
+  .comment-box img {
+    width: 35px;
+    height: 35px;
+  }
+}
