@@ -7,6 +7,8 @@ export interface FreeTrialFormData {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  password: string;
+  confirmPassword: string;
 }
 
 @Component({
@@ -25,6 +27,8 @@ export class FreeTrialFormComponent {
   firstName = '';
   lastName = '';
   phoneNumber = '';
+  password = '';
+  confirmPassword = '';
 
   // Output for form submission
   formSubmit = output<FreeTrialFormData>();
@@ -35,6 +39,8 @@ export class FreeTrialFormComponent {
       firstName: this.firstName,
       lastName: this.lastName,
       phoneNumber: this.phoneNumber,
+      password: this.password,
+      confirmPassword: this.confirmPassword,
     });
   }
 }

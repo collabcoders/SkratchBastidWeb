@@ -83,7 +83,7 @@
                 </div>
                 <div class="position-relative rounded-pill shadow">
                   <input type="text" [(ngModel)]="commentobj.comment"
-                    class="form-control form-control-lg ps-4 rounded-pill border-0 py-3 mt-4 mb-5 comment-input"
+                    class="form-control form-control-lg ps-4 rounded-pill border-0 py-2 mt-4 mb-5 comment-input"
                     placeholder="Add a Comment" />
                   <a (click)="addcomment()" class="rounded-3 py-4 px-4 fw-bold position-absolute top-1 b-mark r-pills"
                     tooltip="Add Comment">
@@ -120,7 +120,7 @@
                     } @else {
                       <!-- (keyup.enter)="updateComment(item)" -->
                       <input type="text" [(ngModel)]="item.comment"
-                        class="form-control rounded-pill py-3 ps-4 bg-secondary" />
+                        class="form-control rounded-pill py-2 ps-4 bg-secondary" />
                     }
                   </div>
                   <div class="clearfix"></div>
