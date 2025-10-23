@@ -80,9 +80,9 @@ export class ApiService {
     return endpointSection;
   }
 
-  private checkForError(err: HttpErrorResponse) {
-    console.log(err);
+  private checkForError(err: HttpErrorResponse): any {
     let message = '';
+    console.log("checkForError", err);
     if (err.statusText != null || err.statusText !== '') {
       message = err.statusText;
     }
@@ -108,18 +108,26 @@ export class ApiService {
     //   window.location.href = '/home';
     // });
 
+    if (err?.error?.Message) {
+      try {
+        message = err.error.Message;
+        const error = new Error();
+        error.message = message;
+        console.log("error here", error);
+        return throwError(() => error);
+      } catch (err) {
+      }
+    }
+
     if (err.error instanceof Error) {
       // A client-side or network error occurred. Handle it accordingly.
-      console.log('An error occurred:', err.error.message);
-      return err.error;
+      return throwError(() => err.error);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      console.log(`Backend returned code ${err.status}, body was: ${err.error}`);
-
       const error = new Error(message);
       error.message = message;
-      return err.error;
+      console.log("error here 2", error);
+      // return error;
+      return throwError(() => error);
     }
   }
 
@@ -193,5 +201,31 @@ export class ApiService {
         console.log(jsonObject.data);
       });
   }
+
+    /**
+     * Get section data (featuredVideosSection, topGrillinSection, mixesSection)
+     * If environment.isDummy, loads from /json/{section}.json in public folder.
+     * Otherwise, uses API endpoint (customize as needed).
+     * Returns Observable<any>.
+     */
+    public getSectionData(section: string): Observable<any> {
+      if ((environment.ismock)) {
+        // Load from public/json/{section}.json
+        const url = `/json/${section}.json`;
+        return this.http.get<any>(url).pipe(
+          retry(2),
+          catchError(this.checkForError)
+        );
+      } else {
+        // Example: use API endpoint (customize as needed)
+        // You can adjust this to match your backend API for sections
+        const url = this.baseUrl(section) + '?app=' + Config.app;
+        return this.http.get<any>(url, { headers: this.setHeader(false, false) }).pipe(
+          retry(3),
+          catchError(this.checkForError)
+        );
+      }
+    }
+  
 }
 

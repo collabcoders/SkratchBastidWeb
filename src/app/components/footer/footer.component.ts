@@ -13,10 +13,6 @@ interface FooterLink {
   action?: () => void;
 }
 
-interface FooterSection {
-  title: string;
-  links: FooterLink[];
-}
 
 @Component({
   selector: 'app-footer',
@@ -27,7 +23,8 @@ interface FooterSection {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
-  private router = inject(Router);
+  constructor() {
+  }
 
   newsletterEmail = signal('');
 
@@ -133,6 +130,26 @@ export class FooterComponent {
     },
   ];
 
+  handleLinkClick(link: FooterLink) {
+    // If the link is a policy route, open modal instead of navigating
+    if (link.href === '/privacypolicy') {
+      this.openPrivacyModal();
+      return false;
+    }
+    if (link.href === '/cancelpolicy') {
+      this.openCancelModal();
+      return false;
+    }
+    if (link.href === '/refundpolicy') {
+      this.openRefundModal();
+      return false;
+    }
+    if (link.action) {
+      link.action();
+    }
+    return true;
+  }
+  
   onNewsletterSubmit() {
     console.log('Newsletter signup:', this.newsletterEmail());
     // Implement newsletter signup logic
@@ -141,12 +158,6 @@ export class FooterComponent {
   onNewsletterEmailChange(event: Event) {
     const target = event.target as HTMLInputElement;
     this.newsletterEmail.set(target.value);
-  }
-
-  handleLinkClick(link: FooterLink) {
-    if (link.action) {
-      link.action();
-    }
   }
 
   openLoginModal() {

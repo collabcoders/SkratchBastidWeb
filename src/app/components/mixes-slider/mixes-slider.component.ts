@@ -11,7 +11,7 @@ export interface Mix {
 export interface MixesSection {
   title: string;
   icon: string;
-  mixes: Mix[];
+  data: Mix[];
   signUpText?: string;
   signUpLink?: string;
 }

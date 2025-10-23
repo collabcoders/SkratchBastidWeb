@@ -1,0 +1,59 @@
+/* Footer styles for Skratch Bastid Web */
+.footer {
+  background: #222;
+  color: #fff;
+  padding: 2rem 0 0 0;
+  font-size: 1rem;
+}
+.footer a {
+  color: #fff;
+  text-decoration: underline;
+}
+.footer a:hover {
+  color: #ff5a00;
+  text-decoration: none;
+}
+.footer .footer-logo {
+  max-width: 180px;
+  margin-bottom: 1rem;
+}
+.footer .footer-section-title {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.footer .footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem 0;
+}
+.footer .footer-links li {
+  margin-bottom: 0.5rem;
+}
+.footer .footer-social {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.footer .footer-social a {
+  font-size: 1.5rem;
+}
+.footer .footer-bottom {
+  border-top: 1px solid #444;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.footer .modal-content {
+  background: #222;
+  color: #fff;
+}
+.footer .modal-header {
+  border-bottom: 1px solid #444;
+}
+.footer .modal-footer {
+  border-top: 1px solid #444;
+}
+.footer .btn-close {
+  filter: invert(1);
+}

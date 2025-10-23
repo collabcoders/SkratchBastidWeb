@@ -12,7 +12,7 @@ export interface BBQRecap {
 export interface BBQRecapSection {
   title: string;
   icon: string;
-  recaps: BBQRecap[];
+  data: BBQRecap[];
 }
 
 @Component({

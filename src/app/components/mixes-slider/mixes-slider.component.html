@@ -42,7 +42,7 @@
       <div #carousel class="overflow-x-auto scrollbar-hidden"
         style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
         <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
-          @for (mix of section().mixes; track mix.title) {
+          @for (mix of section().data; track mix.title) {
           <a [href]="mix.href" class="hover:opacity-75 transition-opacity duration-200" style="
               flex-shrink: 0;
               box-sizing: border-box;

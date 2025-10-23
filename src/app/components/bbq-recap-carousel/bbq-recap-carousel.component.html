@@ -38,7 +38,7 @@
     <div #carousel class="overflow-x-auto scrollbar-hidden"
       style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
       <div class="flex space-x-8 pb-4" style="width: max-content">
-        @for (recap of section().recaps; track recap.slug) {
+        @for (recap of section().data; track recap.slug) {
         <a [href]="'/bbq-recaps/' + recap.slug" class="event flex flex-col cursor-pointer"
           style="flex-shrink: 0; scroll-snap-align: start">
           <div class="h-[12rem] md:h-24 lg:h-[10rem]">

@@ -5,12 +5,13 @@ export interface AudioMix {
   image: string;
   link: string;
   title?: string;
+  category: string;
 }
 
 export interface AudioSection {
   title: string;
   icon: string;
-  mixes: AudioMix[];
+  data: AudioMix[];
   backgroundColor?: string;
   decorativeStripes?: boolean;
 }

@@ -30,6 +30,7 @@ import { ImageCropperComponent } from 'ngx-image-cropper';
 import { VideoPlayerComponent } from './components/video-player/video-player.component';
 import { LoginComponent } from './views/login/login.component';
 import { HeaderComponent } from './components/header/header.component';
+import { FormsComponent } from './forms/forms.component';
 // import { VideosComponent as v } from './views/videos/videos.component';
 // import { HomeComponent as h } from './views/home/home.component';
 
@@ -58,13 +59,14 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
     NgxMarqueeModule,
     TooltipModule.forRoot(MyDefaultTooltipOptions as TooltipOptions),
     CommonModule,
-  HeaderComponent,
+    HeaderComponent,
     ImageCropperComponent,
     CheckImagePipe,
     ImagePipe,
     SafePipe,
     VideoPipe,
     VideoPlayerComponent,
+    FormsComponent,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },

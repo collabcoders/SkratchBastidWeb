@@ -35,9 +35,9 @@
     <div #carousel class="overflow-x-auto scrollbar-hidden"
       style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
       <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
-        @for (mix of section().mixes; track mix.link) {
-        <a [href]="mix.link" [attr.rel]="mix.link.includes('http') ? 'noopener noreferrer' : null"
-          [attr.target]="mix.link.includes('http') ? '_blank' : null" class="flex-shrink-0 duration-300 block"
+        @for (mix of section().data; track mix.link) {
+        <a [href]="mix.link" [attr.rel]="mix?.link?.includes('http') ? 'noopener noreferrer' : null"
+          [attr.target]="mix?.link?.includes('http') ? '_blank' : null" class="flex-shrink-0 duration-300 block"
           style="width: 250px; scroll-snap-align: start">
           <div class="group relative">
             <img [src]="mix.image" [alt]="mix.title || 'Audio Mix'"

@@ -26,7 +26,10 @@ export interface VideoMix {
 export interface VideoSection {
   title: string;
   icon: string;
-  videos: VideoMix[];
+  videos?: VideoMix[];
+  data?: VideoMix[];
+  category?: string;
+  type?: string;
   signUpText?: string;
   signUpLink?: string;
 }

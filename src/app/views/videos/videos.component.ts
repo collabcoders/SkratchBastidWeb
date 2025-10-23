@@ -280,7 +280,7 @@ export class VideosComponent {
   simpleBBQSection: BBQRecapSection = {
     title: 'BBQ Recaps',
     icon: '/img/videosImg.png',
-    recaps: [
+    data: [
       {
         slug: 'halifax-2024',
         city: 'Halifax',
