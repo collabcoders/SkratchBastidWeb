@@ -1,0 +1,90 @@
+{
+  "status": 200,
+  "message": "Success",
+  "data": [
+    {
+      "videoId": 1,
+      "title": "Lunch Break Yacht Rock Edition!",
+      "screenshot": "https://picsum.photos/320/180?random=101",
+      "image": "https://picsum.photos/320/180?random=101",
+      "duration": "01:28:02",
+      "source": "vimeo",
+      "sourceId": "1018607107",
+      "hls": "e8f4e0e6c9e1c9d43a6bb8e5d7abfc7ef1f6a6df",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 2,
+      "title": "Magnificent Lunch Break From The MOON!!!",
+      "screenshot": "https://picsum.photos/320/180?random=102",
+      "image": "https://picsum.photos/320/180?random=102",
+      "duration": "00:58:00",
+      "source": "vimeo",
+      "sourceId": "1016838892",
+      "hls": "def456",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 3,
+      "title": "Imagine NO MUSIC Festival (House Set)",
+      "screenshot": "https://picsum.photos/320/180?random=103",
+      "image": "https://picsum.photos/320/180?random=103",
+      "duration": "01:00:08",
+      "source": "vimeo",
+      "sourceId": "1015955893",
+      "hls": "ghi789",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 4,
+      "title": "Happy Birthday Hip Hop (Break Beat Set)",
+      "screenshot": "https://picsum.photos/320/180?random=104",
+      "image": "https://picsum.photos/320/180?random=104",
+      "duration": "01:01:07",
+      "source": "vimeo",
+      "sourceId": "1015955894",
+      "hls": "ghi790",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 5,
+      "title": "Wingstop Wing Day (DJ Craze)",
+      "screenshot": "https://picsum.photos/320/180?random=105",
+      "image": "https://picsum.photos/320/180?random=105",
+      "duration": "02:00:00",
+      "source": "vimeo",
+      "sourceId": "1015955895",
+      "hls": "ghi791",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 6,
+      "title": "Wingstop Wing Day (DJ MR Thing)",
+      "screenshot": "https://picsum.photos/320/180?random=106",
+      "image": "https://picsum.photos/320/180?random=106",
+      "duration": "02:00:12",
+      "source": "vimeo",
+      "sourceId": "1015955896",
+      "hls": "ghi792",
+      "category": "mix",
+      "featuring": ""
+    },
+    {
+      "videoId": 7,
+      "title": "Wingstop Wing Day (DJ Puffy)",
+      "screenshot": "https://picsum.photos/320/180?random=107",
+      "image": "https://picsum.photos/320/180?random=107",
+      "duration": "01:56:05",
+      "source": "vimeo",
+      "sourceId": "1015955897",
+      "hls": "ghi793",
+      "category": "mix",
+      "featuring": ""
+    }
+  ]
+}

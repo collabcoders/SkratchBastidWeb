@@ -1,0 +1,26 @@
+{
+  "status": 200,
+  "message": "Success",
+  "data": [
+    {
+      "bookmarkId": 1,
+      "title": "Intro starts",
+      "time": 30,
+      "memberId": 1,
+      "userId": 0,
+      "videoId": 0,
+      "featured": 0,
+      "dateAdded": null
+    },
+    {
+      "bookmarkId": 2,
+      "title": "Main technique",
+      "time": 120,
+      "memberId": 1,
+      "userId": 0,
+      "videoId": 0,
+      "featured": 0,
+      "dateAdded": null
+    }
+  ]
+}

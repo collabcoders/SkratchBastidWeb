@@ -10,6 +10,9 @@ import { Video } from '@shared/models/video';
 import { Bookmark } from '@shared/models/bookmark';
 import { VideoService } from '@shared/services/video.service';
 import { Comment } from '@shared/models/comment';
+import { ApiService } from '@shared/services/api.service';
+import { AlertService } from '@shared/services/alert.service';
+import { Config } from '@shared/config';
 
 declare var $: any;
 declare var bootbox: any;
@@ -74,11 +77,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   relatedvideos: any[] = [];
 
 
-  constructor(
+  constructor(private apiService: ApiService, private alertService: AlertService,
     public videoService: VideoService,
-    private cdr: ChangeDetectorRef
-  ) {}
-
+    private cdr: ChangeDetectorRef) {
+  }
   ngOnInit(): void {
     $('#videoModal').on('hidden.bs.modal', () => {
       console.log("CLOSE a VIDEO");
@@ -352,92 +354,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   loadRelatedVideos() {
     // Sample related videos matching the UI
-    this.relatedvideos = [
-      {
-        videoId: 1,
-        title: 'Lunch Break Yacht Rock Edition!',
-        screenshot: 'https://picsum.photos/320/180?random=101',
-        image: 'https://picsum.photos/320/180?random=101',
-        duration: '01:28:02',
-        source: 'vimeo',
-        sourceId: '1018607107',
-        hls: 'e8f4e0e6c9e1c9d43a6bb8e5d7abfc7ef1f6a6df',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 2,
-        title: 'Magnificent Lunch Break From The MOON!!!',
-        screenshot: 'https://picsum.photos/320/180?random=102',
-        image: 'https://picsum.photos/320/180?random=102',
-        duration: '00:58:00',
-        source: 'vimeo',
-        sourceId: '1016838892',
-        hls: 'def456',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 3,
-        title: 'Imagine NO MUSIC Festival (House Set)',
-        screenshot: 'https://picsum.photos/320/180?random=103',
-        image: 'https://picsum.photos/320/180?random=103',
-        duration: '01:00:08',
-        source: 'vimeo',
-        sourceId: '1015955893',
-        hls: 'ghi789',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 4,
-        title: 'Happy Birthday Hip Hop (Break Beat Set)',
-        screenshot: 'https://picsum.photos/320/180?random=104',
-        image: 'https://picsum.photos/320/180?random=104',
-        duration: '01:01:07',
-        source: 'vimeo',
-        sourceId: '1015955894',
-        hls: 'ghi790',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 5,
-        title: 'Wingstop Wing Day (DJ Craze)',
-        screenshot: 'https://picsum.photos/320/180?random=105',
-        image: 'https://picsum.photos/320/180?random=105',
-        duration: '02:00:00',
-        source: 'vimeo',
-        sourceId: '1015955895',
-        hls: 'ghi791',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 6,
-        title: 'Wingstop Wing Day (DJ MR Thing)',
-        screenshot: 'https://picsum.photos/320/180?random=106',
-        image: 'https://picsum.photos/320/180?random=106',
-        duration: '02:00:12',
-        source: 'vimeo',
-        sourceId: '1015955896',
-        hls: 'ghi792',
-        category: 'mix',
-        featuring: ''
-      },
-      {
-        videoId: 7,
-        title: 'Wingstop Wing Day (DJ Puffy)',
-        screenshot: 'https://picsum.photos/320/180?random=107',
-        image: 'https://picsum.photos/320/180?random=107',
-        duration: '01:56:05',
-        source: 'vimeo',
-        sourceId: '1015955897',
-        hls: 'ghi793',
-        category: 'mix',
-        featuring: ''
-      }
-    ];
+    this.relatedvideos = [ ];
+
+    this.apiService.getSectionData("relatedvideo").subscribe((data) => {
+      this.relatedvideos = data?.data;
+    }, (error) => {
+        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+    });
   }
 
   // Load comments for a video
@@ -474,28 +397,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   // Load bookmarks for a video
   loadBookmarks(videoId: number) {
     // Sample bookmarks data - replace with actual API call
-    this.bookmarklst = [
-      {
-        bookmarkId: 1,
-        title: 'Intro starts',
-        time: 30,
-        memberId: 1,
-        userId: 0,
-        videoId: 0,
-        featured: 0,
-        dateAdded: undefined
-      },
-      {
-        bookmarkId: 2,
-        title: 'Main technique',
-        time: 120,
-        memberId: 1,
-        userId: 0,
-        videoId: 0,
-        featured: 0,
-        dateAdded: undefined
-      }
-    ];
+    this.bookmarklst = [];
+
+    this.apiService.getSectionData("bookmark").subscribe((data) => {
+      this.bookmarklst = data?.data;
+    }, (error) => {
+        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+    });
   }
 
   addupdatebookmark() {
