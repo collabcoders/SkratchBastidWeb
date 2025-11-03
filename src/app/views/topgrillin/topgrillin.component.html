@@ -1,5 +1,6 @@
 <app-header></app-header>
 
+@if (!(isLoggedIn$ | async)) {
 <div class="">
   <!-- Hero Section -->
   <div class="bg-[#142129] text-white md:px-12 px-6 py-28 flex flex-col items-center md:flex-row gap-24">
@@ -136,3 +137,6 @@
   <!-- Footer -->
   <app-footer></app-footer>
 </div>
+} @else {
+<app-payment-success></app-payment-success>
+}

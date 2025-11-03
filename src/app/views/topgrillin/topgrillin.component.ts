@@ -10,6 +10,9 @@ import {
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
+import { PaymentSuccessComponent } from './payment-success/payment-success.component';
+import { Observable } from 'rxjs';
+import { TokenService } from '@shared/services/token.service';
 
 @Component({
   selector: 'app-topgrillin',
@@ -19,6 +22,7 @@ import { Config } from '@shared/config';
     FooterComponent,
     VideoCarouselComponent,
     FreeTrialFormComponent,
+    PaymentSuccessComponent,
   ],
   templateUrl: './topgrillin.component.html',
   styleUrl: './topgrillin.component.scss',
@@ -87,11 +91,21 @@ export class TopGrillinComponent {
       data: []
     };
 
-    constructor(private apiService: ApiService, private alertService: AlertService,) {
+  isLoggedIn$!: Observable<boolean>;
+    constructor(private apiService: ApiService, private alertService: AlertService, private token: TokenService,) {
       this.apiService.getSectionData("video").subscribe((data) => {
         this.videoSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin');
       }, (error) => {
           this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
       });
+
+      this.isLoggedIn$ = this.token.isValid(undefined);
+      this.isLoggedIn$.subscribe((res: boolean) => {
+        if (res) {
+          if (this.token.getMember().plan == 'free') {
+            // this.isFree = true;
+          }
+        }
+      })
     }
 }
