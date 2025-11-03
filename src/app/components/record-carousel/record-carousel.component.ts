@@ -11,7 +11,7 @@ export interface Record {
 export interface RecordSection {
   title: string;
   icon: string;
-  records: Record[];
+  data: Record[];
 }
 
 @Component({

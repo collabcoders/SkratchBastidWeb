@@ -1,6 +1,9 @@
-import { Component, inject, HostListener, OnDestroy } from '@angular/core';
+import { Component, inject, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { Observable } from 'rxjs';
+import { TokenService } from '@shared/services/token.service';
+import { AlertService } from '@shared/services/alert.service';
 
 interface NavLink {
   label: string;
@@ -18,11 +21,21 @@ interface NavLink {
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnDestroy {
+export class HeaderComponent implements OnDestroy, OnInit {
+  accountMenuOpen: boolean = false;
+  toggleAccountMenu() {
+    this.accountMenuOpen = !this.accountMenuOpen;
+  }
   private router = inject(Router);
 
   // mobile menu state
   mobileMenuOpen: boolean = false;
+  isLoggedIn$!: Observable<boolean>;
+
+  alertOptions = {
+    autoClose: true,
+    keepAfterRouteChange: false
+  };
 
   toggleMobileMenu() {
     this.mobileMenuOpen = !this.mobileMenuOpen;
@@ -34,6 +47,28 @@ export class HeaderComponent implements OnDestroy {
         if (drawer) drawer.focus();
       }, 50);
     }
+  }
+
+  constructor(private token: TokenService, private alertService: AlertService) {
+
+  }
+
+  logout() {
+    console.log('Logging out...');
+    this.token.remove();
+    this.isLoggedIn$ = this.token.isValid(false);
+    this.alertService.info('Sign-Out Successful', 'You have been Signed-Out of Mag Mob.', this.alertOptions);
+    setTimeout(() => window.location.reload(), 1000);
+  }
+  ngOnInit() {
+    this.isLoggedIn$ = this.token.isValid(undefined);
+    this.isLoggedIn$.subscribe((res: boolean) => {
+      if (res) {
+        if (this.token.getMember().plan == 'free') {
+          // this.isFree = true;
+        }
+      }
+    })
   }
 
   closeMobileMenu() {

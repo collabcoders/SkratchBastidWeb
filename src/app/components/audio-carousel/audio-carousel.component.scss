@@ -9,15 +9,12 @@
 
 /* Custom scrollbar hiding */
 .scrollbar-hidden {
-  scrollbar-width: none;
-  /* Firefox */
-  -ms-overflow-style: none;
-  /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
 .scrollbar-hidden::-webkit-scrollbar {
-  display: none;
-  /* WebKit */
+  display: none; /* WebKit */
 }
 
 /* Navigation button styles */
@@ -27,4 +24,28 @@ button {
 
 button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Simple hover effects for audio cards */
+.audio-card {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Play button styling */
+.play-button {
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }

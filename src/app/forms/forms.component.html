@@ -2,36 +2,63 @@
 <!-- Login Modal -->
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="loginModalLabel" style="font-size: 24px">Login</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
-        <form class="space-y-4">
+        <form class="space-y-4" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
               </div>
-              <input type="email" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="loginEmail" placeholder="Email" style="font-size: 18px" />
+              <input type="email"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="loginEmail" formControlName="email" placeholder="Email" style="font-size: 18px" />
             </div>
+            @if (loginForm.get('email')?.invalid && (loginForm.get('email')?.touched || loginForm.get('email')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Valid email required</div>
+            }
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentCol or" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clip-rule="evenodd" /></svg>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="loginPassword" placeholder="Password" style="font-size: 18px" />
+              <input type="password"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="loginPassword" formControlName="password" placeholder="Password" style="font-size: 18px" />
             </div>
+            @if (loginForm.get('password')?.invalid && (loginForm.get('password')?.touched || loginForm.get('password')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Password required (min 6 chars)</div>
+            }
           </div>
-          <button type="submit" class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition">Login</button>
+          <button type="submit"
+            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
+            [disabled]="loginLoading() || !loginForm.valid">
+            @if (loginLoading()) {
+              <span class="loader mr-2"></span>
+            }Login
+          </button>
         </form>
         <div class="flex justify-center items-center mt-4 text-sm">
-          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#resetPasswordModal" data-bs-dismiss="modal">Forgot Password?</a>
+          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
+            data-bs-dismiss="modal">Forgot Password?</a>
           <span class="mx-2 text-gray-500">|</span>
-          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Not a Member? Sign up</a>
+          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#registerModal"
+            data-bs-dismiss="modal">Not a Member? Sign up</a>
         </div>
       </div>
     </div>
@@ -39,29 +66,51 @@
 </div>
 
 <!-- Reset Password Modal -->
-<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="resetPasswordModalLabel" style="font-size: 24px">Reset Password</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="resetPasswordModalLabel" style="font-size: 24px">
+          Reset Password</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
-        <form class="space-y-4">
+        <form class="space-y-4" [formGroup]="resetForm" (ngSubmit)="onResetSubmit()">
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
               </div>
-              <input type="email" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="resetEmail" placeholder="Enter your email address" style="font-size: 18px" />
+              <input type="email"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="resetEmail" formControlName="email" placeholder="Enter your email address"
+                style="font-size: 18px" />
             </div>
+            @if (resetForm.get('email')?.invalid && (resetForm.get('email')?.touched || resetForm.get('email')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Valid email required</div>
+            }
           </div>
-          <button type="submit" class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition">Send Reset Link</button>
+          <button type="submit"
+            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
+            [disabled]="resetLoading || !resetForm.valid">
+            @if (resetLoading) {
+              <span class="loader mr-2"></span>
+            }Send Reset Link
+          </button>
         </form>
         <div class="flex justify-center items-center mt-4 text-sm">
-          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Back to Sign In</a>
+          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#loginModal"
+            data-bs-dismiss="modal">Back to Sign In</a>
           <span class="mx-2 text-gray-500">|</span>
-          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Not a Member? Sign up</a>
+          <a href="#" class="text-[#FF5941] hover:underline" data-bs-toggle="modal" data-bs-target="#registerModal"
+            data-bs-dismiss="modal">Not a Member? Sign up</a>
         </div>
       </div>
     </div>
@@ -70,76 +119,140 @@
 
 <!-- Register Modal -->
 <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="registerModalLabel" style="font-size: 24px">Register</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="registerModalLabel" style="font-size: 24px">
+          Register</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
-        <form class="space-y-4">
+        <form class="space-y-4" [formGroup]="registerForm" (ngSubmit)="onRegisterSubmit()">
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd" /></svg>
               </div>
-              <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="registerName" placeholder="First Name" style="font-size: 18px" />
+              <input type="text"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="registerName" formControlName="firstName" placeholder="First Name" style="font-size: 18px" />
             </div>
+            <div
+              *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty)"
+              class="text-red-500 text-xs mt-1">First name required</div>
           </div>
           <div>
             <div class="relative">
-              <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="registerLastName" placeholder="Last Name" style="font-size: 18px" />
+              <input type="text"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="registerLastName" formControlName="lastName" placeholder="Last Name" style="font-size: 18px" />
             </div>
-          </div>
-          <div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
-              </div>
-              <input type="email" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="registerEmail" placeholder="Email" style="font-size: 18px" />
-            </div>
-          </div>
-          <div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/></svg>
-              </div>
-              <input type="tel" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="registerPhone" placeholder="Mobile Phone" style="font-size: 18px" />
-            </div>
+            <div
+              *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty)"
+              class="text-red-500 text-xs mt-1">Last name required</div>
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="registerPassword" placeholder="Password" style="font-size: 18px" />
+              <input type="email"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="registerEmail" formControlName="email" placeholder="Email" style="font-size: 18px" />
             </div>
+            <div
+              *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)"
+              class="text-red-500 text-xs mt-1">Valid email required</div>
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
               </div>
-              <input type="password" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="confirmPassword" placeholder="Confirm Password" style="font-size: 18px" />
+              <input type="tel"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="registerPhone" formControlName="phone" placeholder="Mobile Phone" style="font-size: 18px" />
             </div>
+            <div
+              *ngIf="registerForm.get('phone')?.invalid && (registerForm.get('phone')?.touched || registerForm.get('phone')?.dirty)"
+              class="text-red-500 text-xs mt-1">Valid phone required</div>
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clip-rule="evenodd" /></svg>
               </div>
-              <select class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941] appearance-none" id="registerPlan" style="font-size: 18px">
+              <input type="password"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="registerPassword" formControlName="password" placeholder="Password" style="font-size: 18px" />
+            </div>
+            <div
+              *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)"
+              class="text-red-500 text-xs mt-1">Password required (min 6 chars)</div>
+          </div>
+          <div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                    clip-rule="evenodd" /></svg>
+              </div>
+              <input type="password"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password"
+                style="font-size: 18px" />
+            </div>
+            <div
+              *ngIf="registerForm.hasError('passwordsMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)"
+              class="text-red-500 text-xs mt-1">Passwords must match</div>
+          </div>
+          <div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                    clip-rule="evenodd" /></svg>
+              </div>
+              <select
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941] appearance-none"
+                id="registerPlan" formControlName="plan" required style="font-size: 18px">
                 <option value="" disabled selected>Mag Mob VIP Plans</option>
                 <option value="free">Free</option>
                 <option value="monthly">Monthly - $9.99</option>
                 <option value="yearly">Yearly - $99.99</option>
               </select>
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd" /></svg>
               </div>
             </div>
+            <div
+              *ngIf="registerForm.get('plan')?.invalid && (registerForm.get('plan')?.touched || registerForm.get('plan')?.dirty)"
+              class="text-red-500 text-xs mt-1">Plan required</div>
           </div>
-          <button type="submit" class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition">Join</button>
+          <button type="submit"
+            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
+            [disabled]="registerLoading || !registerForm.valid">
+            <span *ngIf="registerLoading" class="loader mr-2"></span>Join
+          </button>
         </form>
       </div>
     </div>
@@ -148,43 +261,66 @@
 
 <!-- Contact Modal -->
 <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact Us</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact
+          Us</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
         <form class="space-y-4">
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                    clip-rule="evenodd" /></svg>
               </div>
-              <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="contactName" placeholder="Name" style="font-size: 18px" />
+              <input type="text"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="contactName" placeholder="Name" style="font-size: 18px" />
             </div>
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
               </div>
-              <input type="email" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="contactEmail" placeholder="Email" style="font-size: 18px" />
+              <input type="email"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="contactEmail" placeholder="Email" style="font-size: 18px" />
             </div>
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/></svg>
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                    clip-rule="evenodd" /></svg>
               </div>
-              <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="contactSubject" placeholder="Subject" style="font-size: 18px" />
+              <input type="text"
+                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+                id="contactSubject" placeholder="Subject" style="font-size: 18px" />
             </div>
           </div>
           <div>
-            <label for="contactMessage" class="block text-left mb-2 font-bold text-white" style="font-size: 18px">Message</label>
-            <textarea class="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]" id="contactMessage" rows="4" placeholder="Enter your message..." style="font-size: 18px"></textarea>
+            <label for="contactMessage" class="block text-left mb-2 font-bold text-white"
+              style="font-size: 18px">Message</label>
+            <textarea
+              class="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
+              id="contactMessage" rows="4" placeholder="Enter your message..." style="font-size: 18px"></textarea>
           </div>
-          <button type="submit" class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition">Send Message</button>
+          <button type="submit"
+            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition">Send
+            Message</button>
         </form>
       </div>
     </div>
@@ -193,33 +329,43 @@
 
 <!-- Privacy Policy Modal -->
 <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="privacyModalLabel" style="font-size: 24px">Privacy Policy</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="privacyModalLabel" style="font-size: 24px">Privacy
+          Policy</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
         <div class="space-y-3 text-gray-300">
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Information We Collect</h3>
-            <p class="text-gray-400" style="font-size: 18px">We collect information you provide directly to us, such as when you create an account, subscribe to our newsletter, or contact us.</p>
+            <p class="text-gray-400" style="font-size: 18px">We collect information you provide directly to us, such as
+              when you create an account, subscribe to our newsletter, or contact us.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">How We Use Your Information</h3>
-            <p class="text-gray-400" style="font-size: 18px">We use the information we collect to provide, maintain, and improve our services, process transactions, and communicate with you.</p>
+            <p class="text-gray-400" style="font-size: 18px">We use the information we collect to provide, maintain, and
+              improve our services, process transactions, and communicate with you.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Information Sharing</h3>
-            <p class="text-gray-400" style="font-size: 18px">We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.</p>
+            <p class="text-gray-400" style="font-size: 18px">We do not sell, trade, or otherwise transfer your personal
+              information to third parties without your consent, except as described in this policy.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Data Security</h3>
-            <p class="text-gray-400" style="font-size: 18px">We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.</p>
+            <p class="text-gray-400" style="font-size: 18px">We implement appropriate security measures to protect your
+              personal information against unauthorized access, alteration, disclosure, or destruction.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Contact Us</h3>
-            <p class="text-gray-400" style="font-size: 18px">If you have questions about this privacy policy, please contact us at privacy&#64;skratchbastid.com</p>
+            <p class="text-gray-400" style="font-size: 18px">If you have questions about this privacy policy, please
+              contact us at privacy&#64;skratchbastid.com</p>
           </div>
         </div>
       </div>
@@ -229,29 +375,38 @@
 
 <!-- Cancel Policy Modal -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="cancelModalLabel" style="font-size: 24px">Cancellation Policy</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="cancelModalLabel" style="font-size: 24px">
+          Cancellation Policy</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
         <div class="space-y-3 text-gray-300">
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Subscription Cancellation</h3>
-            <p class="text-gray-400" style="font-size: 18px">You may cancel your subscription at any time through your account settings or by contacting our support team.</p>
+            <p class="text-gray-400" style="font-size: 18px">You may cancel your subscription at any time through your
+              account settings or by contacting our support team.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Effective Date</h3>
-            <p class="text-gray-400" style="font-size: 18px">Cancellations take effect at the end of your current billing period. You will continue to have access to premium features until that time.</p>
+            <p class="text-gray-400" style="font-size: 18px">Cancellations take effect at the end of your current
+              billing period. You will continue to have access to premium features until that time.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Refund Eligibility</h3>
-            <p class="text-gray-400" style="font-size: 18px">Please refer to our refund policy for information about refund eligibility after cancellation.</p>
+            <p class="text-gray-400" style="font-size: 18px">Please refer to our refund policy for information about
+              refund eligibility after cancellation.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Contact for Assistance</h3>
-            <p class="text-gray-400" style="font-size: 18px">If you need help with cancellation, please contact us at support&#64;skratchbastid.com</p>
+            <p class="text-gray-400" style="font-size: 18px">If you need help with cancellation, please contact us at
+              support&#64;skratchbastid.com</p>
           </div>
         </div>
       </div>
@@ -261,33 +416,43 @@
 
 <!-- Refund Policy Modal -->
 <div class="modal fade" id="refundModal" tabindex="-1" aria-labelledby="refundModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px" (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg" style="max-height: 90vh; overflow-y: auto">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
+    (hidden.bs.modal)="router.navigate(['/'])">
+    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
+      style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="refundModalLabel" style="font-size: 24px">Refund Policy</h2>
-        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+        <h2 class="modal-title font-semibold text-center flex-1" id="refundModalLabel" style="font-size: 24px">Refund
+          Policy</h2>
+        <button type="button"
+          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
         <div class="space-y-3 text-gray-300">
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Refund Window</h3>
-            <p class="text-gray-400" style="font-size: 18px">We offer refunds within 30 days of purchase for most services, subject to the conditions outlined below.</p>
+            <p class="text-gray-400" style="font-size: 18px">We offer refunds within 30 days of purchase for most
+              services, subject to the conditions outlined below.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Eligible Purchases</h3>
-            <p class="text-gray-400" style="font-size: 18px">Refunds are available for subscription services and digital content that has not been substantially accessed or downloaded.</p>
+            <p class="text-gray-400" style="font-size: 18px">Refunds are available for subscription services and digital
+              content that has not been substantially accessed or downloaded.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Refund Process</h3>
-            <p class="text-gray-400" style="font-size: 18px">To request a refund, contact our support team with your order details. Refunds will be processed within 5-10 business days.</p>
+            <p class="text-gray-400" style="font-size: 18px">To request a refund, contact our support team with your
+              order details. Refunds will be processed within 5-10 business days.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Non-Refundable Items</h3>
-            <p class="text-gray-400" style="font-size: 18px">Live event tickets, physical merchandise, and services that have been fully delivered are generally not eligible for refunds.</p>
+            <p class="text-gray-400" style="font-size: 18px">Live event tickets, physical merchandise, and services that
+              have been fully delivered are generally not eligible for refunds.</p>
           </div>
           <div>
             <h3 class="text-white font-bold mb-2" style="font-size: 18px">Contact for Refunds</h3>
-            <p class="text-gray-400" style="font-size: 18px">To request a refund, please contact us at refunds&#64;skratchbastid.com with your order number and reason for the refund request.</p>
+            <p class="text-gray-400" style="font-size: 18px">To request a refund, please contact us at
+              refunds&#64;skratchbastid.com with your order number and reason for the refund request.</p>
           </div>
         </div>
       </div>

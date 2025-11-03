@@ -10,56 +10,22 @@
         and we'll get you sorted out!
       </div>
 
-      <form (ngSubmit)="onLogin()" class="flex flex-col space-y-4">
-        <!-- Email Field -->
-        <div>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-              </svg>
-            </div>
-            <input
-              [(ngModel)]="email"
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Email"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-              required
-            />
-          </div>
+      <form [formGroup]="loginForm.form" *ngIf="loginTitle == 'Member Sign In'" (ngSubmit)="login($event)" novalidate>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="username-addon"><i class="fas fa-user"></i></span>
+          <input formControlName="username" type="text" class="form-control" placeholder="Email" aria-label="Username" aria-describedby="username-addon">
         </div>
-
-        <!-- Password Field -->
-        <div>
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-              </svg>
-            </div>
-            <input
-              [(ngModel)]="password"
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Password"
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-              required
-            />
-          </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="password-addon"><i class="fas fa-key"></i></span>
+          <input formControlName="password" type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
         </div>
-
-        <!-- Login Button -->
-        <button type="submit" class="w-full bg-[#FF5941] text-white p-2 rounded-lg">
-          <span>Login</span>
-        </button>
+        <div class="input-group mb-3">
+          <button type="submit" class="btn btn-primary center" [disabled]="processingSignin">
+            <i [hidden]="!(formProcessing$ | async)" class="fas fa-circle-notch fa-spin"></i>&nbsp;Sign In
+          </button>
+        </div>
+        <a href="/forgot-password" class="text-sm text-slate-600 mt-4">Forgot your password?</a>
       </form>
-
-      <!-- Forgot Password Link -->
-      <a href="/forgot-password" class="text-sm text-slate-600 mt-4">Forgot your password?</a>
     </div>
   </div>
 </div>

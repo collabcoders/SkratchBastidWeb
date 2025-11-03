@@ -8,6 +8,7 @@
           "date": "September 07, 2024",
           "venue": "Alderney Landing",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/Et1364ewKCg/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGE4gZShjMA8=&rs=AOn4CLDpZc2f-vF8KjHvO9JmLhQpRQE_9Q"
         },
         {
@@ -16,6 +17,7 @@
           "date": "August 25, 2024",
           "venue": "The Backyard",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/R6HuK_urkKg/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGD8gWihyMA8=&rs=AOn4CLBqVMjCIw05vrsH6qFVYdNNbfxNWw"
         },
         {
@@ -24,6 +26,7 @@
           "date": "August 11, 2024",
           "venue": "The Birdhouse",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/qln1xpuuzKs/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBcn_Ozzje7jBLA5iTnD9d9FNX6bQ"
         },
         {
@@ -32,6 +35,7 @@
           "date": "July 27, 2024",
           "venue": "The Bentway",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/nRXq3odkjxw/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDtrDP6CcwcmIE97turiP1a20RYzw"
         },
         {
@@ -40,6 +44,7 @@
           "date": "June 08, 2024",
           "venue": "The Seaport",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/EGxJ9pwXkqE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBpsa7Xm8_JSB-lRKi8dPbHVIGh4w"
         },
         {
@@ -48,6 +53,7 @@
           "date": "June 06, 2024",
           "venue": "Whiskey Rose",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/dvX-XijCIZE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBSFS6Fq4g9HL003gQ-2vDvTnxN9w"
         },
         {
@@ -56,6 +62,7 @@
           "date": "March 15, 2024",
           "venue": "Inn Cahoots",
           "category": "bbq",
+          "summary": false,
           "image": "https://res.cloudinary.com/dmlnwhtt2/image/upload/v1724290322/bbq-recaps/2024-bbq-austin/austin-bbq-24_h2ofmj.jpg"
         },
         {
@@ -64,6 +71,7 @@
           "date": "August 27, 2023",
           "venue": "Home & Away",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/R6HuK_urkKg/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGD8gWihyMA8=&rs=AOn4CLBqVMjCIw05vrsH6qFVYdNNbfxNWw"
         },
         {
@@ -72,6 +80,7 @@
           "date": "August 20, 2023",
           "venue": "The Seaport",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/EGxJ9pwXkqE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBpsa7Xm8_JSB-lRKi8dPbHVIGh4w"
         },
         {
@@ -80,6 +89,7 @@
           "date": "August 13, 2023",
           "venue": "The Birdhouse",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/qln1xpuuzKs/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBcn_Ozzje7jBLA5iTnD9d9FNX6bQ"
         },
         {
@@ -88,6 +98,7 @@
           "date": "July 29, 2023",
           "venue": "The Bentway",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/nRXq3odkjxw/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLDtrDP6CcwcmIE97turiP1a20RYzw"
         },
         {
@@ -96,6 +107,7 @@
           "date": "July 16, 2023",
           "venue": "211 McDermot Ave.",
           "category": "bbq",
+          "summary": false,
           "image": "https://res.cloudinary.com/dmlnwhtt2/image/upload/v1693429777/bbq-recaps/2023-bbq-winnipeg/BASTIDSBBQ-WINNIPEG-EVENTBRITE-LINEUP-MOCK-02_jfhmqw.png"
         },
         {
@@ -104,6 +116,7 @@
           "date": "July 08, 2023",
           "venue": "Whiskey Rose",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/dvX-XijCIZE/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBSFS6Fq4g9HL003gQ-2vDvTnxN9w"
         },
         {
@@ -112,6 +125,7 @@
           "date": "June 03, 2023",
           "venue": "House of Vans",
           "category": "bbq",
+          "summary": false,
           "image": "https://i.ytimg.com/vi/zTlpY8kDmms/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLD2PtWGY0hI0uDdtw9XwAcyXWZosg"
         },
         {
@@ -120,6 +134,7 @@
           "date": "April 30, 2023",
           "venue": "We All Scream",
           "category": "bbq",
+          "summary": false,
           "image": "https://res.cloudinary.com/dmlnwhtt2/image/upload/v1694477323/bbq-recaps/2023-bbq-vegas/BASTIDSBBQ-LASVEGAS-EVENTBRITE-MOCK-03_mvydwo.png"
         },
         {
@@ -128,7 +143,128 @@
           "date": "March 17, 2023",
           "venue": "SXSW",
           "category": "bbq",
+          "summary": false,
           "image": "https://res.cloudinary.com/dmlnwhtt2/image/upload/v1693869671/bbq-recaps/2023-bbq-austin/BASTIDSBBQ-AUSTIN-EVENTBRITE-MOCK-05_1_efxtha.png"
+        },
+        {
+          "href": "/bbq-recaps/halifax-2024",
+          "thumbnail": "https://i.ytimg.com/vi/Et1364ewKCg/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGE4gZShjMA8=&rs=AOn4CLDpZc2f-vF8KjHvO9JmLhQpRQE_9Q",
+          "title": "Halifax",
+          "date": "September 07, 2024",
+          "summary": true,
+          "category": "bbq"
+        },
+        {
+          "href": "/bbq-recaps/edmonton-2024",
+          "thumbnail": "https://i.ytimg.com/vi/R6HuK_urkKg/hqdefault.jpg?sqp=-oaymwFBCNACELwBSFryq4qpAzMIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB8AEB-AH-CYAC0AWKAgwIABABGD8gWihyMA8=&rs=AOn4CLBqVMjCIw05vrsH6qFVYdNNbfxNWw",
+          "title": "Edmonton",
+          "date": "August 25, 2024",
+          "summary": true,
+          "category": "bbq"
+        },
+        {
+          "href": "/rotw/tom-novy",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/da97e8e8-6cb0-4937-507f-bb94e7ad2300/w=300",
+          "title": "Do It Right (feat. Omar)",
+          "artist": "Tom Novy",
+          "summary": true,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/slum-village",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/c26eada0-a5a4-405b-ed63-d92b4fbc4600/w=300",
+          "title": "F.U.N.",
+          "artist": "Slum Village",
+          "summary": true,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/tom-novy",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/da97e8e8-6cb0-4937-507f-bb94e7ad2300/w=300",
+          "title": "Do It Right (feat. Omar)",
+          "artist": "Tom Novy",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/slum-village",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/c26eada0-a5a4-405b-ed63-d92b4fbc4600/w=300",
+          "title": "F.U.N.",
+          "artist": "Slum Village",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/slum-village",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/c26eada0-a5a4-405b-ed63-d92b4fbc4600/w=300",
+          "title": "F.U.N.",
+          "artist": "Slum Village",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/spice-1",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/3259b09e-9855-4937-6817-11c48ff6ff00/w=300",
+          "title": "Since The Day (prod. DJ Premier)",
+          "artist": "Spice 1 feat. CL Smooth",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/roy-ayers-ubiquity",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/07ec5384-b83c-45f8-c90d-20fd6cdc7800/w=300",
+          "title": "He's Coming",
+          "artist": "Roy Ayers Ubiquity",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/jeremy-carr",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/236596ea-fd19-45bd-0a16-4e32d567ff00/w=300",
+          "title": "This Must be Heaven",
+          "summary": false,
+          "artist": "Jeremy Carr",
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/yg-marley",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/10615d19-c765-404b-6d1c-378eb3784300/w=300",
+          "title": "Praise Jah In The Moonlight",
+          "artist": "YG Marley",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/nxworries",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/57d69264-3b88-479c-5f13-2f9a7e880700/w=300",
+          "title": "86Sentra",
+          "artist": "NxWorries",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/lord-sko",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/403a47e3-d178-46b5-844e-baf05032cb00/w=300",
+          "title": "Pimp Socks",
+          "artist": "Lord Sko",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/sir-karma",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/7d2c6f88-8545-40a8-aada-3446d7051500/w=300",
+          "title": "Karma",
+          "artist": "Sir",
+          "summary": false,
+          "category": "rotw"
+        },
+        {
+          "href": "/rotw/garfield-fleming",
+          "image": "https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/593a686b-2483-4a64-9135-17be47966300/w=300",
+          "title": "Don't Send Me Away",
+          "summary": false,
+          "artist": "Garfield Fleming",
+          "category": "rotw"
         }
     ]
 }

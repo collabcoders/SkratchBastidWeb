@@ -62,8 +62,8 @@ export class HomeComponent {
 
   constructor(private apiService: ApiService, private alertService: AlertService,) {
     this.apiService.getSectionData("video").subscribe((data) => {
-      this.featuredVideosSection.data = data?.data?.filter((video: any) => video.category === 'Live Sets');
-      this.topGrillinSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin');
+      this.featuredVideosSection.data = data?.data?.filter((video: any) => video.category === 'Live Sets' && !video.summary);
+      this.topGrillinSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin' && !video.summary);
     }, (error) => {
         this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
     });

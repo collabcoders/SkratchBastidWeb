@@ -38,7 +38,7 @@
     <div #carousel class="overflow-x-auto scrollbar-hidden"
       style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
       <div class="flex space-x-8 pb-4" style="width: max-content">
-        @for (record of section().records; track record.href) {
+        @for (record of section().data; track record.href) {
         <a [href]="record.href" class="hover:opacity-75 transition-opacity duration-200"
           style="flex-shrink: 0; scroll-snap-align: start">
           <img [src]="record.image" [alt]="record.title" loading="lazy"

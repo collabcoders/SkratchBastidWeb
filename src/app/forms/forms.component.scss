@@ -1,3 +1,12 @@
+/* Disabled modal button style */
+button[disabled], .btn[disabled], .w-full[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #444 !important;
+  color: #bbb !important;
+  border-color: #666 !important;
+  box-shadow: none;
+}
 /* Footer styles for Skratch Bastid Web */
 .footer {
   background: #222;
@@ -56,4 +65,21 @@
 }
 .footer .btn-close {
   filter: invert(1);
+}
+
+/* Loader Spinner for Modal Buttons */
+.loader {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid #fff;
+  border-top: 2px solid #FF5941;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

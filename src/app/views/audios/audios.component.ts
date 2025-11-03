@@ -9,10 +9,11 @@ import {
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
+import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/audio-player-bar.component';
 
 @Component({
   selector: 'app-audios',
-  imports: [HeaderComponent, FooterComponent, AudioCarouselComponent, FreeTrialFormComponent],
+  imports: [HeaderComponent, FooterComponent, AudioCarouselComponent, FreeTrialFormComponent, AudioPlayerBarComponent],
   templateUrl: './audios.component.html',
   styleUrl: './audios.component.scss',
 })

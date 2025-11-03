@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ApiService } from '@shared/services/api.service';
+import { AlertService } from '@shared/services/alert.service';
+import { Config } from '@shared/config';
 
 interface Product {
   title: string;
@@ -17,26 +20,13 @@ interface Product {
 })
 export class StoreProductsComponent {
   products: Product[] = [
-    {
-      title: 'OBEYxBastid - Hoodie  - Limited Capsule Drop',
-      price: '110.0 USD',
-      image: 'https://cdn.shopify.com/s/files/1/0275/0188/7533/files/IMG_5598-4.png?v=1744376896',
-      link: 'https://shop.skratchbastid.com/products/obeyxbastid-hoodie-limited-capsule-drop',
-      zigzag: '/img/zigzag/zigzag1.png'
-    },
-    {
-      title: 'OBEYxBastid - Tee  - Limited Capsule Drop',
-      price: '60.0 USD',
-      image: 'https://cdn.shopify.com/s/files/1/0275/0188/7533/files/IMG_5584-4.png?v=1744378292',
-      link: 'https://shop.skratchbastid.com/products/obeyxbastid-tee-limited-capsule-drop-copy',
-      zigzag: '/img/zigzag/zigzag2.png'
-    },
-    {
-      title: 'OBEYxBastid - Hat - Limited Capsule Drop',
-      price: '45.0 USD',
-      image: 'https://cdn.shopify.com/s/files/1/0275/0188/7533/files/ScreenShot2025-05-07at7.19.37PM.png?v=1746670789',
-      link: 'https://shop.skratchbastid.com/products/obeyxbastid-hat-limited-capsule-drop',
-      zigzag: '/img/zigzag/zigzag3.png'
-    }
   ];
+
+  constructor(private apiService: ApiService, private alertService: AlertService) {
+    this.apiService.getSectionData("product").subscribe((data) => {
+      this.products = data?.data;
+    }, (error) => {
+        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+    });
+  }
 }

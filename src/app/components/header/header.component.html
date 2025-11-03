@@ -46,16 +46,31 @@
     </div>
 
     <!-- Desktop Auth Buttons -->
-    <div class="hidden lg:flex">
-      <div class="lg:flex gap-4">
-        <a [routerLink]="['/join']"
-          class="!border !border-orange-500 text-black font-bold px-5 py-2 text-xs rounded-[8px] bg-white hover:bg-orange-100 text-decoration-none">SIGN
-          UP</a>
-        <a [routerLink]="['/login']"
-          class="bg-black text-white font-bold px-5 py-2 text-xs rounded-[8px] hover:bg-gray-800 text-decoration-none">LOG
-          IN</a>
+    @if (!(isLoggedIn$ | async)) {
+      <div class="hidden lg:flex">
+        <div class="lg:flex gap-4">
+          <a [routerLink]="['/join']"
+            class="!border !border-orange-500 text-black font-bold px-5 py-2 text-xs rounded-[8px] bg-white hover:bg-orange-100 text-decoration-none">SIGN
+            UP</a>
+          <a [routerLink]="['/login']"
+            class="bg-black text-white font-bold px-5 py-2 text-xs rounded-[8px] hover:bg-gray-800 text-decoration-none">LOG
+            IN</a>
+        </div>
       </div>
-    </div>
+    } @else {
+      <div class="hidden lg:flex items-center relative">
+        <button class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none" (click)="toggleAccountMenu()">
+          <span class="material-icons text-3xl text-gray-700">account_circle</span>
+        </button>
+        @if (accountMenuOpen) {
+          <div class="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-2xl z-50 border border-gray-200 flex flex-col py-2">
+            <a href="https://wp.skratchbastid.com/account/" target="_blank" rel="noopener" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">My Account</a>
+            <a [routerLink]="['/profile']" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">My Profile</a>
+            <button (click)="logout()" class="block w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">Logout</button>
+          </div>
+        }
+      </div>
+    }
   </div>
 </div>
 
@@ -88,6 +103,7 @@
     </nav>
 
     <div class="mt-6 border-t pt-4">
+    @if (!(isLoggedIn$ | async)) {
       @for (link of mobileAuthLinks; track $index) {
         @if (link.href && link.href.startsWith('/')) {
           <a [routerLink]="[link.href]" (click)="closeMobileMenu()" class="block py-2 font-bold">{{ link.label }}</a>
@@ -95,6 +111,13 @@
           <a href="javascript:;" (click)="closeMobileMenu();" class="block py-2 font-bold">{{ link.label }}</a>
         }
       }
+    } @else {
+      <div class="flex flex-col gap-2 mt-2">
+        <a href="https://wp.skratchbastid.com/account/" target="_blank" rel="noopener" class="block py-2 font-bold">My Account</a>
+        <a [routerLink]="['/profile']" (click)="closeMobileMenu()" class="block py-2 font-bold">My Profile</a>
+        <button (click)="logout(); closeMobileMenu();" class="block w-full text-left py-2 font-bold">Logout</button>
+      </div>
+    }
     </div>
   </div>
 </div>
