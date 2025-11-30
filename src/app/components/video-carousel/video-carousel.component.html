@@ -39,27 +39,50 @@
       </button>
 
       <!-- Carousel Content -->
-      <div #carousel class="overflow-x-auto scrollbar-hidden"
-        style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+      @if (isLoadingVideo()) {
         <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
-          @for (video of section().data; track video.title) {
-          <div class="relative flex flex-col w-[311px] group cursor-pointer"
-            style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
-            <div class="relative overflow-hidden rounded-lg">
-              <img [src]="video.thumbnail"
-                class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
-                [alt]="video.title" />
-              <div class="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
-                </svg>
-              </div>
+          @for (skeleton of [0,1,2,3,4]; track skeleton) {
+            <div class="relative flex flex-col w-[311px] group cursor-pointer animate-pulse" style="flex-shrink: 0; scroll-snap-align: start">
+              <div class="relative overflow-hidden rounded-lg bg-gray-200 aspect-video w-full h-full mb-2"></div>
+              <div class="h-4 w-2/3 bg-gray-300 rounded mb-2"></div>
+              <div class="h-3 w-1/2 bg-gray-200 rounded mb-1"></div>
             </div>
-            <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
-          </div>
           }
         </div>
-      </div>
+      } @else {
+        <div #carousel class="overflow-x-auto scrollbar-hidden"
+          style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+          <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
+            @for (video of section().data; track video.title) {
+            <div class="relative flex flex-col w-[311px] group cursor-pointer"
+              style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
+              <div class="relative overflow-hidden rounded-lg">
+                @if (video.source == 'youtube') {
+                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                    [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
+                    (load)="checkImage($event, video)" [attr.alt]="video.title" />
+                } @else if (video.source == 'vimeo') {
+                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                    [src]="video.screenshot" [attr.id]="'img_' + video.videoId"
+                    (error)="errorImage($event, video)" (load)="checkImage($event, video)"
+                    (mouseover)="showGif($event, video)" (mouseout)="showScreenshot($event, video.screenshot)"
+                    [attr.alt]="video.title" />
+                } @else {
+                  <img [src]="video.image" [alt]="video.title" loading="lazy"
+                    class="rounded-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" />
+                }
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
+            </div>
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>

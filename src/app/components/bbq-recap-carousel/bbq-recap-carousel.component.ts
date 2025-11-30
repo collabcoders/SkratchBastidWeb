@@ -1,5 +1,6 @@
-import { Component, input, ElementRef, ViewChild } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Video } from '@shared/models/video';
 
 export interface BBQRecap {
   slug: string;
@@ -12,7 +13,7 @@ export interface BBQRecap {
 export interface BBQRecapSection {
   title: string;
   icon: string;
-  data: BBQRecap[];
+  data: Video[];
 }
 
 @Component({
@@ -23,6 +24,7 @@ export interface BBQRecapSection {
 })
 export class BBQRecapCarouselComponent {
   section = input.required<BBQRecapSection>();
+  @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
 

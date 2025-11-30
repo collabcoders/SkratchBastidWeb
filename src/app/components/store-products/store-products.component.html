@@ -24,17 +24,30 @@
 
     <!-- Products Grid -->
     <div class="products">
-        @for (product of products; track $index) {
-        <div class="product-card">
-            <a [href]="product.link" target="_blank" rel="noopener noreferrer">
-                <div style="position: relative;">
-                    <img [src]="product.image" [alt]="product.title" class="product-image">
-                    <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+        @if (isLoadingProducts()) {
+            @for (skeleton of [0,1,2,3,4,5]; track skeleton) {
+                <div class="product-card animate-pulse">
+                    <div style="position: relative;">
+                        <div class="product-image bg-gray-200 rounded w-full h-40 mb-2"></div>
+                        <div class="rotating-banner bg-gray-100 rounded h-4 w-1/2 mx-auto"></div>
+                    </div>
+                    <h2 class="product-title bg-gray-300 h-5 w-2/3 rounded mx-auto my-2"></h2>
+                    <p class="product-price bg-gray-200 h-4 w-1/3 rounded mx-auto"></p>
                 </div>
-                <h2 class="product-title">{{ product.title }}</h2>
-                <p class="product-price">{{ product.price }}</p>
-            </a>
-        </div>
+            }
+        } @else {
+            @for (product of appData.products(); track $index) {
+            <div class="product-card">
+                <a [href]="product.link" target="_blank" rel="noopener noreferrer">
+                    <div style="position: relative;">
+                        <img [src]="product.image" [alt]="product.title" class="product-image">
+                        <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+                    </div>
+                    <h2 class="product-title">{{ product.title }}</h2>
+                    <p class="product-price">{{ product.price }}</p>
+                </a>
+            </div>
+            }
         }
     </div>
 </div>

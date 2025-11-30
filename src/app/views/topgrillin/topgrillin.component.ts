@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -13,6 +13,10 @@ import { Config } from '@shared/config';
 import { PaymentSuccessComponent } from './payment-success/payment-success.component';
 import { Observable } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
+import { Router } from '@angular/router';
+import { AppData } from 'src/app/app.data';
+import { environment } from '@env/environment';
+import { Video } from '@shared/models/video';
 
 @Component({
   selector: 'app-topgrillin',
@@ -92,12 +96,26 @@ export class TopGrillinComponent {
     };
 
   isLoggedIn$!: Observable<boolean>;
-    constructor(private apiService: ApiService, private alertService: AlertService, private token: TokenService,) {
+  isLoadingVideo: WritableSignal<boolean> = signal(true);
+    constructor(private apiService: ApiService, private appData: AppData, private alertService: AlertService, private token: TokenService, private router: Router) {
+      this.isLoadingVideo.set(true);
+      if (environment.ismock) {
       this.apiService.getSectionData("video").subscribe((data) => {
         this.videoSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin');
+        this.isLoadingVideo.set(false);
       }, (error) => {
           this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+          this.isLoadingVideo.set(false);
       });
+      } else {
+        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.appData.videosLive.set(data.data as Video[]);
+          this.videoSection.data = this.appData.videosLive();
+          this.isLoadingVideo.set(false);
+        },(error) => {
+          this.isLoadingVideo.set(false);
+        });
+      }
 
       this.isLoggedIn$ = this.token.isValid(undefined);
       this.isLoggedIn$.subscribe((res: boolean) => {
@@ -107,5 +125,10 @@ export class TopGrillinComponent {
           }
         }
       })
+    }
+
+    openSignup() {
+      this.appData.planOpen.set(this.isAnnual ? 'yearly' : 'monthly');
+      this.router.navigate(['/join']);
     }
 }

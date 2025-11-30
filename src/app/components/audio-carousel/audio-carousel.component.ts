@@ -1,6 +1,8 @@
-import { Component, input, ElementRef, ViewChild, Input, inject } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Input, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AudioService, AudioTrack } from '@shared/services/audio.service';
+import { AudioService } from '@shared/services/audio.service';
+import { Music } from '@shared/models/music';
+import { ImagePipe } from '@shared/pipes/image.pipe';
 
 export interface AudioMix {
   image: string;
@@ -11,19 +13,21 @@ export interface AudioMix {
 export interface AudioSection {
   title: string;
   icon: string;
-  data: AudioMix[];
+  data: Music[];
   backgroundColor?: string;
   decorativeStripes?: boolean;
+  isLoading?: string;
 }
 
 @Component({
   selector: 'app-audio-carousel',
-  imports: [CommonModule],
+  imports: [CommonModule, ImagePipe],
   templateUrl: './audio-carousel.component.html',
   styleUrl: './audio-carousel.component.scss',
 })
 export class AudioCarouselComponent {
   section = input.required<AudioSection>();
+  @Input({ required: true }) isLoadingMusic!: Signal<boolean>;
 
   @Input() titleColor = 'dark';
 
@@ -47,23 +51,23 @@ export class AudioCarouselComponent {
     return url?.endsWith('.mp3') || url?.endsWith('.wav') || url?.endsWith('.m4a') || url?.endsWith('.ogg');
   }
 
-  playAudio(mix: AudioMix, event: Event): void {
-    if (this.isAudioFile(mix.link)) {
+  playAudio(mix: Music, event: Event): void {
+    if (this.isAudioFile(mix.file)) {
       event.preventDefault();
       event.stopPropagation();
 
-      const track: AudioTrack = {
-        id: mix.link,
-        title: mix.title || 'Unknown Track',
-        image: mix.image,
-        url: mix.link
-      };
+      // const track: AudioTrack = {
+      //   id: mix.file,
+      //   title: mix.title || 'Unknown Track',
+      //   image: mix.image,
+      //   url: mix.file
+      // };
 
-      this.audioService.playTrack(track);
+      this.audioService.playTrack(mix);
     }
   }
 
-  isCurrentTrack(mix: AudioMix): boolean {
-    return this.audioService.currentTrack()?.id === mix.link;
+  isCurrentTrack(mix: Music): boolean {
+    return this.audioService.currentTrack()?.file === mix.file;
   }
 }

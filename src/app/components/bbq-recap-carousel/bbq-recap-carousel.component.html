@@ -35,23 +35,41 @@
     </button>
 
     <!-- Carousel Content -->
-    <div #carousel class="overflow-x-auto scrollbar-hidden"
-      style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+    @if (isLoadingVideo()) {
       <div class="flex space-x-8 pb-4" style="width: max-content">
-        @for (recap of section().data; track recap.slug) {
-        <a [href]="'/bbq-recaps/' + recap.slug" class="event flex flex-col cursor-pointer"
-          style="flex-shrink: 0; scroll-snap-align: start">
-          <div class="h-[12rem] md:h-24 lg:h-[10rem]">
-            <img [src]="recap.image" alt="" class="object-cover w-[300px] h-full rounded-lg" />
+        @for (skeleton of [0,1,2,3]; track skeleton) {
+          <div class="event flex flex-col cursor-pointer animate-pulse" style="flex-shrink: 0; scroll-snap-align: start; width:400px;">
+            <div class="h-[14rem] md:h-24 lg:h-[14rem] bg-gray-200 rounded-lg mb-2"></div>
+            <div class="flex flex-col flex-grow justify-center bg-white pt-3 gap-2">
+              <div class="h-4 w-2/3 bg-gray-300 rounded"></div>
+              <div class="h-3 w-1/2 bg-gray-200 rounded"></div>
+              <div class="h-3 w-1/4 bg-gray-200 rounded"></div>
+            </div>
           </div>
-          <div class="flex flex-col flex-grow justify-center bg-white pt-3">
-            <span class="text-[14px] font-bold">{{ recap.city }}</span>
-            <span class="text-[12px]">{{ recap.date }}</span>
-            <span class="text-sm text-gray-500">{{ recap.venue }}</span>
-          </div>
-        </a>
         }
       </div>
-    </div>
+    }
+    @else {
+      <div #carousel class="overflow-x-auto scrollbar-hidden"
+        style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+        <div class="flex space-x-8 pb-4" style="width: max-content">
+          @for (recap of section().data; track recap.videoId) {
+          <a [href]="'/bbq-recaps/' + recap.videoId" class="event flex flex-col cursor-pointer"
+            style="flex-shrink: 0; scroll-snap-align: start">
+            <div class="h-[14rem] md:h-24 lg:h-[14rem]">
+              <img [src]="recap.image" alt="" class="object-cover w-[400px] h-full rounded-lg" />
+            </div>
+            <div class="flex flex-col flex-grow justify-center bg-white pt-3">
+              <span class="text-[14px] font-bold">{{ recap.title }}</span>
+              <!-- <span class="text-[14px] font-bold">{{ recap.city }}</span> -->
+              <span class="text-[12px]">{{ recap.date }}</span>
+              <span class="text-sm text-gray-500">{{ recap.category }}</span>
+              <!-- <span class="text-sm text-gray-500">{{ recap.venue }}</span> -->
+            </div>
+          </a>
+          }
+        </div>
+      </div>
+    }
   </div>
 </div>

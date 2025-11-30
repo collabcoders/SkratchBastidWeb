@@ -1,20 +1,20 @@
 <app-header></app-header>
 
 <!-- Full-screen Video Hero Section -->
-<app-video-hero></app-video-hero>
+<app-video-hero [isLoadingBanner]="isLoadingBanner"></app-video-hero>
 
 <div>
   <!-- Video Carousel Section -->
-  <app-video-carousel [section]="featuredVideosSection"></app-video-carousel>
+  <app-video-carousel [section]="featuredVideosSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
 
   <!-- Store Products Section -->
   <app-store-products></app-store-products>
 
   <!-- New in Top Grillin Section -->
-  <app-video-carousel [section]="topGrillinSection"></app-video-carousel>
+  <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop"></app-video-carousel>
 
   <!-- Mixes Section -->
-  <app-mixes-slider [section]="mixesSection"></app-mixes-slider>
+  <app-mixes-slider [section]="mixesSection" [isLoadingMusic]="isLoadingMusic"></app-mixes-slider>
 
   <!-- BBQ CTA Section -->
   <app-bbq-cta></app-bbq-cta>
@@ -26,6 +26,8 @@
     <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
   </div>
 
+  <!-- Global Audio Player Bar -->
+  <app-audio-player-bar></app-audio-player-bar>
   <!-- Footer -->
   <app-footer></app-footer>
 </div>

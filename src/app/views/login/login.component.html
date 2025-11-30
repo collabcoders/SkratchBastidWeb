@@ -10,22 +10,24 @@
         and we'll get you sorted out!
       </div>
 
-      <form [formGroup]="loginForm.form" *ngIf="loginTitle == 'Member Sign In'" (ngSubmit)="login($event)" novalidate>
-        <div class="input-group mb-3">
-          <span class="input-group-text" id="username-addon"><i class="fas fa-user"></i></span>
-          <input formControlName="username" type="text" class="form-control" placeholder="Email" aria-label="Username" aria-describedby="username-addon">
-        </div>
-        <div class="input-group mb-3">
-          <span class="input-group-text" id="password-addon"><i class="fas fa-key"></i></span>
-          <input formControlName="password" type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
-        </div>
-        <div class="input-group mb-3">
-          <button type="submit" class="btn btn-primary center" [disabled]="processingSignin">
-            <i [hidden]="!(formProcessing$ | async)" class="fas fa-circle-notch fa-spin"></i>&nbsp;Sign In
-          </button>
-        </div>
-        <a href="/forgot-password" class="text-sm text-slate-600 mt-4">Forgot your password?</a>
-      </form>
+      @if (loginTitle == 'Member Sign In') {
+        <form [formGroup]="loginForm.form" (ngSubmit)="login($event)" novalidate>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="username-addon"><i class="fas fa-user"></i></span>
+            <input formControlName="username" type="text" class="form-control" placeholder="Email" aria-label="Username" aria-describedby="username-addon">
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="password-addon"><i class="fas fa-key"></i></span>
+            <input formControlName="password" type="password" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
+          </div>
+          <div class="input-group mb-3">
+            <button type="submit" class="btn btn-primary center" [disabled]="processingSignin">
+              <i [hidden]="!(formProcessing$ | async)" class="fas fa-circle-notch fa-spin"></i>&nbsp;Sign In
+            </button>
+          </div>
+          <a href="/forgot-password" class="text-sm text-slate-600 mt-4">Forgot your password?</a>
+        </form>
+      }
     </div>
   </div>
 </div>

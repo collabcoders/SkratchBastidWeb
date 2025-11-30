@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Event } from '@shared/models/event';
 
 export interface EventDetails {
   month: string;
@@ -17,5 +18,5 @@ export interface EventDetails {
   styleUrl: './event-card.component.scss',
 })
 export class EventCardComponent {
-  event = input.required<EventDetails>();
+  event = input.required<Event>();
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal, WritableSignal } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { VideoHeroComponent } from '../../components/video-hero/video-hero.component';
 import {
@@ -16,6 +16,12 @@ import { FreeTrialFormComponent } from '../../components/free-trial-form/free-tr
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
+import { environment } from '@env/environment';
+import _ from 'lodash';
+import { Ads } from '@shared/models/ads';
+import { AppData } from 'src/app/app.data';
+import { Video } from '@shared/models/video';
+import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/audio-player-bar.component';
 
 @Component({
   selector: 'app-home',
@@ -27,6 +33,7 @@ import { Config } from '@shared/config';
     StoreProductsComponent,
     BbqCtaComponent,
     FooterComponent,
+    AudioPlayerBarComponent,
     FreeTrialFormComponent,
   ],
   templateUrl: './home.component.html',
@@ -60,17 +67,72 @@ export class HomeComponent {
     signUpLink: '/join',
   };
 
-  constructor(private apiService: ApiService, private alertService: AlertService,) {
-    this.apiService.getSectionData("video").subscribe((data) => {
-      this.featuredVideosSection.data = data?.data?.filter((video: any) => video.category === 'Live Sets' && !video.summary);
-      this.topGrillinSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin' && !video.summary);
-    }, (error) => {
-        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-    });
-    this.apiService.getSectionData("audio").subscribe((data) => {
-      this.mixesSection.data = data?.data?.filter((d: any) => d.category === 'mix');
-    }, (error) => {
-        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-    });
+  isLoadingMusic: WritableSignal<boolean> = signal(false);
+  isLoadingVideo: WritableSignal<boolean> = signal(false);
+  isLoadingVideoTop: WritableSignal<boolean> = signal(false);
+  isLoadingBanner: WritableSignal<boolean> = signal(false);
+  constructor(private apiService: ApiService, private alertService: AlertService, private appData: AppData) {
+    this.isLoadingMusic.set(true);
+    this.isLoadingVideo.set(true);
+    this.isLoadingVideoTop.set(true);
+    this.isLoadingBanner.set(true);
+    if (environment.ismock) {
+      this.apiService.getSectionData("video").subscribe((data) => {
+        this.featuredVideosSection.data = data?.data?.filter((video: any) => video.category === 'Live Sets' && !video.summary);
+        this.topGrillinSection.data = data?.data?.filter((video: any) => video.category === 'Top Grillin' && !video.summary);
+        this.isLoadingVideo.set(false);
+      }, (error) => {
+          this.isLoadingVideo.set(false);
+          this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+      });
+      this.apiService.getSectionData("audio").subscribe((data) => {
+        this.mixesSection.data = data?.data?.filter((d: any) => d.category === 'mix');
+        this.isLoadingMusic.set(false);
+      }, (error) => {
+          this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+          this.isLoadingMusic.set(false);
+      });
+    } else {
+        let filteredItems!: Array<any>;
+        filteredItems = [];
+        this.apiService.getData('ads', '', '').subscribe((data: any) => {
+          let allBanners = data.data as Array<any>;
+          allBanners = _.sortBy(allBanners, ['order', 'adId'], ['asc', 'desc']);
+          let i = 0;
+          allBanners.forEach(item => {
+              item = item as Ads;
+              item.order = i
+              filteredItems.push(item);
+              i += 1;
+          })
+          filteredItems = _.sortBy(filteredItems, ['order']);
+          this.appData.banners.set(filteredItems as Ads[]);
+          this.isLoadingBanner.set(false);
+        },(error) => {
+          this.isLoadingBanner.set(false);
+        });
+        
+        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.appData.videosLive.set(data.data as Video[]);
+          this.featuredVideosSection.data = this.appData.videosLive();
+          this.isLoadingVideo.set(false);
+        },(error) => {
+          this.isLoadingVideo.set(false);
+        });
+        
+        this.apiService.getData('videos', 'livestream-house&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.topGrillinSection.data = data?.data;
+          this.isLoadingVideoTop.set(false);
+        },(error) => {
+          this.isLoadingVideoTop.set(false);
+        });
+
+        this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.mixesSection.data = data?.data;
+          this.isLoadingMusic.set(false);
+        },(error) => {
+          this.isLoadingMusic.set(false);
+        });
+    }
   }
 }

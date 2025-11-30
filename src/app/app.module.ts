@@ -26,11 +26,13 @@ import { UpgradeComponent } from './upgrade/upgrade.component';
 import { RouterModule } from '@angular/router';
 import { AngularWavesurferServiceModule } from '@shared/angular-wavesurfer-service-global';
 import { CoursePaymentComponent } from '@shared/components/course-payment/course-payment.component';
-import { ImageCropperComponent } from 'ngx-image-cropper';
+// import { ImageCropperComponent } from 'ngx-image-cropper';
 import { VideoPlayerComponent } from './components/video-player/video-player.component';
 import { LoginComponent } from './views/login/login.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FormsComponent } from './forms/forms.component';
+import { NgxStripeModule } from 'ngx-stripe';
+import { environment } from '@env/environment';
 // import { VideosComponent as v } from './views/videos/videos.component';
 // import { HomeComponent as h } from './views/home/home.component';
 
@@ -60,13 +62,14 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
     TooltipModule.forRoot(MyDefaultTooltipOptions as TooltipOptions),
     CommonModule,
     HeaderComponent,
-    ImageCropperComponent,
+    // ImageCropperComponent,
     CheckImagePipe,
     ImagePipe,
     SafePipe,
     VideoPipe,
     VideoPlayerComponent,
     FormsComponent,
+    NgxStripeModule.forRoot(environment.stripeKey)
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },

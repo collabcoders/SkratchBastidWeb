@@ -4,13 +4,14 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { AppData } from 'src/app/app.data';
+import { Config } from '@shared/config';
 
-export interface AudioTrack {
-  id: string;
-  title: string;
-  image: string;
-  url: string;
-}
+// export interface AudioTrack {
+//   id: string;
+//   title: string;
+//   image: string;
+//   url: string;
+// }
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class AudioService {
   private audio: HTMLAudioElement | null = null;
 
   // Signals for reactive state management
-  currentTrack = signal<AudioTrack | null>(null);
+  currentTrack = signal<Music | null>(null);
   isPlaying = signal<boolean>(false);
   currentTime = signal<number>(0);
   duration = signal<number>(0);
@@ -48,25 +49,50 @@ export class AudioService {
   // Equalizer data for visualization
   equalizerData = signal<number[]>([0, 0, 0, 0, 0, 0, 0, 8]);
 
-  playTrack(track: AudioTrack): void {
-    if (this.currentTrack()?.id === track.id) {
+  playTrack(music: Music): void {
+    if (this.currentTrack()?.musicId === music.musicId) {
       this.togglePlayPause();
       return;
     }
 
     this.stopCurrentTrack();
-    this.currentTrack.set(track);
+    this.currentTrack.set(music);
     this.isLoading.set(true);
 
-    this.audio = new Audio(track.url);
-    this.setupAudioListeners();
+    let url = music.file;
+    if (url.toLocaleLowerCase().indexOf('http') === -1) {
+      url = Config.content + music.file;
+    }
+    let fileName = music.file.substring(music.file.lastIndexOf('/') + 1);
+    let pos = fileName.lastIndexOf(".");
+    fileName = fileName.substr(0, pos < 0 ? fileName.length : pos) + ".txt";
+      this.api.getText(fileName).subscribe((data) => {
+        console.log("Got text file", data);
+      }
+    );
+      
+    console.log("url", url);
+    this.audio = new Audio(url);
+    setTimeout(() => {
+      if (this.audio) {
+        this.audio.volume = this.volume(); // Ensure volume is set
+        this.audio.muted = false; // Explicitly unmute
+        console.log('Audio volume:', this.audio.volume, 'Muted:', this.audio.muted);
+      }
+    }, 500);
 
-    this.audio.play().then(() => {
-      this.isPlaying.set(true);
-      this.isLoading.set(false);
-    }).catch(() => {
-      this.isLoading.set(false);
+    this.audio.addEventListener('loadedmetadata', () => {
+      this.audio!.volume = this.volume();
+      this.audio!.muted = false;
+
+      this.audio!.play().then(() => {
+        this.isPlaying.set(true);
+        this.isLoading.set(false);
+      }).catch(err => {
+        console.log("Autoplay blocked:", err);
+      });
     });
+    this.setupAudioListeners();
   }
 
   togglePlayPause(): void {
@@ -191,7 +217,7 @@ export class AudioService {
         this.subject.next(music);
         this.loadMusic(music);
       } else {
-        bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Mag Mob VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+        bootbox.alert('<h4>Member VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Member VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
       }
   }
 
@@ -213,13 +239,13 @@ export class AudioService {
           this.subject.next(music);
           this.loadMusic(music);
         } else {
-          bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Mag Mob VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Membership VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
         if (music.featured > 0) { 
           bootbox.alert('<h4>Stream Now</h4><br>' + 'To enjoy this mix, please sign-in or sign-up for free!');
         } else {
-          bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+          bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
         }
       }
     });

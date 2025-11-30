@@ -371,10 +371,10 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
               });
           }
         } else { 
-          bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob VIP subscribers only. Please click the Upgrade button (link on the top-right) to get access.');
+          bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership VIP subscribers only. Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
-        bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
 
@@ -424,7 +424,7 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
         this.appData.shareURL = `https://magmob.skratchbastid.com/DJ?id=${music.musicId}&app=skratchbastid`;
         $('#urlShareSocialMediaModal').modal('show');
     //   } else {
-    //     bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, the Share feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+    //     bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Share feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
     //   }
     // });
   }

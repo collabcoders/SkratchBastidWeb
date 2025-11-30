@@ -1,4 +1,4 @@
-import { Component, input, ElementRef, ViewChild, inject } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, inject, Signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
 import { Video } from '@shared/models/video';
@@ -27,7 +27,7 @@ export interface VideoSection {
   title: string;
   icon: string;
   videos?: VideoMix[];
-  data?: VideoMix[];
+  data?: Video[];
   category?: string;
   type?: string;
   signUpText?: string;
@@ -44,6 +44,7 @@ export interface VideoSection {
 export class VideoCarouselComponent {
   section = input.required<VideoSection>();
   private videoService = inject(VideoService);
+  @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
 
@@ -59,24 +60,9 @@ export class VideoCarouselComponent {
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
 
-  playVideo(video: VideoMix) {
+  playVideo(video: Video) {
     // Convert VideoMix to Video format
-    const videoData: Video= {
-      videoId: video.videoId || 0,
-      title: video.title,
-      source: video.source || 'vimeo',
-      sourceId: video.sourceId || '',
-      hls: video.hls || '',
-      duration: video.duration || '0:00',
-      category: video.category || '',
-      featuring: video.featuring || '',
-      image: video.image || video.thumbnail,
-      screenshot: video.thumbnail,
-      date: video.date || new Date().toISOString(),
-      audio1: '',
-      favId: 0,
-      featured: 0
-    };
+    const videoData: Video = video;
 
     console.log(72, 'here,', video);
     // Show the video player
@@ -98,5 +84,45 @@ export class VideoCarouselComponent {
         }
       }
     }, 100);
+  }
+
+  videoPoster = '/public/logo.png';
+  checkImage(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    let imgElement = new Image();
+    imgElement.src = target.src;
+    imgElement.addEventListener('load', () => {
+      //console.log(imgElement.naturalHeight + ' x ' + imgElement.naturalWidth);
+      if (video.source == 'vimeo' && imgElement.naturalHeight === 480 && imgElement.naturalWidth === 640) {
+        target.src = this.videoPoster;
+        imgElement.onload = null;
+      }
+      if (video.source == 'youtube' && imgElement.naturalHeight === 90 && imgElement.naturalWidth === 120) {
+        target.src = this.videoPoster;
+        imgElement.onload = null;
+      }
+    });
+    imgElement.addEventListener('error', () => {
+      target.src = this.videoPoster;
+      imgElement.onload = null;
+    });
+  }
+
+  errorImage(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    let imgElement = new Image();
+    imgElement.src = target.src;
+    target.src = target.src = this.videoPoster;
+    imgElement.onload = null;
+  }
+
+  showGif(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    target.src = video.image;
+  }
+
+  showScreenshot(event: any, screenshot: string) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    target.src = screenshot;
   }
 }

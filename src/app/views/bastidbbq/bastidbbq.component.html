@@ -44,10 +44,10 @@
   <app-bbq-signup-form />
 
   <!-- Apple Music Section -->
-  <app-audio-carousel [titleColor]="'light'" [section]="appleMusicSection" />
+  <app-audio-carousel [titleColor]="'light'" [section]="appleMusicSection" [isLoadingMusic]="isLoadingMusic" />
 
   <!-- BBQ Recaps Section -->
-  <app-bbq-recap-carousel [section]="bbqRecapsSection" />
+  <app-bbq-recap-carousel [section]="bbqRecapsSection" [isLoadingVideo]="isLoadingVideo" />
 
   <app-footer />
 
@@ -68,3 +68,5 @@
   </div>
   }
 </div>
+  <!-- Global Audio Player Bar -->
+  <app-audio-player-bar></app-audio-player-bar>

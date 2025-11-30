@@ -143,9 +143,9 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
                 id="registerName" formControlName="firstName" placeholder="First Name" style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty)"
-              class="text-red-500 text-xs mt-1">First name required</div>
+            @if (registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.touched || registerForm.get('firstName')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">First name required</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -153,9 +153,9 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
                 id="registerLastName" formControlName="lastName" placeholder="Last Name" style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty)"
-              class="text-red-500 text-xs mt-1">Last name required</div>
+            @if (registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.touched || registerForm.get('lastName')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Last name required</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -168,9 +168,9 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
                 id="registerEmail" formControlName="email" placeholder="Email" style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)"
-              class="text-red-500 text-xs mt-1">Valid email required</div>
+            @if (registerForm.get('email')?.invalid && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Valid email required</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -184,9 +184,9 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
                 id="registerPhone" formControlName="phone" placeholder="Mobile Phone" style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.get('phone')?.invalid && (registerForm.get('phone')?.touched || registerForm.get('phone')?.dirty)"
-              class="text-red-500 text-xs mt-1">Valid phone required</div>
+            @if (registerForm.get('phone')?.invalid && (registerForm.get('phone')?.touched || registerForm.get('phone')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Valid phone required</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -200,9 +200,9 @@
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
                 id="registerPassword" formControlName="password" placeholder="Password" style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)"
-              class="text-red-500 text-xs mt-1">Password required (min 6 chars)</div>
+            @if (registerForm.get('password')?.invalid && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Password required (min 6 chars)</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -217,9 +217,9 @@
                 id="confirmPassword" formControlName="confirmPassword" placeholder="Confirm Password"
                 style="font-size: 18px" />
             </div>
-            <div
-              *ngIf="registerForm.hasError('passwordsMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)"
-              class="text-red-500 text-xs mt-1">Passwords must match</div>
+            @if (registerForm.hasError('passwordsMismatch') && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Passwords must match</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -232,7 +232,7 @@
               <select
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941] appearance-none"
                 id="registerPlan" formControlName="plan" required style="font-size: 18px">
-                <option value="" disabled selected>Mag Mob VIP Plans</option>
+                <option value="" disabled selected>Plans</option>
                 <option value="free">Free</option>
                 <option value="monthly">Monthly - $9.99</option>
                 <option value="yearly">Yearly - $99.99</option>
@@ -244,14 +244,42 @@
                     clip-rule="evenodd" /></svg>
               </div>
             </div>
-            <div
-              *ngIf="registerForm.get('plan')?.invalid && (registerForm.get('plan')?.touched || registerForm.get('plan')?.dirty)"
-              class="text-red-500 text-xs mt-1">Plan required</div>
+            @if (registerForm.get('plan')?.invalid && (registerForm.get('plan')?.touched || registerForm.get('plan')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Plan required</div>
+            }
           </div>
+          @if (!(selectedPrice == '' || selectedPrice == 'free') || isReJoin) {
+            <div class="mb-3">
+              <div style="border-radius: 5px; width: 100%; border: 1px solid #fff; padding: 0.33em;">
+                <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
+                  <ngx-stripe-card [options]="cardOptions"></ngx-stripe-card>
+                </ngx-stripe-elements>
+              </div>
+              <div id="card-errors"></div>
+            </div>
+          }
+
+          @if (!(selectedPrice == '' || selectedPrice == 'free')) {
+            <div class="input-group form-text" style="color: white">
+              Terms: By clicking the "{{isReJoin ? 'Upgrade' : 'Join'}}" button below you agree to an
+              initial subscription payment of {{selectedPrice}} and billed {{selectedFrequency}} with the
+              option to cancel any time.
+            </div>
+          }
+
+          @if (selectedPrice == 'free') {
+            <div class="input-group mb-1 form-text" style="color: white">
+              Note: Free members only have access to Featured Content which you can filter from the dropdowns
+              over the Video section.
+            </div>
+          }
+
           <button type="submit"
             class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
             [disabled]="registerLoading || !registerForm.valid">
-            <span *ngIf="registerLoading" class="loader mr-2"></span>Join
+            @if (registerLoading) {
+              <span class="loader mr-2"></span>
+            }Join
           </button>
         </form>
       </div>
@@ -273,30 +301,37 @@
           data-bs-dismiss="modal" aria-label="Close">×</button>
       </div>
       <div class="modal-body px-6 pb-6">
-        <form class="space-y-4">
+        <form class="space-y-4" [formGroup]="contactForm" (ngSubmit)="saveContact()">
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                    clip-rule="evenodd" /></svg>
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
               </div>
               <input type="text"
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactName" placeholder="Name" style="font-size: 18px" />
+                id="contactName" formControlName="name" placeholder="Name" style="font-size: 18px" />
             </div>
+            @if (contactForm.get('name')?.invalid && (contactForm.get('name')?.touched || contactForm.get('name')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Name required</div>
+            }
           </div>
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
               </div>
               <input type="email"
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactEmail" placeholder="Email" style="font-size: 18px" />
+                id="contactEmail" formControlName="email" placeholder="Email" style="font-size: 18px" />
             </div>
+            @if (contactForm.get('email')?.invalid && (contactForm.get('email')?.touched || contactForm.get('email')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Valid email required</div>
+            }
           </div>
           <div>
             <div class="relative">
@@ -304,23 +339,33 @@
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fill-rule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                    clip-rule="evenodd" /></svg>
+                    clip-rule="evenodd" />
+                </svg>
               </div>
               <input type="text"
                 class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactSubject" placeholder="Subject" style="font-size: 18px" />
+                id="contactSubject" formControlName="subject" placeholder="Subject" style="font-size: 18px" />
             </div>
+            @if (contactForm.get('subject')?.invalid && (contactForm.get('subject')?.touched || contactForm.get('subject')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Subject required</div>
+            }
           </div>
           <div>
-            <label for="contactMessage" class="block text-left mb-2 font-bold text-white"
-              style="font-size: 18px">Message</label>
+            <label for="contactMessage" class="block text-left mb-2 font-bold text-white" style="font-size: 18px">Message</label>
             <textarea
               class="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-              id="contactMessage" rows="4" placeholder="Enter your message..." style="font-size: 18px"></textarea>
+              id="contactMessage" formControlName="message" rows="4" placeholder="Enter your message..." style="font-size: 18px"></textarea>
+            @if (contactForm.get('message')?.invalid && (contactForm.get('message')?.touched || contactForm.get('message')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Message required</div>
+            }
           </div>
           <button type="submit"
-            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition">Send
-            Message</button>
+            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
+            [disabled]="isLoadingContact() || !contactForm.valid">
+            @if (isLoadingContact()) {
+              <span class="loader mr-2"></span>
+            }Send Message
+          </button>
         </form>
       </div>
     </div>

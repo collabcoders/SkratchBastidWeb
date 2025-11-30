@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AppData } from 'src/app/app.data';
 
 @Component({
   selector: 'app-bbq-signup-form',
@@ -16,6 +18,8 @@ export class BBQSignupFormComponent {
     city: '',
     postalCode: ''
   };
+
+  constructor(private router: Router, private appData: AppData) {}
 
   cities = [
     'Toronto',
@@ -34,5 +38,10 @@ export class BBQSignupFormComponent {
   onSubmit() {
     console.log('BBQ Signup Form submitted:', this.formData);
     // Handle form submission logic here
+  }
+
+  openSignup() {
+    this.appData.planOpen.set('free');
+    this.router.navigate(['/join']);
   }
 }

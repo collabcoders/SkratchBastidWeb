@@ -1,5 +1,11 @@
-import { Component, input, ElementRef, ViewChild } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Signal, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ImagePipe } from '@shared/pipes/image.pipe';
+import { Music } from '@shared/models/music';
+import { AudioService } from '@shared/services/audio.service';
+import { AppData } from 'src/app/app.data';
+import { Observable } from 'rxjs';
+import { TokenService } from '@shared/services/token.service';
 
 export interface Mix {
   image: string;
@@ -11,22 +17,29 @@ export interface Mix {
 export interface MixesSection {
   title: string;
   icon: string;
-  data: Mix[];
+  data: Music[];
   signUpText?: string;
   signUpLink?: string;
 }
 
 @Component({
   selector: 'app-mixes-slider',
-  imports: [CommonModule],
+  imports: [CommonModule, ImagePipe],
   templateUrl: './mixes-slider.component.html',
   styleUrl: './mixes-slider.component.scss'
 })
 export class MixesSliderComponent {
   section = input.required<MixesSection>();
+  @Input({ required: true }) isLoadingMusic!: Signal<boolean>;
+
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
 
+  isLoggedIn$!: Observable<boolean>;
+
+  constructor(public appData: AppData, private audioService: AudioService, private token: TokenService) {
+    this.isLoggedIn$ = this.token.isValid(undefined);
+  }
   scrollLeft() {
     const container = this.carousel.nativeElement;
     const scrollAmount = container.clientWidth * 0.8;
@@ -38,4 +51,53 @@ export class MixesSliderComponent {
     const scrollAmount = container.clientWidth * 0.8;
     container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
   }
+
+  initMusic(i: Music) {
+    console.log("initMusic", i);
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+      this.appData.previewMusicId.set(i.musicId);
+        this.audioService.showPlayer(i);
+      } else {
+        bootbox.alert('<h4>Member Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
+  }
+
+  isAudioFile(url: string): boolean {
+    return url?.endsWith('.mp3') || url?.endsWith('.wav') || url?.endsWith('.m4a') || url?.endsWith('.ogg');
+  }
+  
+  playAudio(mix: Music, event: Event): void {
+    if (this.isAudioFile(mix.file)) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // const track: AudioTrack = {
+      //   id: mix.file,
+      //   title: mix.title || 'Unknown Track',
+      //   image: mix.image,
+      //   url: mix.file
+      // };
+
+      this.audioService.playTrack(mix);
+    }
+  }
+
+  initMusicFromURL(i: Music) {
+    console.log("initMusic", i);
+    const valid = i?.featured > 0;
+    if (valid) {
+      this.appData.previewMusicId.set(i.musicId);
+      if (this.appData.isMobileDevice) {
+        console.log("OPEN MODAL");
+        // $('#audioModal').modal('show');
+      } else {
+      }
+      this.audioService.showPlayerURL(i);
+    } else {
+      bootbox.alert('<h4>MMember Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+    }
+  }
+
 }

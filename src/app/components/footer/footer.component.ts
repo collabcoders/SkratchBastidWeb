@@ -2,6 +2,9 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { Config } from '@shared/config';
+import { ApiService } from '@shared/services/api.service';
+import { AlertService } from '@shared/services/alert.service';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -23,7 +26,7 @@ interface FooterLink {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
-  constructor() {
+  constructor(private apiService: ApiService, private alertService: AlertService) {
   }
 
   newsletterEmail = signal('');
@@ -212,5 +215,29 @@ export class FooterComponent {
     } else if (typeof $ !== 'undefined') {
       $('#refundModal').modal('show');
     }
+  }
+
+  isLoadingNewsletter = signal(false);
+  subscribeNewsletter() {
+    const email = this.newsletterEmail();
+    // Simple email regex validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.alertService.error('Invalid Email', 'Please enter a valid email address.');
+      return;
+    }
+    this.isLoadingNewsletter.set(true);
+    this.apiService.post('SubscribeNewsletter?app=' + Config.app, email, true, true)
+      .subscribe(data => {
+        if (data.error) {
+          // Optionally handle error from API
+        }
+        this.alertService.success('Thank you for subscribing!', data.msg);
+        this.newsletterEmail.set('');
+        this.isLoadingNewsletter.set(false);
+      }, (error) => {
+        this.newsletterEmail.set('');
+        this.isLoadingNewsletter.set(false);
+      });
   }
 }

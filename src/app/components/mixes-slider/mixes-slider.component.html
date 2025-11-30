@@ -39,26 +39,73 @@
       </button>
 
       <!-- Carousel Content -->
-      <div #carousel class="overflow-x-auto scrollbar-hidden"
-        style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+      @if (isLoadingMusic()) {
         <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
-          @for (mix of section().data; track mix.title) {
-          <a [href]="mix.href" class="hover:opacity-75 transition-opacity duration-200" style="
-              flex-shrink: 0;
-              box-sizing: border-box;
-              min-height: 1px;
-              scroll-snap-align: start;
-            ">
-            <img [src]="mix.image" [alt]="mix.title" loading="lazy"
-              class="rounded-lg aspect-square object-cover w-[200px]" />
-            <div class="mt-2" style="width: 200px">
-              <div class="font-bold text-[16px] truncate">{{ mix.title }}</div>
-              <div class="text-[12px] truncate">{{ mix.artist }}</div>
+          @for (skeleton of [0,1,2,3,4]; track skeleton) {
+            <div class="hover:opacity-75 transition-opacity duration-200 relative animate-pulse" style="
+                flex-shrink: 0;
+                box-sizing: border-box;
+                min-height: 1px;
+                scroll-snap-align: start;
+                width: 200px;">
+              <div class="rounded-lg aspect-square object-cover w-[200px] bg-gray-200 mb-2" style="height: 200px;"></div>
+              <div class="h-4 w-2/3 bg-gray-300 rounded mb-2"></div>
+              <div class="h-3 w-1/2 bg-gray-200 rounded mb-1"></div>
             </div>
-          </a>
           }
         </div>
-      </div>
+      } @else {
+        <div #carousel class="overflow-x-auto scrollbar-hidden"
+          style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
+          <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
+            @for (mix of section().data; track mix.title) {
+              @if (mix.href) {
+              <a [href]="mix.href" class="hover:opacity-75 transition-opacity duration-200" style="
+                  flex-shrink: 0;
+                  box-sizing: border-box;
+                  min-height: 1px;
+                  scroll-snap-align: start;
+                ">
+                <img [src]="mix.image | imageUrl:300:300:true" [alt]="mix.title" loading="lazy"
+                  class="rounded-lg aspect-square object-cover w-[200px]" />
+                <div class="mt-2" style="width: 200px">
+                  <div class="font-bold text-[16px] truncate">{{ mix.title }}</div>
+                  <div class="text-[12px] truncate">{{ mix.artist }}</div>
+                </div>
+              </a>
+              } @else {
+              <div class="hover:opacity-75 transition-opacity duration-200 relative" style="
+                  flex-shrink: 0;
+                  box-sizing: border-box;
+                  min-height: 1px;
+                  scroll-snap-align: start;
+                ">
+                <!-- Absolute Play Icon Button Overlay -->
+                <button
+                  type="button"
+                  (click)="playAudio(mix, $event)"
+                  class="absolute inset-0 flex items-center justify-center transition duration-300 rounded-lg"
+                  style="border: none; outline: none; width: 100%; height: 100%; z-index: 2; background: transparent;"
+                  aria-label="Play audio"
+                >
+                  <span class="bg-white bg-opacity-90 rounded-full p-3 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <svg class="w-8 h-8 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </span>
+                </button>
+                <img [src]="mix.image | imageUrl:300:300:true" [alt]="mix.title" loading="lazy"
+                  class="rounded-lg aspect-square object-cover w-[200px]" />
+                <div class="mt-2" style="width: 200px">
+                  <div class="font-bold text-[16px] truncate">{{ mix.title }}</div>
+                  <div class="text-[12px] truncate">{{ mix.artist }}</div>
+                </div>
+              </div>
+              }
+            }
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>

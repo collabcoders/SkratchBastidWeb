@@ -43,18 +43,30 @@
     <!-- Grid Layout for Videos -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
       @for (video of getFilteredVideos(); track $index) {
-      <a [href]="video.href" class="block">
-        <div class="relative overflow-hidden rounded-lg w-full aspect-video">
-          <img
-            [src]="video.thumbnail"
-            class="rounded-lg drop-shadow-lg w-full h-full object-cover transition-transform duration-300 transform hover:scale-110"
-            loading="lazy"
-            [alt]="video.title"
-          />
+      <div class="relative flex flex-col w-full group cursor-pointer"
+        style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
+        <div class="relative overflow-hidden rounded-lg">
+          @if (video.source == 'youtube') {
+            <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+              [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
+              (load)="checkImage($event, video)" [attr.alt]="video.title" />
+          } @else if (video.source == 'vimeo') {
+            <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" [src]="video.screenshot"
+              [attr.id]="'img_' + video.videoId" (error)="errorImage($event, video)" (load)="checkImage($event, video)"
+              [attr.alt]="video.title" />
+          } @else {
+            <img [src]="video.thumbnail" [alt]="video.title" loading="lazy"
+              class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" />
+          }
+          <div class="absolute inset-0 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+            </svg>
+          </div>
         </div>
         <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
         <div class="text-xs font-light">{{ video.timeAgo }}</div>
-      </a>
+      </div>
       }
     </div>
 
@@ -72,16 +84,16 @@
   <!-- All Categories View (default sections) -->
   <div >
     <!-- New in Top Grillin Section -->
-    <app-video-carousel [section]="topGrillinSection"></app-video-carousel>
+    <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
 
     <!-- Tuesday Morning Coffee Section -->
-    <app-video-carousel [section]="tuesdayMorningCoffeeSection"></app-video-carousel>
+    <app-video-carousel [section]="tuesdayMorningCoffeeSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
 
     <!-- BBQ Recaps Section -->
-    <app-bbq-recap-carousel [section]="$any(simpleBBQSection)"></app-bbq-recap-carousel>
+    <app-bbq-recap-carousel [section]="$any(simpleBBQSection)" [isLoadingVideo]="isLoadingRecap"></app-bbq-recap-carousel>
 
     <!-- Record of the Week Section -->
-    <app-record-carousel [section]="simpleRecordSection"></app-record-carousel>
+    <app-record-carousel [section]="simpleRecordSection" [isLoadingRecap]="isLoadingRecap"></app-record-carousel>
   </div>
   }
 

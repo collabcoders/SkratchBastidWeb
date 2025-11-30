@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -22,6 +22,11 @@ import {
 import { SearchComponent } from '../../components/search/search.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ApiService } from '@shared/services/api.service';
+import { environment } from '@env/environment';
+import { Video } from '@shared/models/video';
+import { AppData } from 'src/app/app.data';
+import { Category } from '@shared/models/category';
+import { VideoService } from '@shared/services/video.service';
 
 @Component({
   imports: [
@@ -85,47 +90,86 @@ export class VideosComponent implements OnInit {
     data: [],
   };
 
-  constructor(private apiService: ApiService) {}
+  isLoadingVideo: WritableSignal<boolean> = signal(false);
+  isLoadingCategory: WritableSignal<boolean> = signal(false);
+  isLoadingRecap: WritableSignal<boolean> = signal(false);
+
+  constructor(private apiService: ApiService, public appData: AppData, private videoService: VideoService) {}
 
   ngOnInit(): void {
-    this.apiService.getSectionData('category').subscribe({
-      next: (data) => {
-        if (Array.isArray(data)) {
-          this.categories = ['All', ...data];
-        } else if (data && Array.isArray(data.data)) {
-          this.categories = ['All', ...data.data];
-        }
-      },
-      error: (err) => {
-        console.error('Failed to fetch categories', err);
-      }
-    });
+      if (environment.ismock) {
+        this.apiService.getData('videos', this.selectedCategory, '&sort=date&dir=desc').subscribe((data: any) => {
+          console.log("DATA", data);
+        });
+        
+        this.apiService.getSectionData('category').subscribe({
+          next: (data) => {
+            if (Array.isArray(data)) {
+              this.categories = ['All', ...data];
+            } else if (data && Array.isArray(data.data)) {
+              this.categories = ['All', ...data.data];
+            }
+          },
+          error: (err) => {
+            console.error('Failed to fetch categories', err);
+          }
+        });
 
-    this.apiService.getSectionData('video').subscribe({
-      next: (data) => {
-        this.topGrillinSection.data = data?.data?.filter((i: any) => i.category === 'Top Grillin') || [];
-        this.tuesdayMorningCoffeeSection.data = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
-        this.topGrillinVideos = data?.data?.filter((i: any) => i.summary) || [];
-        this.tuesdayMorningCoffeeVideos = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
-        console.log('Fetched videos:', this.topGrillinVideos);
-      },
-      error: (err) => {
-        console.error('Failed to fetch categories', err);
-      }
-    });
+        this.apiService.getSectionData('video').subscribe({
+          next: (data) => {
+            this.topGrillinSection.data = data?.data?.filter((i: any) => i.category === 'Top Grillin') || [];
+            this.tuesdayMorningCoffeeSection.data = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
+            this.topGrillinVideos = data?.data?.filter((i: any) => i.summary) || [];
+            this.tuesdayMorningCoffeeVideos = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
+            console.log('Fetched videos:', this.topGrillinVideos);
+          },
+          error: (err) => {
+            console.error('Failed to fetch categories', err);
+          }
+        });
 
-    this.apiService.getSectionData('recap').subscribe({
-      next: (data) => {
-        this.bbqRecaps = data?.data?.filter((i: any) => i.summary && i?.category === 'bbq') || [];
-        this.rotwRecords = data?.data?.filter((i: any) => i.summary && i?.category === 'rotw') || [];
-        this.simpleBBQSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'bbq') || [];
-        this.simpleRecordSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'rotw') || [];
-        console.log('Fetched BBQ recaps:', this.bbqRecaps);
-      },
-      error: (err) => {
-        console.error('Failed to fetch categories', err);
+        this.apiService.getSectionData('recap').subscribe({
+          next: (data) => {
+            this.bbqRecaps = data?.data?.filter((i: any) => i.summary && i?.category === 'bbq') || [];
+            this.rotwRecords = data?.data?.filter((i: any) => i.summary && i?.category === 'rotw') || [];
+            this.simpleBBQSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'bbq') || [];
+            this.simpleRecordSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'rotw') || [];
+            console.log('Fetched BBQ recaps:', this.bbqRecaps);
+          },
+          error: (err) => {
+            console.error('Failed to fetch categories', err);
+          }
+        });
+      } else {
+        this.isLoadingCategory.set(true);
+        this.apiService.getData('categories', 'videos', '', 'beats').subscribe((data: any) => {
+          const categories = data.data as Category[];
+          this.categories = ['All', ...categories.map(cat => cat.name)];
+          this.isLoadingCategory.set(false);
+        });
+        
+        this.isLoadingVideo.set(true);
+        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.topGrillinSection.data = data?.data || [];
+          this.tuesdayMorningCoffeeSection.data = data?.data || [];
+          this.topGrillinVideos = data?.data || [];
+          this.tuesdayMorningCoffeeVideos = data?.data || [];
+          this.isLoadingVideo.set(false);
+        },(error) => {
+          this.isLoadingVideo.set(false);
+        });
+        
+        this.isLoadingRecap.set(true);
+        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          this.bbqRecaps = data?.data || [];
+          this.rotwRecords = data?.data || [];
+          this.simpleBBQSection.data = data?.data || [];
+          this.simpleRecordSection.data = data?.data || [];
+          this.isLoadingRecap.set(false);
+        },(error) => {
+          this.isLoadingRecap.set(false);
+        });
       }
-    });
   }
 
   selectCategory(category: string): void {
@@ -173,7 +217,23 @@ export class VideosComponent implements OnInit {
           video.title.toLowerCase().includes('pop')
         );
       default:
-        return [];
+        // Return all videos combined for 'All' category or any unmatched category
+        return [
+          ...this.topGrillinVideos,
+          ...this.tuesdayMorningCoffeeVideos,
+          ...this.bbqRecaps.map((event: any) => ({
+            href: event.href,
+            thumbnail: event.thumbnail,
+            title: event.title,
+            timeAgo: event.date,
+          })),
+          ...this.rotwRecords.map((record: any) => ({
+            href: record.href,
+            thumbnail: record.image,
+            title: record.title,
+            timeAgo: record.artist,
+          }))
+        ];;
     }
   }
 
@@ -210,5 +270,86 @@ export class VideosComponent implements OnInit {
   // Check if showing filtered view (any category except 'All')
   isFilteredView(): boolean {
     return this.selectedCategory !== 'All';
+  }
+
+  playVideo(video: Video) {
+    // Convert VideoMix to Video format
+    const videoData: Video= {
+      videoId: video.videoId || 0,
+      title: video.title,
+      source: video.source || 'vimeo',
+      sourceId: video.sourceId || '',
+      hls: video.hls || '',
+      duration: video.duration || '0:00',
+      category: video.category || '',
+      featuring: video.featuring || '',
+      image: video.image || video.image,
+      screenshot: video.screenshot,
+      date: video.date || new Date().toISOString(),
+      audio1: '',
+      favId: 0,
+      featured: 0
+    };
+
+    console.log(72, 'here,', video);
+    // Show the video player
+    this.videoService.showPlayer(videoData);
+
+    // Open the Bootstrap modal using Bootstrap 5 native API
+    setTimeout(() => {
+      const modalElement = document.getElementById('videoModal');
+      if (modalElement) {
+        // Check if Bootstrap is loaded
+        if (typeof (window as any).bootstrap !== 'undefined') {
+          const modal = new (window as any).bootstrap.Modal(modalElement);
+          modal.show();
+        } else if (typeof $ !== 'undefined' && typeof ($ as any).fn.modal !== 'undefined') {
+          // Fallback to jQuery if available
+          ($('#videoModal') as any).modal('show');
+        } else {
+          console.error('Bootstrap modal is not available');
+        }
+      }
+    }, 100);
+  }
+
+  videoPoster = '/public/logo.png';
+  checkImage(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    let imgElement = new Image();
+    imgElement.src = target.src;
+    imgElement.addEventListener('load', () => {
+      //console.log(imgElement.naturalHeight + ' x ' + imgElement.naturalWidth);
+      if (video.source == 'vimeo' && imgElement.naturalHeight === 480 && imgElement.naturalWidth === 640) {
+        target.src = this.videoPoster;
+        imgElement.onload = null;
+      }
+      if (video.source == 'youtube' && imgElement.naturalHeight === 90 && imgElement.naturalWidth === 120) {
+        target.src = this.videoPoster;
+        imgElement.onload = null;
+      }
+    });
+    imgElement.addEventListener('error', () => {
+      target.src = this.videoPoster;
+      imgElement.onload = null;
+    });
+  }
+
+  errorImage(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    let imgElement = new Image();
+    imgElement.src = target.src;
+    target.src = target.src = this.videoPoster;
+    imgElement.onload = null;
+  }
+
+  showGif(event: any, video: Video) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    target.src = video.image;
+  }
+
+  showScreenshot(event: any, screenshot: string) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    target.src = screenshot;
   }
 }

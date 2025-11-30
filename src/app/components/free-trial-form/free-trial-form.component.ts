@@ -1,6 +1,10 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { AppData } from 'src/app/app.data';
+import { Observable } from 'rxjs';
+import { TokenService } from '@shared/services/token.service';
 
 export interface FreeTrialFormData {
   email: string;
@@ -33,6 +37,11 @@ export class FreeTrialFormComponent {
   // Output for form submission
   formSubmit = output<FreeTrialFormData>();
 
+  isLoggedIn$!: Observable<boolean>;
+  constructor(private router: Router, private appData: AppData, private token: TokenService) {
+    if (!this.isLoggedIn$) this.isLoggedIn$ = this.token.isValid(undefined);
+  }
+
   onSubmit() {
     this.formSubmit.emit({
       email: this.email,
@@ -42,5 +51,10 @@ export class FreeTrialFormComponent {
       password: this.password,
       confirmPassword: this.confirmPassword,
     });
+  }
+
+  openSignup() {
+    this.appData.planOpen.set('free');
+    this.router.navigate(['/join']);
   }
 }

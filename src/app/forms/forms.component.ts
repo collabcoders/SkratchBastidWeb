@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -6,6 +6,9 @@ import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
 import { Config } from '@shared/config';
 import { TokenService } from '@shared/services/token.service';
+import { AppData } from '../app.data';
+import { NgxStripeModule } from 'ngx-stripe';
+import { environment } from '@env/environment';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -21,24 +24,96 @@ interface FooterLink {
 @Component({
   selector: 'app-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule],
   templateUrl: './forms.component.html',
   styleUrls: ['./forms.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormsComponent implements AfterViewInit {
+    apiPost(endpoint: string) {
+      // Use registerForm for this context
+      console.log('registerForm.value', this.registerForm.value);
+      if (this.selectedPrice === 'free') {
+        // No payment method required
+      } else {
+        if (!this.registerForm.value.paymentMethodId) {
+          this.processingSignup = false;
+          return;
+        }
+      }
+      this.apiService.post(endpoint + '?app=' + Config.app + '&source=website', this.registerForm.value, true, true)
+        .subscribe((data: any) => {
+          if (data.error) {
+            // SHOW ERROR MESSAGE
+            console.log(data);
+            this.alertService.error('Error', data.msg, Config.alertOptions);
+            setTimeout(() => {
+              this.processingSignup = false;
+            }, 400);
+          } else {
+            // SET TOKEN
+            console.log(data);
+            if (this.isReJoin) {
+              this.token.set(data?.data);
+              // this.logIn.emit(); // Uncomment if you have logIn EventEmitter
+            }
+            // HIDE REGISTER MODAL
+            if (typeof $ !== 'undefined') {
+              $('#registerModal').modal('hide');
+            }
+            // SHOW MESSAGES AND REDIRECT
+            bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the QMT VIP</h4><br>' + data.msg);
+            this.isReJoin = false;
+            setTimeout(() => {
+              this.processingSignup = false;
+            }, 400);
+          }
+        });
+    }
+    // Add ViewChild for StripeCardComponent
+    // @ViewChild(StripeCardComponent) card!: StripeCardComponent; // Uncomment and import if using StripeCardComponent
+    processingSignup = false;
+    // Add paymentMethodId and paymentMethodLast4 to registerForm if not present
+    // Stripe/plan properties for registration
+    selectedPrice: string = '';
+    selectedFrequency: string = '';
+    isReJoin: boolean = false;
+
+    // Stripe integration
+    stripe = (window as any).Stripe ? (window as any).Stripe('pk_test_123') : undefined; // Replace with your Stripe key or inject as needed
+    elementsOptions = {
+      locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
+      appearance: {
+        theme: 'flat'
+      }
+    };
+    cardOptions = {
+      style: {
+        base: {
+          iconColor: '#fff',
+          color: '#fff',
+          fontWeight: '300',
+          fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+          fontSize: '18px',
+          '::placeholder': {
+            color: '#fff',
+          },
+        },
+      },
+    };
   public router = inject(Router);
 
   // Reactive Forms
   loginForm: FormGroup;
   resetForm: FormGroup;
   registerForm: FormGroup;
+  contactForm: FormGroup;
 
   loginLoading = signal(false);
   resetLoading = false;
   registerLoading = false;
 
-  constructor(private fb: FormBuilder, private alertService: AlertService, private apiService: ApiService, private token: TokenService,) {
+  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService,) {
     this.router = inject(Router);
 
     this.loginForm = this.fb.group({
@@ -60,6 +135,30 @@ export class FormsComponent implements AfterViewInit {
       plan: ['', Validators.required],
     }, { validators: this.passwordsMatchValidator });
 
+    // Listen for plan changes to update selectedPrice and selectedFrequency
+    this.registerForm.get('plan')?.valueChanges.subscribe((plan) => {
+      if (plan === 'free') {
+        this.selectedPrice = 'free';
+        this.selectedFrequency = '';
+      } else if (plan === 'monthly') {
+        this.selectedPrice = '$9.99';
+        this.selectedFrequency = 'monthly';
+      } else if (plan === 'yearly') {
+        this.selectedPrice = '$99.99';
+        this.selectedFrequency = 'yearly';
+      } else {
+        this.selectedPrice = '';
+        this.selectedFrequency = '';
+      }
+    });
+
+    this.contactForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      subject: ['', Validators.required],
+      message: ['', Validators.required],
+    });
+
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
       if (event?.constructor?.name === 'NavigationEnd' && event.url) {
@@ -78,6 +177,18 @@ export class FormsComponent implements AfterViewInit {
         }
       }
     });
+
+    effect(() => {
+      if (this.appData.planOpen()) {
+        if (this.appData.planOpen() === 'free') {
+          this.registerForm.get('plan')?.setValue('free');
+        } else if (this.appData.planOpen() === 'monthly') {
+          this.registerForm.get('plan')?.setValue('monthly');
+        } else if (this.appData.planOpen() === 'yearly') {
+          this.registerForm.get('plan')?.setValue('yearly');
+        }
+      }
+    })
   }
 
   passwordsMatchValidator(form: FormGroup) {
@@ -86,7 +197,6 @@ export class FormsComponent implements AfterViewInit {
     return password === confirm ? null : { passwordsMismatch: true };
   }
 
-  appData = { loginFromBeats: false };
   showReJoin(id: any) { bootbox.alert('Upgrade logic for id: ' + id); }
 
   onLoginSubmit() {
@@ -97,7 +207,7 @@ export class FormsComponent implements AfterViewInit {
       return;
     }
     this.loginLoading.set(true);
-    this.apiService.post('MemberLogin?app=skratchbastid',{username: this.loginForm.value.email,...this.loginForm.value}, true, true)
+    this.apiService.post('MemberLogin?app=djjazzyjeff',{username: this.loginForm.value.email,...this.loginForm.value}, true, true)
       .subscribe((data: any) => {
         this.loginLoading.set(false);
         console.log("MemberLogin", data);
@@ -154,12 +264,55 @@ export class FormsComponent implements AfterViewInit {
   }
 
   onRegisterSubmit() {
-    if (this.registerForm.invalid) return;
-    this.registerLoading = true;
-    setTimeout(() => {
-      this.registerLoading = false;
-      // TODO: handle register logic
-    }, 1500);
+    this.alertService.clear();
+    // Mark form as attempted
+    (this.registerForm as any).formSubmitAttempt = true;
+
+    if (this.selectedPrice === 'free') {
+      // No-op for now, handled below
+    } else {
+      // No-op for now, handled below
+    }
+    if (this.registerForm.valid) {
+      this.processingSignup = true;
+      let endpoint = 'NewMember';
+      if (this.selectedPrice == 'free') {
+        this.registerForm.value.plan = 'free';
+        this.registerForm.value.selectedPrice = '';
+      } else {
+        if (this.isReJoin) {
+          endpoint = 'UpdateSubscription';
+        } else {
+          endpoint = 'NewSubscription';
+        }
+      }
+      if (this.selectedPrice === 'free') {
+        this.registerForm.patchValue({
+          paymentMethodId: '',
+          paymentMethodLast4: ''
+        });
+        this.apiPost(endpoint);
+      } else {
+        // Stripe payment method creation
+        // You must have a reference to the StripeCardComponent as 'card'
+        const payload: any = {
+          type: 'card',
+          card: (this as any).card?.element, // Replace with correct reference if needed
+        };
+        (this.stripe as any).createPaymentMethod(payload).subscribe((p: any) => {
+          console.log('Payment Method', p);
+          if (p.error?.message) {
+            this.processingSignup = false;
+            return;
+          }
+          this.registerForm.patchValue({
+            paymentMethodId: p.paymentMethod?.id,
+            paymentMethodLast4: p.paymentMethod?.card?.last4 || '',
+          });
+          this.apiPost(endpoint);
+        });
+      }
+    }
   }
 
   ngAfterViewInit() {
@@ -254,6 +407,45 @@ export class FormsComponent implements AfterViewInit {
       modal.show();
     } else if (typeof $ !== 'undefined') {
       $('#refundModal').modal('show');
+    }
+  }
+
+  isLoadingContact: WritableSignal<boolean> = signal(false);
+  saveContact() {
+    this.alertService.clear();
+    console.log("contactForm", this.contactForm);
+    if (this.contactForm.valid) {
+      this.isLoadingContact.set(true);
+      let endpoint = 'Contact';
+      const payload = this.contactForm.value;
+      this.apiService.post(endpoint + '?app=' + Config.app, payload, true, true)
+        .subscribe(data => {
+          if (data.error) {
+            // SHOW ERROR MESSAGE
+            console.log(data);
+            this.alertService.error('Error', data.msg, Config.alertOptions)
+            setTimeout(() => {
+              this.isLoadingContact.set(false);
+            }, 400);
+          } else {
+            this.contactForm.reset();
+            // SET TOKEN
+            console.log(data);
+            bootbox.alert(data);
+            // HIDE LOGIN MODAL
+            if (typeof bootstrap !== 'undefined') {
+              const modal = new bootstrap.Modal(document.getElementById('contactModal'));
+              modal.show();
+            } else if (typeof $ !== 'undefined') {
+              $('#contactModal').modal('show');
+            }
+            setTimeout(() => {
+              this.isLoadingContact.set(false);
+            }, 400);
+          }
+        });
+    } else {
+      this.contactForm.markAllAsTouched();
     }
   }
 }

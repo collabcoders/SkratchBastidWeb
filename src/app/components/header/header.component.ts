@@ -57,7 +57,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
     console.log('Logging out...');
     this.token.remove();
     this.isLoggedIn$ = this.token.isValid(false);
-    this.alertService.info('Sign-Out Successful', 'You have been Signed-Out of Mag Mob.', this.alertOptions);
+    this.alertService.info('Sign-Out Successful', 'You have been Signed-Out.', this.alertOptions);
     setTimeout(() => window.location.reload(), 1000);
   }
   ngOnInit() {

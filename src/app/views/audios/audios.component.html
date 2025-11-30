@@ -4,7 +4,7 @@
   <!-- Audio Sections -->
   <div>
     @for (section of audioSections; track section.title) {
-    <app-audio-carousel [section]="section"></app-audio-carousel>
+    <app-audio-carousel [section]="section" [isLoadingMusic]="onChange(section)"></app-audio-carousel>
     }
   </div>
 
@@ -24,4 +24,4 @@
 <app-audio-player-bar></app-audio-player-bar>
 
 <!-- Add bottom padding to prevent content from being hidden behind player bar -->
-<div class="h-20 md:h-24"></div>
+<!-- <div class="h-20 md:h-24"></div> -->

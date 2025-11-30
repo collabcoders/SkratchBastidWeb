@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Ads } from '@shared/models/ads';
 import { Member } from '@shared/models/member';
+import { Video } from '@shared/models/video';
 import { TokenService } from '@shared/services/token.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 
@@ -17,6 +19,7 @@ export class AppData {
     isMobileDevice = false;
     isMobileDevices = false;
 
+    previewMusicId: WritableSignal<number | null> = signal(null);
     shareURL = '';
 
     user: any;
@@ -25,7 +28,13 @@ export class AppData {
     isFree = false;
     isLogged = false;
     member!: Member;
+
+    planOpen: WritableSignal<'free' | 'monthly' | 'yearly'> = signal('free');
     
+    banners: WritableSignal<Ads[]> = signal([]);
+    videos: WritableSignal<Video[]> = signal([]);
+    videosLive: WritableSignal<Video[]> = signal([]);
+    products: WritableSignal<any[]> = signal([]);
     constructor(private token: TokenService,) {
         this.onFavoritesChanges = new BehaviorSubject(false);
         this.onBeatsChanges = new BehaviorSubject(false);

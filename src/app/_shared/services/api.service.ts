@@ -208,8 +208,8 @@ export class ApiService {
      * Otherwise, uses API endpoint (customize as needed).
      * Returns Observable<any>.
      */
-    public getSectionData(section: string): Observable<any> {
-      if ((environment.ismock)) {
+    public getSectionData(section: string, forceMock = false): Observable<any> {
+      if ((environment.ismock || forceMock)) {
         // Load from public/json/{section}.json
         const url = `/json/${section}.json`;
         return this.http.get<any>(url).pipe(

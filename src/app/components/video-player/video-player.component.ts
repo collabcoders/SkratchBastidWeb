@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, Observable } from 'rxjs';
@@ -12,7 +12,9 @@ import { VideoService } from '@shared/services/video.service';
 import { Comment } from '@shared/models/comment';
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
+import { TokenService } from '@shared/services/token.service';
 import { Config } from '@shared/config';
+import { environment } from '@env/environment';
 
 declare var $: any;
 declare var bootbox: any;
@@ -26,7 +28,9 @@ declare var bootbox: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges, AfterViewChecked {
-  video: Video = null as any;
+  isLoadingBookmark = signal(false);
+  isLoadingRelated = signal(false);
+  video: Video | null = null;
   @Input() beats: boolean = false;
   @Output("isClose") isClose: EventEmitter<any> = new EventEmitter();
   videoId = 0;
@@ -50,14 +54,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   isUserBeats = false;
 
   // Bookmarks
-  bookmarkobj: Bookmark = {
-    title: '', time: 0, bookmarkId: 0,
-    userId: 0,
-    memberId: 0,
-    videoId: 0,
-    featured: 0,
-    dateAdded: new Date()
-  };
+  bookmarkobj: Bookmark = new Bookmark();
   bookmarklst: Bookmark[] = [];
   delbookmarkId: any;
 
@@ -72,16 +69,31 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   };
   commentlst: Comment[] = [];
   editablecomRow: number = 0;
+  isLoadingComments = signal(false);
 
   // Related videos
-  relatedvideos: any[] = [];
+  relatedvideos: Video[] = [];
 
 
+  // Always bind distroyVideo to this instance in the constructor
   constructor(private apiService: ApiService, private alertService: AlertService,
     public videoService: VideoService,
+    private token: TokenService,
     private cdr: ChangeDetectorRef) {
+      this.distroyVideo = this.distroyVideo.bind(this);
   }
   ngOnInit(): void {
+    this.isLoggedIn$ = this.token.isValid(undefined);
+    
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+        const member = this.token.getMember();
+        if (member?.beats) {
+          this.isUserBeats = true;
+        }
+      }
+    });
+    
     $('#videoModal').on('hidden.bs.modal', () => {
       console.log("CLOSE a VIDEO");
       this.distroyVideo();
@@ -92,6 +104,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       if (i) {
         console.log("videoService1", i);
         this.video = i;
+        if (!this.isLoggedIn$) this.isLoggedIn$ = this.token.isValid(undefined);
         if (this.isFirstTime) {
           this.showreldetails(this.video, true);
           this.isFirstTime = false;
@@ -108,10 +121,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   ngAfterViewInit(): void {
-    this.newPlayer();
-    setInterval(() => {
-      this.newPlayer();
-    }, 1000);
+    // Initialize player only once to avoid conflicts
+    setTimeout(() => {
+      this.initializePlayer();
+    }, 100);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -150,24 +163,31 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     }
   }
 
-  distryVideo() {
-    var player = videojs('videoPlay');
-    player.pause();
-  }
-
   distroyVideo() {
     console.log("distroyVideo", videojs.getPlayers()['videoPlay'])
     if (videojs.getPlayers()['videoPlay']) {
-      var player = videojs('videoPlay');
+      const player = videojs.getPlayer('videoPlay');
       console.log("player", player);
       if (player) {
         player.pause();
+        player.dispose();
       }
     }
   }
 
   closeModal() {
     this.distroyVideo();
+    // Reset state for next video
+    this.videohls = '';
+    this.videotitle = '';
+    this.videoId = 0;
+    // Clear video source to force reload next time
+    if (videojs.getPlayers()['videoPlay']) {
+      const player = videojs.getPlayer('videoPlay');
+      if (player) {
+        player.src('');
+      }
+    }
     $('#videoModal').modal('hide');
     this.isClose.next(this.video);
   }
@@ -179,24 +199,56 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.videohls = '';
     this.classone = 'v-small';
     this.videozoom = 'true';
-
-    this.setPlayer(isrel, videoData);
+    
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+        const member = this.token.getMember();
+        if (!member.beats && this.beats) {
+          this.alertBeats();
+          return;
+        }
+        if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
+          this.setPlayer(isrel, videoData);
+        } else if (this.beats && member.beats) {
+          this.setPlayer(isrel, videoData);
+        } else if (this.beats && !member.beats) {
+          this.alertBeats();
+          return;
+        } else {
+          if (this.beats) {
+            this.alertBeats();
+            return;
+          }
+          bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+        }
+      } else {
+        if (this.beats) {
+          this.alertBeats();
+          return;
+        } 
+        bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
   }
 
-  setPlayer(isrel: boolean, videoData: any) {
-    if (!isrel) {
-      this.videohls = 'https://player.vimeo.com/external/' + this.video.sourceId + '.m3u8?s=' + this.video.hls;
-      if (videojs.getPlayers()[`videoPlay`]) {
-        videojs(`videoPlay`).src({
-          src: 'https://player.vimeo.com/external/' + videoData.sourceId + '.m3u8?s=' + videoData.hls,
-          type: "application/x-mpegURL",
-        });
+  setPlayer(isrel: boolean, videoData: Video) {
+    if (this.video) {
+      this.distroyVideo();
+      const getVideoUrl = (video: Video) => {
+        if (video.hls && (video.hls.startsWith('http://') || video.hls.startsWith('https://') || video.hls.includes('.m3u8'))) {
+          return video.hls;
+        }
+        return 'https://player.vimeo.com/external/' + video.sourceId + '.m3u8?s=' + video.hls;
+      };
+      this.videohls = getVideoUrl(this.video);
+      // Remove any existing player instance
+      if (videojs.getPlayers()['videoPlay']) {
+        const oldPlayer = videojs.getPlayer('videoPlay');
+        if (oldPlayer) {
+          oldPlayer.dispose();
+        }
       }
-    } else {
-      this.videohls = 'https://player.vimeo.com/external/' + this.video.sourceId + '.m3u8?s=' + this.video.hls;
-      this.videohls='//vjs.zencdn.net/v/oceans.mp4'
-      console.log("videoData", videoData?.sourceId);
-      console.log("videoData", videoData?.hls);
+      // Always create a new player with autoplay true
       const options = {
         autoplay: true,
         poster: this.videoPoster,
@@ -204,48 +256,105 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         fluid: true,
         children: ['bigPlayButton', 'controlBar']
       };
-      videojs(`videoPlay`, options).src({
-        src: 'https://player.vimeo.com/external/' + videoData.sourceId + '.m3u8?s=' + videoData.hls,
-        type: "application/x-mpegURL"
+      const player = videojs('videoPlay', options);
+      player.src({
+        src: this.videohls,
+        type: 'application/x-mpegURL'
       });
+      player.ready(() => {
+        player.play();
+        this.setupPlayerEvents(player);
+      });
+      setTimeout(() => {
+        if (videojs('videoPlay').remainingTime && videojs('videoPlay').duration) {
+          console.log("REMAINING", videojs('videoPlay').remainingTime());
+          console.log("DURATION", videojs('videoPlay').duration());
+        }
+        this.cdr.detectChanges();
+      }, 1000);
     }
-    setTimeout(() => {
-      console.log("REMAINING", videojs(`videoPlay`).remainingTime());
-      console.log("DURATION", videojs(`videoPlay`).duration());
-      this.cdr.detectChanges();
-    }, 1000);
   }
 
-  newPlayer() {
-    const player: any = videojs('videoPlay');
-    player.on('ready', () => {
-      player.play();
+  initializePlayer() {
+    const videoElement = document.getElementById('videoPlay');
+    if (!videoElement) {
+      console.error('Video element not found');
+      // Try again after a short delay
+      setTimeout(() => {
+        this.initializePlayer();
+      }, 500);
+      return;
+    }
+
+    // Don't dispose existing player here, just ensure it exists
+    if (!videojs.getPlayers()['videoPlay']) {
+      // Initialize new player only if it doesn't exist
+      const player = videojs('videoPlay', {
+        controls: true,
+        fluid: true,
+        responsive: true,
+        children: ['controlBar'], // Exclude big play button initially
+        playbackRates: [0.5, 1, 1.5, 2]
+      });
+
+      player.ready(() => {
+        console.log('Player is ready');
+        this.setupPlayerEvents(player);
+      });
+    } else {
+      console.log('Player already exists');
+      const existingPlayer = videojs.getPlayer('videoPlay');
+      if (existingPlayer) {
+        this.setupPlayerEvents(existingPlayer);
+      }
+    }
+  }
+
+  setupPlayerEvents(player: any) {
+    // Initially hide big play button
+    if (player.bigPlayButton) {
+      player.bigPlayButton.hide();
+    }
+    
+    player.on('loadedmetadata', () => {
+      // Show big play button only after video metadata is loaded
+      if (player.bigPlayButton && player.paused()) {
+        player.bigPlayButton.show();
+      }
     });
+    
     player.on('pause', () => {
-      player.bigPlayButton.show();
+      if (player.bigPlayButton) {
+        player.bigPlayButton.show();
+      }
       const pause = document.getElementsByClassName('vjs-icon-pause');
       if (pause && pause?.length > 0) {
         pause[0].className = 'vjs-play-control vjs-control vjs-button';
       }
     });
+    
     player.on('play', () => {
-      player.bigPlayButton.hide();
+      if (player.bigPlayButton) {
+        player.bigPlayButton.hide();
+      }
       const play = document.getElementsByClassName('vjs-play-control');
       if (play && play?.length > 0) {
         play[0].className = 'vjs-icon-pause vjs-control vjs-button';
       }
     });
+    
     player.on('playing', () => {
-      player.bigPlayButton.hide();
+      if (player.bigPlayButton) {
+        player.bigPlayButton.hide();
+      }
     });
-    player.on('loadedmetadata', () => {
-
-    });
+    
     player.on('timeupdate', () => {
       this.timeUpdate();
     });
-    player.on('loadeddata', () => {
-
+    
+    player.on('error', (e: any) => {
+      console.error('Video player error:', e);
     });
   }
 
@@ -293,21 +402,23 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     }
   }
 
-  showreldetails(item: Video, isrel: boolean) {
+  showreldetails(item: Video | null, isrel: boolean) {
     this.timeUpdate(0);
-    this.video = Object.assign({}, item);
-    this.videoId = item.videoId;
-    this.distryVideo();
-    setTimeout(() => {
-      this.selectedVideo(this.video, isrel);
-    }, 100);
+    if (item) {
+      this.video = Object.assign({}, item);
+      this.videoId = item.videoId;
+      this.distroyVideo();
+      setTimeout(() => {
+        this.selectedVideo(this.video, isrel);
+      }, 100);
 
-    this.relatedvideos = [];
-    this.videotitle = item.title;
-    this.loadComments(item.videoId);
-    this.loadBookmarks(item.videoId);
-    this.loadRelatedVideos();
-    $('#videoModal').scrollTop(0);
+      this.relatedvideos = [];
+      this.videotitle = item.title;
+      this.loadComments(item.videoId);
+      this.loadBookmarks(item.videoId);
+      this.loadRelatedVideos();
+      $('#videoModal').scrollTop(0);
+    }
   }
 
   showScreenshot(event: any, screenshot: string) {
@@ -352,76 +463,178 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.largescreen = !this.largescreen;
   }
 
-  loadRelatedVideos() {
-    // Sample related videos matching the UI
-    this.relatedvideos = [ ];
+  alertBeats() {
+    bootbox.alert('<h4>Get The Course</h4><br>' + 'To purchase the entire the Beat Making Course, please click the "GET THE COURSE" button. Thank you.');
+  }
 
-    this.apiService.getSectionData("relatedvideo").subscribe((data) => {
-      this.relatedvideos = data?.data;
-    }, (error) => {
-        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-    });
+  loadRelatedVideos() {
+    this.isLoadingRelated.set(true);
+    if (environment.ismock) {
+    // Sample related videos matching the UI
+      this.relatedvideos = [ ];
+
+      this.apiService.getSectionData("relatedvideo").subscribe((data) => {
+        this.relatedvideos = data?.data;
+        this.isLoadingRelated.set(false);
+      }, (error) => {
+          this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+          this.isLoadingRelated.set(false);
+      });
+    } else {
+      this.getrealtedvideos(this.video);
+    }
+  }
+
+  getrealtedvideos(data: any) {
+    console.log("getrealtedvideos", this.beats);
+    if (!this.beats) {
+      this.apiService.get('Videos?app=djjazzyjeff&sort=related&category=' + data.category + '&client=hls' + data.featuring).subscribe(data => {
+        try {
+          if (data) {
+            if (data._http != 200) {
+              this.relatedvideos = data.data;
+              console.log("getrealtedvideos", data.data);
+              this.isLoadingRelated.set(false);
+            }
+          }
+        } catch {
+        }
+      });
+    } else {
+      this.apiService.get('Videos?app=beats&sort=related&category=' + data.category + '&client=hls' + data.featuring).subscribe(data => {
+        try {
+          if (data) {
+            if (data._http != 200) {
+              this.relatedvideos = data.data;
+              console.log("getrealtedvideos", data.data);
+             this.isLoadingRelated.set(false);
+            }
+          }
+        } catch {
+        }
+      });
+    }
   }
 
   // Load comments for a video
   loadComments(videoId: number) {
-    // Sample comments data - replace with actual API call
-    this.commentlst = [
-      {
-        commentId: 1,
-        name: 'John Doe',
-        comment: 'Great video! Love the technique shown here.',
-        date: new Date().toISOString(),
-        image: 'https://picsum.photos/40/40?random=1',
-        memberId: 1,
-        userId: 0,
-        itemId: 0,
-        section: '',
-        like: 0
-      },
-      {
-        commentId: 2,
-        name: 'Jane Smith',
-        comment: 'This tutorial really helped me understand the basics.',
-        date: new Date(Date.now() - 86400000).toISOString(),
-        image: 'https://picsum.photos/40/40?random=1',
-        memberId: 2,
-        userId: 0,
-        itemId: 0,
-        section: '',
-        like: 0
+    this.isLoadingComments.set(true);
+    if (environment.ismock) {
+      // Use mock data
+      this.commentlst = [
+        {
+          commentId: 1,
+          name: 'John Doe',
+          comment: 'Great video! Love the technique shown here.',
+          date: new Date().toISOString(),
+          image: 'https://picsum.photos/40/40?random=1',
+          memberId: 1,
+          userId: 0,
+          itemId: 0,
+          section: '',
+          like: 0
+        },
+        {
+          commentId: 2,
+          name: 'Jane Smith',
+          comment: 'This tutorial really helped me understand the basics.',
+          date: new Date(Date.now() - 86400000).toISOString(),
+          image: 'https://picsum.photos/40/40?random=1',
+          memberId: 2,
+          userId: 0,
+          itemId: 0,
+          section: '',
+          like: 0
+        }
+      ];
+      this.isLoadingComments.set(false);
+    } else {
+      this.getcomment(videoId);
+    }
+  }
+
+  getcomment(videoId: number) {
+    this.isLoadingComments.set(true);
+    this.apiService.get('Comments/' + videoId + '?app=djjazzyjeff&category=videos&sort=date&dir=desc').subscribe(data => {
+      try {
+        if (data) {
+          this.commentobj.comment = '';
+          this.commentlst = data.data;
+        }
+      } catch {
       }
-    ];
+      this.isLoadingComments.set(false);
+    }, () => {
+      this.isLoadingComments.set(false);
+    });
   }
 
   // Load bookmarks for a video
   loadBookmarks(videoId: number) {
-    // Sample bookmarks data - replace with actual API call
-    this.bookmarklst = [];
+    if (environment.ismock) {
+      this.bookmarklst = [];
+      this.isLoadingBookmark.set(false);
 
-    this.apiService.getSectionData("bookmark").subscribe((data) => {
-      this.bookmarklst = data?.data;
-    }, (error) => {
-        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+      this.isLoadingBookmark.set(true);
+      this.bookmarklst = [];
+      this.apiService.getSectionData("bookmark").subscribe({
+        next: (data) => {
+          this.bookmarklst = data?.data;
+          this.isLoadingBookmark.set(false);
+        },
+        error: (error) => {
+          this.isLoadingBookmark.set(false);
+          this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+        }
+      });
+      return;
+    } else {
+        this.getbookmarks(videoId);
+    }
+  }
+  getbookmarks(videoId: number) {
+    if ((environment as any).ismocl) {
+      this.bookmarklst = [];
+      this.isLoadingBookmark.set(false);
+      return;
+    }
+    this.isLoadingBookmark.set(true);
+    this.apiService.get('Bookmarks/' + videoId + '?app=djjazzyjeff', false, false).subscribe({
+      next: data => {
+        try {
+          if (data) {
+            this.bookmarklst = data.data;
+          }
+        } catch {}
+        this.isLoadingBookmark.set(false);
+      },
+      error: () => {
+        this.isLoadingBookmark.set(false);
+      }
     });
   }
-
+  
   addupdatebookmark() {
-    this.bookmarkobj.time = this.getCurrentTime() || 0;
-    this.bookmarkobj.videoId = this.videoId;
-    const newBookmark: Bookmark = {
-      bookmarkId: Date.now(),
-      title: this.bookmarkobj.title,
-      time: this.bookmarkobj.time,
-      memberId: 1,
-      userId: 0,
-      videoId: 0,
-      featured: 0,
-      dateAdded: undefined
-    };
-    this.bookmarklst.push(newBookmark);
-    this.bookmarkobj = { title: '', time: 0, bookmarkId: 0, userId: 0, memberId: 0, videoId: 0, featured: 0, dateAdded: new Date() };
-    console.log('Bookmark added:', newBookmark);
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+        const member = this.token.getMember();
+        this.bookmarkobj.time = this.getCurrentTime();
+        this.bookmarkobj.memberId = member?.memberId;
+        this.bookmarkobj.videoId = this.videoId;
+        this.apiService.post('AddBookmark?app=djjazzyjeff', this.bookmarkobj, false, false).subscribe(data => {
+          try {
+            if (data) {
+              this.bookmarkobj = new Bookmark();
+              this.getbookmarks(this.videoId);
+              this.selectedVideo(this.video, false);
+            }
+          } catch {
+          }
+        });
+      } else {
+        bootbox.alert('<h4>VIP Member</h4><br>' + 'Sorry, the Bookmark feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
   }
 
   editbookmark(item: any) {
@@ -430,11 +643,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   deletebookmark() {
-    if (this.delbookmarkId) {
-      this.bookmarklst = this.bookmarklst.filter(item => item.bookmarkId !== this.delbookmarkId);
-      this.delbookmarkId = null;
-      console.log('Bookmark deleted');
-    }
+    this.apiService.delete('DeleteBookmark/' + this.delbookmarkId + '?app=djjazzyjeff').subscribe(data => {
+      try {
+        if (data) {
+          this.bookmarkobj = new Bookmark();
+          this.getbookmarks(this.videoId);
+          this.selectedVideo(this.video, false);
+        }
+      } catch {
+      }
+    });
   }
 
   addcomment() {
