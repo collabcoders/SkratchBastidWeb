@@ -28,6 +28,7 @@ declare var bootbox: any;
   encapsulation: ViewEncapsulation.None,
 })
 export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges, AfterViewChecked {
+    private isAlertOpen = false;
   isLoadingBookmark = signal(false);
   isLoadingRelated = signal(false);
   video: Video | null = null;
@@ -201,6 +202,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.videozoom = 'true';
     
     this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
+      // Close any open bootbox dialogs before opening a new one
+      if (typeof bootbox !== 'undefined' && $(".bootbox").length > 0) {
+        $(".bootbox").modal('hide');
+      }
       if (valid) {
         const member = this.token.getMember();
         if (!member.beats && this.beats) {
@@ -219,14 +224,24 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
             this.alertBeats();
             return;
           }
-          bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          if (!this.isAlertOpen && $(".bootbox").length === 0) {
+            this.isAlertOpen = true;
+            bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member subscribers only.  Please click the Upgrade button (link on the top-right) to get access.', () => {
+              this.isAlertOpen = false;
+            });
+          }
         }
       } else {
         if (this.beats) {
           this.alertBeats();
           return;
-        } 
-        bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        }
+        if (!this.isAlertOpen && $(".bootbox").length === 0) {
+          this.isAlertOpen = true;
+          bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.', () => {
+            this.isAlertOpen = false;
+          });
+        }
       }
     });
   }

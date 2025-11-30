@@ -1,3 +1,83 @@
+// GLOBAL BOOTBOX MODAL STYLE OVERRIDES
+.bootbox .modal-dialog {
+  max-width: 400px;
+  margin: 2rem auto;
+}
+
+.bootbox .modal-content {
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  border: none;
+  background: #fff;
+}
+
+.bootbox .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem 0.75rem 1.25rem;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.bootbox .modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+// Bootbox close button absolutely positioned top right
+.bootbox .close {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  transition: color 0.2s;
+  opacity: 1;
+  z-index: 2;
+}
+.bootbox .close:hover {
+  color: #d33;
+}
+
+.bootbox .modal-body {
+  padding: 1.2rem 1.25rem 1.25rem 1.25rem;
+  font-size: 1rem;
+  color: #444;
+  background: #fff;
+}
+
+.bootbox .modal-footer {
+  border-top: 1px solid #eee;
+  padding: 0.75rem 1.25rem;
+  background: #fafbfc;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bootbox .btn-primary, .bootbox .btn {
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.25rem;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: none;
+  transition: background 0.2s;
+}
+.bootbox .btn-primary:hover, .bootbox .btn:hover {
+  background: #d33;
+  color: #fff;
+}
 $primary: #212529;
 $body-bg: #060606;
 $secondary: #FB5343;
