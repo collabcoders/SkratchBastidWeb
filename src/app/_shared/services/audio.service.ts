@@ -1,6 +1,6 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { Music } from '@shared/models/music';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, take } from 'rxjs';
 import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { AppData } from 'src/app/app.data';
@@ -50,49 +50,56 @@ export class AudioService {
   equalizerData = signal<number[]>([0, 0, 0, 0, 0, 0, 0, 8]);
 
   playTrack(music: Music): void {
-    if (this.currentTrack()?.musicId === music.musicId) {
-      this.togglePlayPause();
-      return;
-    }
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
+      console.log("valid", valid, music)
+      if (valid) {
+        if (this.currentTrack()?.musicId === music.musicId) {
+          this.togglePlayPause();
+          return;
+        }
 
-    this.stopCurrentTrack();
-    this.currentTrack.set(music);
-    this.isLoading.set(true);
+        this.stopCurrentTrack();
+        this.currentTrack.set(music);
+        this.isLoading.set(true);
 
-    let url = music.file;
-    if (url.toLocaleLowerCase().indexOf('http') === -1) {
-      url = Config.content + music.file;
-    }
-    let fileName = music.file.substring(music.file.lastIndexOf('/') + 1);
-    let pos = fileName.lastIndexOf(".");
-    fileName = fileName.substr(0, pos < 0 ? fileName.length : pos) + ".txt";
-      this.api.getText(fileName).subscribe((data) => {
-        console.log("Got text file", data);
+        let url = music.file;
+        if (url.toLocaleLowerCase().indexOf('http') === -1) {
+          url = Config.content + music.file;
+        }
+        let fileName = music.file.substring(music.file.lastIndexOf('/') + 1);
+        let pos = fileName.lastIndexOf(".");
+        fileName = fileName.substr(0, pos < 0 ? fileName.length : pos) + ".txt";
+          this.api.getText(fileName).subscribe((data) => {
+            console.log("Got text file", data);
+          }
+        );
+          
+        console.log("url", url);
+        this.audio = new Audio(url);
+        setTimeout(() => {
+          if (this.audio) {
+            this.audio.volume = this.volume(); // Ensure volume is set
+            this.audio.muted = false; // Explicitly unmute
+            console.log('Audio volume:', this.audio.volume, 'Muted:', this.audio.muted);
+          }
+        }, 500);
+
+        this.audio.addEventListener('loadedmetadata', () => {
+          this.audio!.volume = this.volume();
+          this.audio!.muted = false;
+
+          this.audio!.play().then(() => {
+            this.isPlaying.set(true);
+            this.isLoading.set(false);
+          }).catch(err => {
+            console.log("Autoplay blocked:", err);
+          });
+        });
+        this.setupAudioListeners();
+      } else {
+            bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
-    );
-      
-    console.log("url", url);
-    this.audio = new Audio(url);
-    setTimeout(() => {
-      if (this.audio) {
-        this.audio.volume = this.volume(); // Ensure volume is set
-        this.audio.muted = false; // Explicitly unmute
-        console.log('Audio volume:', this.audio.volume, 'Muted:', this.audio.muted);
-      }
-    }, 500);
-
-    this.audio.addEventListener('loadedmetadata', () => {
-      this.audio!.volume = this.volume();
-      this.audio!.muted = false;
-
-      this.audio!.play().then(() => {
-        this.isPlaying.set(true);
-        this.isLoading.set(false);
-      }).catch(err => {
-        console.log("Autoplay blocked:", err);
-      });
     });
-    this.setupAudioListeners();
   }
 
   togglePlayPause(): void {
@@ -209,21 +216,28 @@ export class AudioService {
   }
 
   showPlayerURL(music: Music) {
-    console.log("showPlayer", this.isLoggedIn$);
-      if (music.featured > 0) { 
-        this.subject.next(music);
-        this.loadMusic(music);
-      } else if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
-        this.subject.next(music);
-        this.loadMusic(music);
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
+      console.log("valid", valid, music)
+        if (valid) {
+      console.log("showPlayer", this.isLoggedIn$);
+        if (music.featured > 0) { 
+          this.subject.next(music);
+          this.loadMusic(music);
+        } else if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
+          this.subject.next(music);
+          this.loadMusic(music);
+        } else {
+          bootbox.alert('<h4>Member VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Member VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+        }
       } else {
-        bootbox.alert('<h4>Member VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Member VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
+    });
   }
 
   showPlayer(music: Music) {
     console.log("showPlayer", this.isLoggedIn$);
-    this.isLoggedIn$.subscribe(valid => {
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
       console.log("valid", valid, music)
       if (valid) {
         if (music.featured > 0) { 

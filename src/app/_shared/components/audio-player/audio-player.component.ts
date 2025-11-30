@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Music } from '@shared/models/music';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { tap, throttleTime } from 'rxjs/operators';
+import { take, tap, throttleTime } from 'rxjs/operators';
 import { Config } from '@shared/config';
 import { ApiService } from '@shared/services/api.service';
 import { UtilitiesService } from '@shared/services/utilities.service';
@@ -419,13 +419,13 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
 
   openShare(music: Music) {
     console.log("openShare");
-    // this.isLoggedIn$.subscribe(valid => {
-    //   if (valid) {
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
+      if (valid) {
         this.appData.shareURL = `https://magmob.skratchbastid.com/DJ?id=${music.musicId}&app=skratchbastid`;
         $('#urlShareSocialMediaModal').modal('show');
-    //   } else {
-    //     bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Share feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
-    //   }
-    // });
+      } else {
+        bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Share feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
   }
 }

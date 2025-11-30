@@ -1,7 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subscription, Observable } from 'rxjs';
+import { Subscription, Observable, take } from 'rxjs';
 import videojs from 'video.js';
 import 'videojs-contrib-quality-levels';
 // @ts-ignore
@@ -200,7 +200,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.classone = 'v-small';
     this.videozoom = 'true';
     
-    this.isLoggedIn$.subscribe(valid => {
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
       if (valid) {
         const member = this.token.getMember();
         if (!member.beats && this.beats) {

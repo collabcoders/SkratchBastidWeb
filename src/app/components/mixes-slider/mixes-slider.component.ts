@@ -4,7 +4,7 @@ import { ImagePipe } from '@shared/pipes/image.pipe';
 import { Music } from '@shared/models/music';
 import { AudioService } from '@shared/services/audio.service';
 import { AppData } from 'src/app/app.data';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
 
 export interface Mix {
@@ -54,7 +54,7 @@ export class MixesSliderComponent {
 
   initMusic(i: Music) {
     console.log("initMusic", i);
-    this.isLoggedIn$.subscribe(valid => {
+    this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
       if (valid) {
       this.appData.previewMusicId.set(i.musicId);
         this.audioService.showPlayer(i);
