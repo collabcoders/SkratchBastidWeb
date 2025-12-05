@@ -33,6 +33,10 @@ import { HeaderComponent } from './components/header/header.component';
 import { FormsComponent } from './forms/forms.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '@env/environment';
+import { FavoritesModalComponent } from '@shared/components/favorites-modal/favorites-modal.component';
+import { VipLoginDialogComponent } from '@shared/components/vip-login-dialog/vip-login-dialog.component';
+import { BastidBBQDetailComponent } from './views/bastidbbq-detail/bastidbbq-detail.component';
+import { RotwDetailComponent } from './views/rotw-detail/rotw-detail.component';
 // import { VideosComponent as v } from './views/videos/videos.component';
 // import { HomeComponent as h } from './views/home/home.component';
 
@@ -69,6 +73,10 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
     VideoPipe,
     VideoPlayerComponent,
     FormsComponent,
+    FavoritesModalComponent,
+    VipLoginDialogComponent,
+    BastidBBQDetailComponent,
+    RotwDetailComponent,
     NgxStripeModule.forRoot(environment.stripeKey)
   ],
   providers: [

@@ -3,3 +3,15 @@
 
 <app-alert></app-alert>
 <app-forms></app-forms>
+
+<!-- VIP Login Dialog -->
+<app-vip-login-dialog
+  [isVisible]="showVipDialog"
+  (closeDialog)="onCloseVipDialog()">
+</app-vip-login-dialog>
+
+<!-- Favorites Modal -->
+<app-favorites-modal
+  [isVisible]="showFavoritesModal"
+  (closeModal)="onCloseFavoritesModal()">
+</app-favorites-modal>

@@ -12,6 +12,7 @@ import { Video } from '@shared/models/video';
 import { Music } from '@shared/models/music';
 import { NavigateService } from '@shared/services/navigate.service';
 import { AppData } from 'src/app/app.data';
+import { VideoAccessService } from '@shared/services/video-access.service';
 
 interface VideoItem {
   src: string;
@@ -42,7 +43,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   isLoggedIn$!: Observable<boolean>;
 
-  constructor(private token: TokenService, private appData: AppData, private nav: NavigateService, private util: UtilitiesService, private videoService: VideoService, private audioService: AudioService, private api: ApiService) {
+  constructor(private token: TokenService, private appData: AppData, private nav: NavigateService, private util: UtilitiesService, private videoService: VideoService, private audioService: AudioService, private api: ApiService, private videoAccessService: VideoAccessService) {
 
   }
 
@@ -153,7 +154,13 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
           if (valid) {
             window.location.href = page;
           } else {
-            bootbox.alert('<h4>SkratchBashID</h4><br>' + 'Sorry, VIP access and streaming is reserved for SkratchBashID members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+            const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+            if (!hasAccess) {
+              // Dialog will be shown automatically by the service
+              return;
+            }
+            // bootbox.alert('<h4>SkratchBashID</h4><br>' + 'Sorry, VIP access and streaming is reserved for SkratchBashID members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
           }
         } else {
           window.location.href = page;

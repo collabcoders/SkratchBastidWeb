@@ -15,6 +15,8 @@ import { AlertService } from '@shared/services/alert.service';
 import { TokenService } from '@shared/services/token.service';
 import { Config } from '@shared/config';
 import { environment } from '@env/environment';
+import { VideoAccessService } from '@shared/services/video-access.service';
+import { FavoriteId } from '@shared/models/favorite-id';
 
 declare var $: any;
 declare var bootbox: any;
@@ -80,6 +82,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   constructor(private apiService: ApiService, private alertService: AlertService,
     public videoService: VideoService,
     private token: TokenService,
+    private videoAccessService: VideoAccessService,
     private cdr: ChangeDetectorRef) {
       this.distroyVideo = this.distroyVideo.bind(this);
   }
@@ -99,6 +102,15 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       console.log("CLOSE a VIDEO");
       this.distroyVideo();
       this.isClose.next(this.video);
+    });
+
+    // When any Bootbox modal is closed, also close the video modal
+    $(document).on('hidden.bs.modal', function(e: any) {
+      if ($(e.target).hasClass('bootbox')) {
+        if ($('#videoModal').hasClass('show')) {
+          $('#videoModal').modal('hide');
+        }
+      }
     });
 
     this.videoService.subject.subscribe((i: any) => {
@@ -225,10 +237,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
             return;
           }
           if (!this.isAlertOpen && $(".bootbox").length === 0) {
-            this.isAlertOpen = true;
-            bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member subscribers only.  Please click the Upgrade button (link on the top-right) to get access.', () => {
-              this.isAlertOpen = false;
-            });
+            const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+            if (!hasAccess) {
+              // Dialog will be shown automatically by the service
+              return;
+            }
+            // this.isAlertOpen = true;
+            // bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member subscribers only.  Please click the Upgrade button (link on the top-right) to get access.', () => {
+            //   this.isAlertOpen = false;
+            // });
           }
         }
       } else {
@@ -237,10 +255,17 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           return;
         }
         if (!this.isAlertOpen && $(".bootbox").length === 0) {
-          this.isAlertOpen = true;
-          bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.', () => {
-            this.isAlertOpen = false;
-          });
+          // this.isAlertOpen = true;
+          // bootbox.alert('<h4>VIP Member Only</h4><br>' + 'Sorry, access to MHP episodes are reserved for VIP Member members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.', () => {
+          //   this.isAlertOpen = false;
+          // });
+
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
         }
       }
     });
@@ -479,7 +504,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   alertBeats() {
-    bootbox.alert('<h4>Get The Course</h4><br>' + 'To purchase the entire the Beat Making Course, please click the "GET THE COURSE" button. Thank you.');
+    const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+    if (!hasAccess) {
+      // Dialog will be shown automatically by the service
+      return;
+    }
+    // bootbox.alert('<h4>Get The Course</h4><br>' + 'To purchase the entire the Beat Making Course, please click the "GET THE COURSE" button. Thank you.');
   }
 
   loadRelatedVideos() {
@@ -647,7 +678,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           }
         });
       } else {
-        bootbox.alert('<h4>VIP Member</h4><br>' + 'Sorry, the Bookmark feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>VIP Member</h4><br>' + 'Sorry, the Bookmark feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }
@@ -755,5 +792,60 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     const x = minutes < 10 ? "0" + minutes : minutes;
     const y = seconds < 10 ? "0" + seconds : seconds;
     return x + ":" + y;
+  }
+
+  processingFav = false;
+  fav(event: any, video: Video, itemId: number) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    console.log("FAV", itemId, event);
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+        if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
+          const fav = {
+            favId: video.favId,
+            itemId: itemId,
+            section: 'video'
+          } as FavoriteId;
+          if (!this.processingFav) {
+            this.processingFav = true;
+            this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+              .subscribe(data => {
+                if (data.error) {
+                  this.alertService.error('Error', data.msg, this.alertOptions);
+                } else {
+                  console.log(data.id);
+                  if (data.id > 0) {
+                    video.favId = data.id;
+                    this.alertService.success('Added', data.msg, this.alertOptions);
+                  } else {
+                    video.favId = 0;
+                    this.alertService.info('Removed', data.msg, this.alertOptions);
+                  }
+                }
+                setTimeout(() => {
+                  this.processingFav = false;
+                }, 1000);
+              });
+          }
+        } else {
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+        }
+      } else {
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
   }
 }

@@ -1,7 +1,14 @@
-import { Component, input, ElementRef, ViewChild, inject, Signal, Input } from '@angular/core';
+import { ApiService } from '@shared/services/api.service';
+import { Component, input, ElementRef, ViewChild, inject, Signal, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
 import { Video } from '@shared/models/video';
+import { VideoAccessService } from '@shared/services/video-access.service';
+import { TokenService } from '@shared/services/token.service';
+import { Observable } from 'rxjs';
+import { FavoriteId } from '@shared/models/favorite-id';
+import { Config } from '@shared/config';
+import { AlertService } from '@shared/services/alert.service';
 // import { VideoService } from '../../services/video.service';
 // import { Video } from '../../models/video.model';
 
@@ -41,13 +48,31 @@ export interface VideoSection {
   templateUrl: './video-carousel.component.html',
   styleUrl: './video-carousel.component.scss',
 })
-export class VideoCarouselComponent {
+export class VideoCarouselComponent implements OnInit {
   section = input.required<VideoSection>();
   private videoService = inject(VideoService);
   @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
 
+  processingFav = false;
+  alertOptions = {
+    autoClose: true,
+    keepAfterRouteChange: false
+  };
+  isLoggedIn$!: Observable<boolean>;
+  constructor(private videoAccessService: VideoAccessService, 
+    private token: TokenService,
+    private apiService: ApiService,
+    private alertService: AlertService,) {
+
+  }
+
+  ngOnInit() {
+    this.isLoggedIn$ = this.token.isValid(undefined);
+    
+  }
+  
   scrollLeft() {
     const container = this.carousel.nativeElement;
     const scrollAmount = container.clientWidth * 0.8;
@@ -61,6 +86,13 @@ export class VideoCarouselComponent {
   }
 
   playVideo(video: Video) {
+    const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+    if (!hasAccess) {
+      // Dialog will be shown automatically by the service
+      return;
+    }
+
     // Convert VideoMix to Video format
     const videoData: Video = video;
 
@@ -124,5 +156,59 @@ export class VideoCarouselComponent {
   showScreenshot(event: any, screenshot: string) {
     const target = event.target || event.srcElement || event.currentTarget;
     target.src = screenshot;
+  }
+
+  fav(event: any, video: Video, itemId: number) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    console.log("FAV", itemId, event);
+    this.isLoggedIn$.subscribe(valid => {
+      if (valid) {
+        if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
+          const fav = {
+            favId: video.favId,
+            itemId: itemId,
+            section: 'video'
+          } as FavoriteId;
+          if (!this.processingFav) {
+            this.processingFav = true;
+            this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+              .subscribe(data => {
+                if (data.error) {
+                  this.alertService.error('Error', data.msg, this.alertOptions);
+                } else {
+                  console.log(data.id);
+                  if (data.id > 0) {
+                    video.favId = data.id;
+                    this.alertService.success('Added', data.msg, this.alertOptions);
+                  } else {
+                    video.favId = 0;
+                    this.alertService.info('Removed', data.msg, this.alertOptions);
+                  }
+                }
+                setTimeout(() => {
+                  this.processingFav = false;
+                }, 1000);
+              });
+          }
+        } else {
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+        }
+      } else {
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+      }
+    });
   }
 }

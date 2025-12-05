@@ -13,6 +13,7 @@ import { WaveService } from '@shared/angular-wavesurfer-service-global';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppData } from 'src/app/app.data';
 import { Location } from '@angular/common';
+import { VideoAccessService } from '@shared/services/video-access.service';
 
 
 @Component({
@@ -62,7 +63,8 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
     public token: TokenService,
     public audioService: AudioService,
     private location: Location,
-    public alertService: AlertService
+    public alertService: AlertService,
+    private videoAccessService: VideoAccessService,
   ) { }
     
   ngOnInit(): void {
@@ -371,10 +373,22 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
               });
           }
         } else { 
-          bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership VIP subscribers only. Please click the Upgrade button (link on the top-right) to get access.');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership VIP subscribers only. Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
-        bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
 
@@ -424,7 +438,13 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
         this.appData.shareURL = `https://magmob.skratchbastid.com/DJ?id=${music.musicId}&app=skratchbastid`;
         $('#urlShareSocialMediaModal').modal('show');
       } else {
-        bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Share feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, the Share feature is reserved for Membership members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }

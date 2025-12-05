@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { AppData } from 'src/app/app.data';
 import { Config } from '@shared/config';
+import { VideoAccessService } from './video-access.service';
 
 // export interface AudioTrack {
 //   id: string;
@@ -97,7 +98,13 @@ export class AudioService {
         });
         this.setupAudioListeners();
       } else {
-            bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }
@@ -191,6 +198,7 @@ export class AudioService {
   constructor(private api: ApiService,
     private token: TokenService,
     private appData: AppData,
+    private videoAccessService: VideoAccessService,
     ) {
       this.onLoad();
       this.startEqualizerAnimation();
@@ -227,10 +235,22 @@ export class AudioService {
           this.subject.next(music);
           this.loadMusic(music);
         } else {
-          bootbox.alert('<h4>Member VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Member VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Member VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Member VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
-          bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }
@@ -253,13 +273,31 @@ export class AudioService {
           this.subject.next(music);
           this.loadMusic(music);
         } else {
-          bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Membership VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Membership VIP Only</h4><br>' + 'Sorry, access to and streaming is reserved for Membership VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
         if (music.featured > 0) { 
-          bootbox.alert('<h4>Stream Now</h4><br>' + 'To enjoy this mix, please sign-in or sign-up for free!');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Stream Now</h4><br>' + 'To enjoy this mix, please sign-in or sign-up for free!');
         } else {
-          bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, VIP access and streaming is reserved for Membership only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
         }
       }
     });

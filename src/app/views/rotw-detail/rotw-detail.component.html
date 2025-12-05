@@ -1,0 +1,160 @@
+<div class="min-h-screen">
+  <app-header />
+
+  <div class="mt-[58px]">
+    @if (loading) {
+      <div class="flex justify-center items-center min-h-[50vh]">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    } @else if (error) {
+      <div class="flex justify-center items-center min-h-[50vh]">
+        <div class="text-red-500 text-xl">{{ error }}</div>
+      </div>
+    } @else if (rotwDetail) {
+      <div class="bg-white">
+   
+
+        <div class="w-full md:px-8">
+          <div class="flex flex-col lg:flex-row h-full justify-center max-w-[1200px] m-auto lg:gap-16">
+
+            <!-- Left Section - Album Art and Details -->
+            <div class="flex flex-col lg:w-1/3 p-6 items-center justify-center relative">
+
+              <!-- Left Navigation Arrow -->
+              <!-- @if (hasPrevious()) {
+                <button (click)="navigateToPrevious()"
+                        class="absolute left-5 top-1/2 transform -translate-y-1/2 text-3xl text-blue-400 z-10 hover:text-blue-600 transition-colors duration-200">
+                  <div class="rounded-full border-0 border-blue-400 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="m14 18l-6-6l6-6l1.4 1.4l-4.6 4.6l4.6 4.6z"></path>
+                    </svg>
+                  </div>
+                </button>
+              } -->
+
+              <!-- Right Navigation Arrow -->
+              <!-- @if (hasNext()) {
+                <button (click)="navigateToNext()"
+                        class="absolute right-5 top-1/2 transform -translate-y-1/2 text-3xl text-blue-400 z-10 hover:text-blue-600 transition-colors duration-200">
+                  <div class="rounded-full border-0 border-blue-400 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 24 24">
+                      <path fill="currentColor" d="M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z"></path>
+                    </svg>
+                  </div>
+                </button>
+              } -->
+
+              <!-- Logo Image -->
+              <!-- @if (rotwDetail.logoImage) { -->
+                <img src="https://imagedelivery.net/pBWn_5oX0Np5kM_4V8gAww/ca8fd383-4e18-4141-555c-221ae8853d00/w=500"
+                     alt="Record Label Logo"
+                     class="w-1/3 lg:w-2/3 mb-4 m-auto">
+              <!-- } -->
+
+              <!-- Album Art -->
+              <img [src]="rotwDetail.image"
+                   [alt]="rotwDetail.title"
+                   id="album-art"
+                   class="m-auto w-2/3 max-w-[250px] aspect-square rounded shadow-xl">
+
+              <!-- Track Details -->
+              <div class="flex flex-col items-center justify-center text-center my-4">
+                <h1 class="font-semibold text-xl lg:text-2xl">{{ rotwDetail.title }}</h1>
+                <p class="text-sm lg:text-base">{{ rotwDetail.featured }}</p>
+
+                <!-- <div class="text-xs flex gap-3 mt-4">
+                  @if (rotwDetail) {
+                    <span class="text-gray-600">{{ rotwDetail.releaseDate }}</span>
+                  }
+                  @if (rotwDetail.label) {
+                    <span class="text-gray-600">{{ rotwDetail.label }}</span>
+                  }
+                  @if (rotwDetail.genre) {
+                    <span class="text-gray-600">{{ rotwDetail.genre }}</span>
+                  }
+                </div> -->
+              </div>
+            </div>
+
+            <!-- Right Section - Video and Newsletter -->
+            <div class="aspect-video w-full flex flex-col-reverse justify-center lg:w-2/3 lg:flex-col">
+
+              <!-- Newsletter Subscription -->
+              <a href="/newsletter"
+                 class="mx-3 md:mx-0 bg-[#FF5941] rounded-lg p-2 lg:p-4 text-white text-sm lg:text-base text-center my-3 lg:max-w-[1200px] lg:leading-none hover:bg-[#A6192B] transition-colors duration-200">
+                <span class="font-bold block flex items-center justify-center">
+                  SUBSCRIBE
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                       aria-hidden="true" role="img" class="icon" width="22px" height="22px"
+                       viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                          d="M12.6 12L8.7 8.1q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.6 4.6q.15.15.213.325t.062.375t-.062.375t-.213.325l-4.6 4.6q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7z">
+                    </path>
+                  </svg>
+                </span>
+                <span class="text-xs">Get the ROTW in your inbox every week!</span>
+              </a>
+
+              <!-- Video Player -->
+              <div class="md:rounded-lg overflow-hidden shadow-2xl">
+                <div class="relative" style="padding-bottom: 56.25%; height: 0;">
+                  <iframe
+                    src="https://www.youtube.com/embed/NUZrfg4woGM"
+                    title="Bastid's Record of the Week"
+                    class="absolute top-0 left-0 w-full h-full"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                  </iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Free Trial Form Section -->
+        <div class="bg-white relative overflow-hidden py-8 px-6 max-w-md mx-auto">
+          <div class="relative z-10 text-center mb-8">
+            <h1 class="text-3xl font-bold uppercase mb-2">Try it for free</h1>
+            <p class="text-gray-600 text-base mb-6 mx-auto max-w-xs">
+              Wanna have a taste of the Top Grillin' Experience? Sign up for a free trial (no card info required).
+              <a href="#" class="underline">Privacy Policy</a>. By clicking above, you agree we may process your info per these terms.
+            </p>
+          </div>
+
+          <form class="hive-signup-form" novalidate>
+            <input type="hidden" value="9308">
+
+            <label for="rotw-email">Email</label>
+            <input id="rotw-email" name="email" type="email" placeholder="Enter an email..." autocomplete="email" required>
+
+            <label for="rotw-firstName">First Name</label>
+            <input id="rotw-firstName" name="fname" type="text" placeholder="Enter a first name..." autocomplete="given-name">
+
+            <label for="rotw-lastName">Last Name</label>
+            <input id="rotw-lastName" name="lname" type="text" placeholder="Enter a last name..." autocomplete="family-name">
+
+            <label for="rotw-phoneNumber">Phone Number</label>
+            <input id="rotw-phoneNumber" name="phone" type="tel" placeholder="Enter a phone number..." autocomplete="tel">
+
+            <input type="hidden" value="Signup Form - ROTW">
+            <input type="hidden" value="VIP Free Trial">
+
+            <div style="position:absolute;left:-5000px;" aria-hidden="true">
+              <input type="text" tabindex="-1" value="">
+            </div>
+
+            <button type="submit" class="mt-4">Start your free trial</button>
+          </form>
+        </div>
+
+        <!-- Bottom Image -->
+        <div class="bg-white relative">
+          <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover">
+        </div>
+      </div>
+    }
+  </div>
+
+  <app-footer />
+</div>

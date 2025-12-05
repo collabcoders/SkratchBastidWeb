@@ -1,0 +1,86 @@
+/* Backdrop animation */
+.fixed.inset-0 {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal content animation */
+.bg-white.rounded-2xl {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button hover effects */
+button {
+  transition: all 0.2s ease;
+}
+
+/* VIP Icon styling */
+.bg-blue-100 {
+  background-color: #dbeafe;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+/* Custom button styling to match design */
+.bg-gray-100:hover {
+  background-color: #f3f4f6;
+}
+
+.bg-blue-600 {
+  background-color: #2563eb;
+}
+
+.bg-blue-600:hover {
+  background-color: #1d4ed8;
+}
+
+/* Close button styling */
+.absolute.top-4.right-4 {
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+.absolute.top-4.right-4:hover {
+  background-color: #f3f4f6;
+}
+
+/* Modal shadow */
+.shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .max-w-md {
+    max-width: calc(100vw - 2rem);
+  }
+
+  .flex-col.sm\\:flex-row {
+    flex-direction: column;
+  }
+
+  .p-8 {
+    padding: 1.5rem;
+  }
+}

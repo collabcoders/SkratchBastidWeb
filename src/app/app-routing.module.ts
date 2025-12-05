@@ -12,6 +12,8 @@ import { HomeComponent } from './views/home/home.component';
 import { PaymentSuccessComponent } from './views/topgrillin/payment-success/payment-success.component';
 import { ProfileComponent } from './views/profile/profile.component';
 import { NewsletterComponent } from './views/newsletter/newsletter.component';
+import { RotwDetailComponent } from './views/rotw-detail/rotw-detail.component';
+import { BastidBBQDetailComponent } from './views/bastidbbq-detail/bastidbbq-detail.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -32,6 +34,8 @@ const routes: Routes = [
   { path: 'newsletter', component: NewsletterComponent },
   { path: 'profile', component: ProfileComponent },
   { path: 'topgrillin/payment-success', component: PaymentSuccessComponent },
+  { path: 'bbq-recaps/:id', component: BastidBBQDetailComponent},
+  { path: 'rotw/:id', component: RotwDetailComponent},
 ];
 
 @NgModule({

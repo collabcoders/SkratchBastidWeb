@@ -4,6 +4,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
 import { AlertService } from '@shared/services/alert.service';
+import { FavoritesService } from '@shared/services/favorites.service';
 
 interface NavLink {
   label: string;
@@ -49,8 +50,13 @@ export class HeaderComponent implements OnDestroy, OnInit {
     }
   }
 
-  constructor(private token: TokenService, private alertService: AlertService) {
+  constructor(private token: TokenService, private alertService: AlertService, 
+      private favoritesService: FavoritesService) {
 
+  }
+
+  showFavorites() {
+    this.favoritesService.showModal();
   }
 
   logout() {

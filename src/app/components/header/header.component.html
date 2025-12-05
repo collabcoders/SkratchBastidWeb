@@ -58,7 +58,16 @@
         </div>
       </div>
     } @else {
-      <div class="hidden lg:flex items-center relative">
+      <div class="hidden lg:flex items-center relative gap-6">
+        <button
+          (click)="showFavorites()"
+          class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none transition-colors duration-200"
+          title="Favorites">
+          <svg class="w-5 h-5 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+          </svg>
+        </button>
+
         <button class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 focus:outline-none" (click)="toggleAccountMenu()">
           <span class="material-icons text-3xl text-gray-700">account_circle</span>
         </button>
@@ -112,6 +121,7 @@
         }
       }
     } @else {
+
       <div class="flex flex-col gap-2 mt-2">
         <a href="https://wp.skratchbastid.com/account/" target="_blank" rel="noopener" class="block py-2 font-bold">My Account</a>
         <a [routerLink]="['/profile']" (click)="closeMobileMenu()" class="block py-2 font-bold">My Profile</a>

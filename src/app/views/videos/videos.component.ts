@@ -27,6 +27,8 @@ import { Video } from '@shared/models/video';
 import { AppData } from 'src/app/app.data';
 import { Category } from '@shared/models/category';
 import { VideoService } from '@shared/services/video.service';
+import { mappingFavorites, VideoAccessService } from '@shared/services/video-access.service';
+import { FavoritesService } from '@shared/services/favorites.service';
 
 @Component({
   imports: [
@@ -94,7 +96,7 @@ export class VideosComponent implements OnInit {
   isLoadingCategory: WritableSignal<boolean> = signal(false);
   isLoadingRecap: WritableSignal<boolean> = signal(false);
 
-  constructor(private apiService: ApiService, public appData: AppData, private videoService: VideoService) {}
+  constructor(private apiService: ApiService, private favoritesService: FavoritesService, private videoAccessService: VideoAccessService, public appData: AppData, private videoService: VideoService) {}
 
   ngOnInit(): void {
       if (environment.ismock) {
@@ -150,6 +152,7 @@ export class VideosComponent implements OnInit {
         
         this.isLoadingVideo.set(true);
         this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
           this.topGrillinSection.data = data?.data || [];
           this.tuesdayMorningCoffeeSection.data = data?.data || [];
           this.topGrillinVideos = data?.data || [];
@@ -161,6 +164,7 @@ export class VideosComponent implements OnInit {
         
         this.isLoadingRecap.set(true);
         this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
           this.bbqRecaps = data?.data || [];
           this.rotwRecords = data?.data || [];
           this.simpleBBQSection.data = data?.data || [];
@@ -273,6 +277,13 @@ export class VideosComponent implements OnInit {
   }
 
   playVideo(video: Video) {
+    const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+    if (!hasAccess) {
+      // Dialog will be shown automatically by the service
+      return;
+    }
+
     // Convert VideoMix to Video format
     const videoData: Video= {
       videoId: video.videoId || 0,

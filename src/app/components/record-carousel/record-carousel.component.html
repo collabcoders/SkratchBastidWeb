@@ -55,25 +55,36 @@
             style="flex-shrink: 0; scroll-snap-align: start">
             <div class="relative overflow-hidden rounded-lg">
               @if (record.source == 'youtube') {
-                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                <a [routerLink]="'/rotw/' + record.videoId" class="block rounded-lg drop-shadow-lg aspect-video w-full h-full overflow-hidden">
+                <img [routerLink]="'/rotw/' + record.videoId" class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
                   [src]="'//img.youtube.com/vi/' + record.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + record.videoId"
                   (load)="checkImage($event, record)" [attr.alt]="record.title" />
+                <!-- <div class="absolute inset-0 flex items-center justify-center">
+                  <a [href]="record.audio1" class="hover:opacity-75 transition-opacity duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                    </svg>
+                  </a>
+                </div> -->
+                </a>
               } @else if (record.source == 'vimeo') {
-                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                <a [routerLink]="'/rotw/' + record.videoId" class="block rounded-lg drop-shadow-lg aspect-video w-full h-full overflow-hidden">
+                <img [routerLink]="'/rotw/' + record.videoId" class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
                   [src]="record.screenshot" [attr.id]="'img_' + record.videoId"
                   (error)="errorImage($event, record)" (load)="checkImage($event, record)"
                   [attr.alt]="record.title" />
+                </a>
+                <!-- <div class="absolute inset-0 flex items-center justify-center">
+                  <a [href]="record.audio1" class="hover:opacity-75 transition-opacity duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                    </svg>
+                  </a>
+                </div> -->
               } @else {
-                <img [src]="record.image" [alt]="record.title" loading="lazy"
+                <img [src]="record.image" [alt]="record.title" loading="lazy" [routerLink]="'rotw/' + record.videoId"
                   class="rounded-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" />
               }
-              <div class="absolute inset-0 flex items-center justify-center">
-                <a [href]="record.audio1" class="hover:opacity-75 transition-opacity duration-200">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
-                  </svg>
-                </a>
-              </div>
             </div>
             <div class="font-semibold mt-2 truncate text-[14px]">{{ record.title }}</div>
           </div>

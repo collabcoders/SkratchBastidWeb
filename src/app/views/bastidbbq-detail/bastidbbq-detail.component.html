@@ -1,0 +1,146 @@
+<div class="min-h-screen bg-white ">
+  <app-header />
+
+  <div class="mt-[58px] pt-[50px]">
+    @if (loading) {
+      <div class="flex justify-center items-center min-h-[50vh]">
+        <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+      </div>
+    } @else if (error) {
+      <div class="flex justify-center items-center min-h-[50vh]">
+        <div class="text-red-500 text-xl">{{ error }}</div>
+      </div>
+    } @else if (recapDetail) {
+      <div class="w-full px-3 md:px-8 lg:px-[7.5rem] lg:max-w-[1440px] m-auto">
+        <!-- Back Button -->
+        <div class="flex justify-start absolute z-50 ml-5 mt-2 lg:mt-3">
+          <button (click)="goBack()" class="text-white text-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                 aria-hidden="true" role="img" class="icon text-white" width="20px" height="20px"
+                 viewBox="0 0 20 20">
+              <path fill="currentColor"
+                    d="m3.828 9l6.071-6.071l-1.414-1.414L0 10l.707.707l7.778 7.778l1.414-1.414L3.828 11H20V9z">
+              </path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Hero Section -->
+        <div class="hero mb-5">
+          <img [src]="recapDetail.banner"
+               [alt]="recapDetail.city + ' BBQ Event'"
+               class="lg:rounded-lg lg:mt-6 w-full h-48 md:h-64 lg:h-80 object-cover"
+               loading="lazy">
+
+          <div class="flex flex-col w-full md:w-1/2 gap-1 justify-center py-3">
+            <div class="text-xl font-bold uppercase">{{ recapDetail.city }}</div>
+
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                   aria-hidden="true" role="img" class="icon" width="1em" height="1em"
+                   viewBox="0 0 1024 1024">
+                <path fill="currentColor"
+                      d="M800 416a288 288 0 1 0-576 0c0 118.144 94.528 272.128 288 456.576C705.472 688.128 800 534.144 800 416M512 960C277.312 746.688 160 565.312 160 416a352 352 0 0 1 704 0c0 149.312-117.312 330.688-352 544">
+                </path>
+                <path fill="currentColor"
+                      d="M512 512a96 96 0 1 0 0-192a96 96 0 0 0 0 192m0 64a160 160 0 1 1 0-320a160 160 0 0 1 0 320">
+                </path>
+              </svg>
+              {{ recapDetail.venue }}
+            </div>
+
+            <div class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                   aria-hidden="true" role="img" class="icon" width="1em" height="1em"
+                   viewBox="0 0 16 16">
+                <path fill="currentColor"
+                      d="M14.5 16h-13C.67 16 0 15.33 0 14.5v-12C0 1.67.67 1 1.5 1h13c.83 0 1.5.67 1.5 1.5v12c0 .83-.67 1.5-1.5 1.5M1.5 2c-.28 0-.5.22-.5.5v12c0 .28.22.5.5.5h13c.28 0 .5-.22.5-.5v-12c0-.28-.22-.5-.5-.5z">
+                </path>
+                <path fill="currentColor"
+                      d="M4.5 4c-.28 0-.5-.22-.5-.5v-3c0-.28.22-.5.5-.5s.5.22.5.5v3c0 .28-.22.5-.5.5m7 0c-.28 0-.5-.22-.5-.5v-3c0-.28.22-.5.5-.5s.5.22.5.5v3c0 .28-.22.5-.5.5m4 2H.5C.22 6 0 5.78 0 5.5S.22 5 .5 5h15c.28 0 .5.22.5.5s-.22.5-.5.5">
+                </path>
+              </svg>
+              {{ recapDetail.date }}
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="flex w-full gap-3 text-sm my-3 mb-8">
+            <button (click)="selectTab('recap')"
+                    [class]="selectedTab === 'recap' ? 'border-2 px-5 py-1 !rounded-lg bg-gray-500 border-gray-500 text-white font-bold' : 'border-2 px-5 py-1 !rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50'">
+              Recap
+            </button>
+            <button (click)="selectTab('photos')"
+                    [class]="selectedTab === 'photos' ? 'border-2 px-5 py-1 rounded-lg bg-gray-500 border-gray-500 text-white font-bold' : 'border-2 px-5 py-1 !rounded-lg border-gray-300 text-gray-700 hover:bg-gray-50'">
+              Photos
+            </button>
+          </div>
+
+          <!-- Main Content Area -->
+          <div class="flex flex-col lg:flex-row gap-8 lg:items-center">
+            <!-- Video Section -->
+            <div class="lg:w-1/2">
+              <div class="relative rounded-lg overflow-hidden"
+                   style="padding-bottom: 56.25%; height: 0;">
+                <iframe
+                  src="https://www.youtube.com/embed/Et1364ewKCg"
+                  title="Bastid's BBQ Halifax Recap"
+                  class="absolute top-0 left-0 w-full h-full rounded-lg"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen>
+                </iframe>
+              </div>
+            </div>
+
+            <!-- Description Section -->
+            <div class="lg:w-1/2 lg:text-lg">
+              @if (recapDetail.recapText) {
+                <p class="text-gray-700  leading-relaxed">
+                  {{ recapDetail.recapText }}
+                </p>
+              }
+            </div>
+          </div>
+
+          <!-- Videos Section (Hidden for now as mentioned in original HTML) -->
+          @if (selectedTab === 'videos' && recapDetail.videos.length > 0) {
+            <div class="py-8">
+              <div class="m-auto mb-12">
+                <h2 class="text-sm font-black uppercase mb-4">Video</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-6">
+                  @for (video of recapDetail.videos; track video.id) {
+                    <a [href]="'https://youtu.be/' + video.id" target="_blank"
+                       class="flex flex-col group">
+                      <img [src]="getYoutubeThumbnail(video.id)"
+                           [alt]="video.title"
+                           class="aspect-video rounded group-hover:opacity-80 transition-opacity">
+                      <span class="mt-2 text-sm font-medium">{{ video.title }}</span>
+                    </a>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Photos Section -->
+          @if (selectedTab === 'photos') {
+            <div class="py-8">
+              <div class="m-auto">
+                <h2 class="text-sm font-black uppercase mb-4">Photos</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <!-- Placeholder for photos - would be populated from API -->
+                  <div class="text-gray-500 text-center py-8 md:col-span-4">
+                    Photos will be loaded here from the API
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <app-footer />
+</div>

@@ -17,6 +17,8 @@ import { Router } from '@angular/router';
 import { AppData } from 'src/app/app.data';
 import { environment } from '@env/environment';
 import { Video } from '@shared/models/video';
+import { mappingFavorites } from '@shared/services/video-access.service';
+import { FavoritesService } from '@shared/services/favorites.service';
 
 @Component({
   selector: 'app-topgrillin',
@@ -97,7 +99,7 @@ export class TopGrillinComponent {
 
   isLoggedIn$!: Observable<boolean>;
   isLoadingVideo: WritableSignal<boolean> = signal(true);
-    constructor(private apiService: ApiService, private appData: AppData, private alertService: AlertService, private token: TokenService, private router: Router) {
+    constructor(private apiService: ApiService, private appData: AppData, private favoritesService: FavoritesService, private alertService: AlertService, private token: TokenService, private router: Router) {
       this.isLoadingVideo.set(true);
       if (environment.ismock) {
       this.apiService.getSectionData("video").subscribe((data) => {
@@ -109,6 +111,7 @@ export class TopGrillinComponent {
       });
       } else {
         this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+          data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
           this.appData.videosLive.set(data.data as Video[]);
           this.videoSection.data = this.appData.videosLive();
           this.isLoadingVideo.set(false);

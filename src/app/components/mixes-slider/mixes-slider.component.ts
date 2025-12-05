@@ -6,6 +6,7 @@ import { AudioService } from '@shared/services/audio.service';
 import { AppData } from 'src/app/app.data';
 import { Observable, take } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
+import { VideoAccessService } from '@shared/services/video-access.service';
 
 export interface Mix {
   image: string;
@@ -37,7 +38,7 @@ export class MixesSliderComponent {
 
   isLoggedIn$!: Observable<boolean>;
 
-  constructor(public appData: AppData, private audioService: AudioService, private token: TokenService) {
+  constructor(public appData: AppData, private audioService: AudioService, private token: TokenService, private videoAccessService: VideoAccessService) {
     this.isLoggedIn$ = this.token.isValid(undefined);
   }
   scrollLeft() {
@@ -59,7 +60,13 @@ export class MixesSliderComponent {
       this.appData.previewMusicId.set(i.musicId);
         this.audioService.showPlayer(i);
       } else {
-        bootbox.alert('<h4>Member Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>Member Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }
@@ -96,7 +103,13 @@ export class MixesSliderComponent {
       }
       this.audioService.showPlayerURL(i);
     } else {
-      bootbox.alert('<h4>MMember Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+        if (!hasAccess) {
+          // Dialog will be shown automatically by the service
+          return;
+        }
+        // bootbox.alert('<h4>MMember Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
     }
   }
 
