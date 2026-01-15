@@ -84,7 +84,7 @@ export class FormsComponent implements AfterViewInit {
     elementsOptions = {
       locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
       appearance: {
-        theme: 'flat'
+        theme: 'flat' as 'flat' | 'stripe' | 'night'
       }
     };
     cardOptions = {
