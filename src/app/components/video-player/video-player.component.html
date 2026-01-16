@@ -1,6 +1,6 @@
 <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModal" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-fullscreen-lg-down">
-    <div class="modal-content custom-modal">
+    <div class="modal-content custom-modal modal-light">
       <div class="modal-header px-5 flex justify-between items-center">
 
         @if (video) {
@@ -14,9 +14,9 @@
         </div>
         }
         
-        <h2 class="font-semibold text-center flex-1" style="font-size: 24px">Video Archive</h2>
+        <h2 class="font-semibold text-center flex-1 text-gray-900" style="font-size: 24px">Video Archive</h2>
         <button (click)="closeModal()" type="button"
-          class="btn-close text-white hover:text-gray-300 text-2xl font-bold leading-none p-2 border-0 bg-transparent cursor-pointer"
+          class="btn-close text-gray-700 hover:text-gray-500 text-2xl font-bold leading-none p-2 border-0 bg-transparent cursor-pointer"
           data-bs-dismiss="modal"
           aria-label="Close">
           ×
@@ -47,11 +47,16 @@
                     class="form-control bg-light2 border-0 form-control-lg ps-4 bookmark-caption"
                     placeholder="Bookmark Caption..." />
                   <a (click)="addupdatebookmark()" class="rounded-3 py-2 px-3 fw-bold position-absolute top-0 b-mark"
-                    tooltip="Save Bookmark">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round">
-                      <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
-                    </svg>
+                    [class.opacity-60]="bookmarkSaving()" [class.cursor-not-allowed]="bookmarkSaving()"
+                    tooltip="Save Bookmark" [attr.aria-busy]="bookmarkSaving()">
+                    @if (bookmarkSaving()) {
+                      <span class="bookmark-spinner"></span>
+                    } @else {
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"></path>
+                      </svg>
+                    }
                   </a>
                 </div>
               </div>
@@ -97,10 +102,16 @@
                   <input type="text" [(ngModel)]="commentobj.comment"
                     class="form-control form-control-lg ps-4 rounded-pill border-0 comment-input pe-5"
                     placeholder="Add a Comment" style="height: 48px; min-height: 0;" />
-                  <button type="button" (click)="addcomment()"
+                  <button type="button" (click)="addcomment()" [disabled]="commentSaving()"
+                    [class.cursor-not-allowed]="commentSaving()"
                     class="btn btn-primary rounded-3 px-4 fw-bold b-mark r-pills d-flex align-items-center position-absolute top-0 end-0"
-                    tooltip="Add Comment" style="height: 48px; min-height: 0;">
-                    <i class="fas fa-comment me-2"></i> Comment
+                    tooltip="Add Comment" style="height: 48px; min-height: 0; margin-right: -10px; border-radius: 30px !important;">
+                    <i class="fas fa-comment"></i>
+                    @if (commentSaving()) {
+                      <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...
+                    } @else {
+                      Comment
+                    }
                   </button>
                 </div>
                 @if (isLoadingComments()) {
@@ -132,8 +143,13 @@
                         @if (editablecomRow !== item.commentId) {
                           <p class="line-h1 text-white mb-0">{{item.comment}}</p>
                         } @else {
-                          <input type="text" (keyup.enter)="updatecomment(item)" [(ngModel)]="item.comment"
-                            class="form-control rounded-pill py-3 ps-4 bg-secondary" />
+                          <div class="d-flex align-items-center gap-2">
+                            <input type="text" (keyup.enter)="updatecomment(item)" [(ngModel)]="item.comment"
+                              class="form-control rounded-pill py-3 ps-4 bg-secondary" />
+                            @if (commentSaving()) {
+                              <span class="spinner-border spinner-border-sm text-primary" role="status" aria-hidden="true"></span>
+                            }
+                          </div>
                         }
                       </div>
                       <div class="clearfix"></div>
@@ -153,11 +169,11 @@
               @if (isLoadingRelated()) {
                 <div class="d-flex flex-column gap-3 mt-4">
                   @for (i of [1,2,3,4]; track $index) {
-                    <div class="card bg-none border-0 rounded-2 video-list overflow-hidden animate-pulse" style="min-height:90px;display:flex;flex-direction:row;align-items:center;">
-                      <div style="width:90px;height:90px;background:#222;border-radius:8px;margin-right:16px;flex-shrink:0;"></div>
-                      <div style="flex:1;">
-                        <div style="height:18px;width:70%;background:#333;border-radius:4px;margin-bottom:10px;"></div>
-                        <div style="height:14px;width:50%;background:#333;border-radius:4px;"></div>
+                    <div class="related-skeleton">
+                      <div class="skeleton-thumb shimmer"></div>
+                      <div class="skeleton-lines">
+                        <div class="skeleton-line shimmer w-70"></div>
+                        <div class="skeleton-line shimmer w-50"></div>
                       </div>
                     </div>
                   }

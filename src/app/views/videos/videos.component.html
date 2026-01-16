@@ -23,10 +23,19 @@
   <div class="mb-8 mx-4 md:mx-10 my-8">
 
     <!-- Centered Category Heading -->
-    <div class="text-center mb-8">
-      <div class="flex justify-center items-center gap-3">
-        <img src="/img/videosImg.png" alt="{{ selectedCategory }}" class="w-8 h-8" />
-        <h1 class="text-[28px] md:text-[36px] font-bold text-gray-800">{{ selectedCategory }}</h1>
+    <div class="mb-8">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <img src="/img/videosImg.png" alt="{{ selectedCategory }}" class="w-8 h-8" />
+          <h1 class="text-[28px] md:text-[36px] font-bold text-gray-800">{{ selectedCategory }}</h1>
+        </div>
+        <div class="md:flex-shrink-0">
+          <app-pagination
+            [currentPage]="currentPage"
+            [totalPages]="totalPages"
+            (pageChange)="onPageChange($event)"
+          ></app-pagination>
+        </div>
       </div>
     </div>
 
@@ -41,34 +50,54 @@
     </div>
 
     <!-- Grid Layout for Videos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-      @for (video of getFilteredVideos(); track $index) {
-      <div class="relative flex flex-col w-full group cursor-pointer"
-        style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
-        <div class="relative overflow-hidden rounded-lg">
-          @if (video.source == 'youtube') {
-            <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
-              [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
-              (load)="checkImage($event, video)" [attr.alt]="video.title" />
-          } @else if (video.source == 'vimeo') {
-            <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" [src]="video.screenshot"
-              [attr.id]="'img_' + video.videoId" (error)="errorImage($event, video)" (load)="checkImage($event, video)"
-              [attr.alt]="video.title" />
-          } @else {
-            <img [src]="video.thumbnail" [alt]="video.title" loading="lazy"
-              class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" />
-          }
-          <div class="absolute inset-0 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
-            </svg>
+    @if (isLoadingVideo()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+        @for (skeleton of [0,1,2,3,4,5,6,7,8,9,10,11]; track skeleton) {
+          <div class="relative flex flex-col w-full animate-pulse">
+            <div class="relative overflow-hidden rounded-lg bg-gray-200 aspect-video w-full h-full mb-2"></div>
+            <div class="h-4 w-3/4 bg-gray-300 rounded mb-2"></div>
+            <div class="h-3 w-1/2 bg-gray-200 rounded"></div>
           </div>
-        </div>
-        <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
-        <div class="text-xs font-light">{{ video.timeAgo }}</div>
+        }
       </div>
+    } @else {
+      @if (getFilteredVideos().length === 0) {
+        <div class="border border-dashed border-gray-300 rounded-xl p-10 text-center text-gray-600 bg-gray-50">
+          <div class="text-lg font-semibold mb-2">No videos found</div>
+          <div class="text-sm">Try a different search or pick another category.</div>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+          @for (video of getFilteredVideos(); track $index) {
+          <div class="relative flex flex-col w-full group cursor-pointer"
+            style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
+            <div class="relative overflow-hidden rounded-lg">
+              @if (video.source == 'youtube') {
+                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
+                  [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
+                  (load)="onImageLoad($event); checkImage($event, video)" (error)="onImageError($event)" [attr.alt]="video.title" />
+              } @else if (video.source == 'vimeo') {
+                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer" [src]="video.screenshot"
+                  [attr.id]="'img_' + video.videoId" (error)="errorImage($event, video); onImageError($event)" (load)="onImageLoad($event); checkImage($event, video)"
+                  [attr.alt]="video.title" />
+              } @else {
+                <img [src]="video.image || video.screenshot" [alt]="video.title" loading="lazy"
+                  class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
+                  (load)="onImageLoad($event)" (error)="onImageError($event)" />
+              }
+              <div class="absolute inset-0 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
+            <div class="text-xs font-light">{{ video.date }}</div>
+          </div>
+          }
+        </div>
       }
-    </div>
+    }
 
     <!-- Pagination at the bottom -->
     <div class="mt-8 flex justify-center">

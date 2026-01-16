@@ -2,6 +2,7 @@ import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, Element
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, Observable, take } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import videojs from 'video.js';
 import 'videojs-contrib-quality-levels';
 // @ts-ignore
@@ -33,6 +34,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     private isAlertOpen = false;
   isLoadingBookmark = signal(false);
   isLoadingRelated = signal(false);
+  bookmarkSaving = signal(false);
+  commentSaving = signal(false);
   video: Video | null = null;
   @Input() beats: boolean = false;
   @Output("isClose") isClose: EventEmitter<any> = new EventEmitter();
@@ -534,7 +537,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   getrealtedvideos(data: any) {
     console.log("getrealtedvideos", this.beats);
     if (!this.beats) {
-      this.apiService.get('Videos?app=djjazzyjeff&sort=related&category=' + data.category + '&client=hls' + data.featuring).subscribe(data => {
+      this.apiService.get(`Videos?app=${environment.projectid}&sort=related&category=`+ data.category + '&client=hls' + data.featuring).subscribe(data => {
         try {
           if (data) {
             if (data._http != 200) {
@@ -547,7 +550,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         }
       });
     } else {
-      this.apiService.get('Videos?app=beats&sort=related&category=' + data.category + '&client=hls' + data.featuring).subscribe(data => {
+      this.apiService.get(`Videos?app=${environment.projectid}&sort=related&category=` + data.category + '&client=hls' + data.featuring).subscribe(data => {
         try {
           if (data) {
             if (data._http != 200) {
@@ -601,7 +604,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   getcomment(videoId: number) {
     this.isLoadingComments.set(true);
-    this.apiService.get('Comments/' + videoId + '?app=djjazzyjeff&category=videos&sort=date&dir=desc').subscribe(data => {
+    this.apiService.get('Comments/' + videoId + `?app=${environment.projectid}&category=videos&sort=date&dir=desc`).subscribe(data => {
       try {
         if (data) {
           this.commentobj.comment = '';
@@ -645,7 +648,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       return;
     }
     this.isLoadingBookmark.set(true);
-    this.apiService.get('Bookmarks/' + videoId + '?app=djjazzyjeff', false, false).subscribe({
+    this.apiService.get('Bookmarks/' + videoId + `?app=${environment.projectid}`, false, false).subscribe({
       next: data => {
         try {
           if (data) {
@@ -661,32 +664,46 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
   
   addupdatebookmark() {
-    this.isLoggedIn$.subscribe(valid => {
-      if (valid) {
-        const member = this.token.getMember();
-        this.bookmarkobj.time = this.getCurrentTime();
-        this.bookmarkobj.memberId = member?.memberId;
-        this.bookmarkobj.videoId = this.videoId;
-        this.apiService.post('AddBookmark?app=djjazzyjeff', this.bookmarkobj, false, false).subscribe(data => {
-          try {
-            if (data) {
-              this.bookmarkobj = new Bookmark();
-              this.getbookmarks(this.videoId);
-              this.selectedVideo(this.video, false);
-            }
-          } catch {
-          }
-        });
-      } else {
-        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+    if (this.bookmarkSaving()) {
+      return;
+    }
 
-        if (!hasAccess) {
-          // Dialog will be shown automatically by the service
-          return;
+    this.bookmarkSaving.set(true);
+
+    this.isLoggedIn$
+      .pipe(take(1))
+      .subscribe(valid => {
+        if (valid) {
+          const member = this.token.getMember();
+          this.bookmarkobj.time = this.getCurrentTime();
+          this.bookmarkobj.memberId = member?.memberId;
+          this.bookmarkobj.videoId = this.videoId;
+
+          this.apiService
+            .post(`AddBookmark?app=${environment.projectid}`, this.bookmarkobj, false, false)
+            .pipe(finalize(() => this.bookmarkSaving.set(false)))
+            .subscribe(data => {
+              try {
+                if (data) {
+                  this.bookmarkobj = new Bookmark();
+                  this.getbookmarks(this.videoId);
+                  this.selectedVideo(this.video, false);
+                }
+              } catch {}
+            }, () => {
+              this.bookmarkSaving.set(false);
+            });
+        } else {
+          this.bookmarkSaving.set(false);
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+
+          if (!hasAccess) {
+            // Dialog will be shown automatically by the service
+            return;
+          }
+          // bootbox.alert('<h4>VIP Member</h4><br>' + 'Sorry, the Bookmark feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
         }
-        // bootbox.alert('<h4>VIP Member</h4><br>' + 'Sorry, the Bookmark feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
-      }
-    });
+      });
   }
 
   editbookmark(item: any) {
@@ -695,7 +712,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   deletebookmark() {
-    this.apiService.delete('DeleteBookmark/' + this.delbookmarkId + '?app=djjazzyjeff').subscribe(data => {
+    this.apiService.delete('DeleteBookmark/' + this.delbookmarkId + `?app=${environment.projectid}`).subscribe(data => {
       try {
         if (data) {
           this.bookmarkobj = new Bookmark();
@@ -708,38 +725,67 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   addcomment() {
-    if (this.commentobj.comment != '' && this.commentobj.comment != undefined && this.commentobj.comment != null) {
-      this.commentobj.itemId = this.videoId;
-      this.commentobj.memberId = 1;
-      this.commentobj.section = 'videos';
-
-      const newComment: Comment = {
-        commentId: Date.now(),
-        name: 'Current User',
-        comment: this.commentobj.comment,
-        date: new Date().toISOString(),
-        image: 'https://picsum.photos/40/40?random=1',
-        memberId: 1,
-        userId: 0,
-        itemId: 0,
-        section: '',
-        like: 0
-      };
-      this.commentlst.unshift(newComment);
-      this.commentobj = {
-        comment: '',
-        commentId: 0,
-        itemId: 0,
-        memberId: 0,
-        section: 'videos',
-        userId: 0,
-        image: '',
-        like: 0,
-        date: new Date(),
-        name: ''
-      };
-      console.log('Comment added:', newComment);
+    const text = (this.commentobj.comment || '').trim();
+    if (!text) {
+      return;
     }
+
+    if (this.commentSaving()) {
+      return;
+    }
+
+    this.commentSaving.set(true);
+
+    this.isLoggedIn$
+      .pipe(take(1))
+      .subscribe(valid => {
+        if (!valid) {
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+          if (!hasAccess) {
+            this.commentSaving.set(false);
+            return;
+          }
+          this.commentSaving.set(false);
+          return;
+        }
+
+        const member = this.token.getMember();
+        const payload: Comment = {
+          commentId: 0,
+          userId: 0,
+          memberId: member?.memberId || 0,
+          itemId: this.videoId,
+          section: 'videos',
+          comment: text,
+          image: member?.image || '',
+          name: member?.alias || `${member?.firstName || ''} ${member?.lastName || ''}`.trim(),
+          like: 0,
+          date: new Date().toISOString(),
+        };
+
+        this.apiService.post(`UpdateComment?app=${environment.projectid}`, payload, false, false)
+          .pipe(finalize(() => this.commentSaving.set(false)))
+          .subscribe({
+            next: () => {
+              this.commentobj = {
+                comment: '',
+                commentId: 0,
+                itemId: 0,
+                memberId: 0,
+                section: 'videos',
+                userId: 0,
+                image: '',
+                like: 0,
+                date: new Date(),
+                name: ''
+              };
+              this.loadComments(this.videoId);
+            },
+            error: (error) => {
+              this.alertService.error('', error?.error?.message || error?.message || 'Unable to add comment.', Config.alertOptions);
+            }
+          });
+      });
   }
 
   EditComment(id: any) {
@@ -760,12 +806,55 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   updatecomment(data: any) {
-    this.commentobj.itemId = this.videoId;
-    this.commentobj.section = 'videos';
-    this.commentobj.comment = data.comment;
-    this.commentobj.commentId = data.commentId;
-    this.editablecomRow = 0;
-    console.log('Comment updated:', data);
+    const text = (data?.comment || '').trim();
+    if (!text) {
+      return;
+    }
+
+    if (this.commentSaving()) {
+      return;
+    }
+
+    this.commentSaving.set(true);
+
+    this.isLoggedIn$
+      .pipe(take(1))
+      .subscribe(valid => {
+        if (!valid) {
+          this.commentSaving.set(false);
+          const hasAccess = this.videoAccessService.checkVideoAccess(true);
+          if (!hasAccess) {
+            return;
+          }
+          return;
+        }
+
+        const member = this.token.getMember();
+        const payload: Comment = {
+          commentId: data.commentId,
+          userId: 0,
+          memberId: member?.memberId || 0,
+          itemId: this.videoId,
+          section: 'videos',
+          comment: text,
+          image: member?.image || '',
+          name: member?.alias || `${member?.firstName || ''} ${member?.lastName || ''}`.trim(),
+          like: data.like || 0,
+          date: new Date().toISOString(),
+        };
+
+        this.apiService.post(`UpdateComment?app=${environment.projectid}`, payload, false, false)
+          .pipe(finalize(() => this.commentSaving.set(false)))
+          .subscribe({
+            next: () => {
+              this.editablecomRow = 0;
+              this.loadComments(this.videoId);
+            },
+            error: (error) => {
+              this.alertService.error('', error?.error?.message || error?.message || 'Unable to update comment.', Config.alertOptions);
+            }
+          });
+      });
   }
 
   setCurrentTime(time: number) {

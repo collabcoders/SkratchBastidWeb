@@ -68,18 +68,19 @@
               
               <div class="relative overflow-hidden rounded-lg">
                 @if (video.source == 'youtube') {
-                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
                     [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
-                    (load)="checkImage($event, video)" [attr.alt]="video.title" />
+                    (load)="onImageLoad($event); checkImage($event, video)" (error)="onImageError($event)" [attr.alt]="video.title" />
                 } @else if (video.source == 'vimeo') {
-                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
+                  <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
                     [src]="video.screenshot" [attr.id]="'img_' + video.videoId"
-                    (error)="errorImage($event, video)" (load)="checkImage($event, video)"
+                    (error)="errorImage($event, video); onImageError($event)" (load)="onImageLoad($event); checkImage($event, video)"
                     (mouseover)="showGif($event, video)" (mouseout)="showScreenshot($event, video.screenshot)"
                     [attr.alt]="video.title" />
                 } @else {
-                  <img [src]="video.image" [alt]="video.title" loading="lazy"
-                    class="rounded-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110" />
+                  <img [src]="video.image || video.screenshot" [alt]="video.title" loading="lazy"
+                    class="rounded-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
+                    (load)="onImageLoad($event)" (error)="onImageError($event)" />
                 }
                 <div class="absolute inset-0 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">

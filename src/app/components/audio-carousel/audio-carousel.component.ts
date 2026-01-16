@@ -70,4 +70,18 @@ export class AudioCarouselComponent {
   isCurrentTrack(mix: Music): boolean {
     return this.audioService.currentTrack()?.file === mix.file;
   }
+
+  onImageLoad(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
+  }
 }

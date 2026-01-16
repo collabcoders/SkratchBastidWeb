@@ -37,36 +37,42 @@ export class FormsComponent implements AfterViewInit {
         // No payment method required
       } else {
         if (!this.registerForm.value.paymentMethodId) {
-          this.processingSignup = false;
+          this.registerLoading.set(false);
           return;
         }
       }
       this.apiService.post(endpoint + '?app=' + Config.app + '&source=website', this.registerForm.value, true, true)
-        .subscribe((data: any) => {
-          if (data.error) {
-            // SHOW ERROR MESSAGE
-            console.log(data);
-            this.alertService.error('Error', data.msg, Config.alertOptions);
-            setTimeout(() => {
-              this.processingSignup = false;
-            }, 400);
-          } else {
-            // SET TOKEN
-            console.log(data);
-            if (this.isReJoin) {
-              this.token.set(data?.data);
-              // this.logIn.emit(); // Uncomment if you have logIn EventEmitter
+        .subscribe({
+          next: (data: any) => {
+            if (data.error) {
+              // SHOW ERROR MESSAGE
+              console.log(data);
+              this.alertService.error('Error', data.msg, Config.alertOptions);
+              setTimeout(() => {
+                this.registerLoading.set(false);
+              }, 400);
+            } else {
+              // SET TOKEN
+              console.log(data);
+              if (this.isReJoin) {
+                this.token.set(data?.data);
+                // this.logIn.emit(); // Uncomment if you have logIn EventEmitter
+              }
+              // HIDE REGISTER MODAL
+              if (typeof $ !== 'undefined') {
+                $('#registerModal').modal('hide');
+              }
+              // SHOW MESSAGES AND REDIRECT
+              bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the QMT VIP</h4><br>' + data.msg);
+              this.isReJoin = false;
+              setTimeout(() => {
+                this.registerLoading.set(false);
+              }, 400);
             }
-            // HIDE REGISTER MODAL
-            if (typeof $ !== 'undefined') {
-              $('#registerModal').modal('hide');
-            }
-            // SHOW MESSAGES AND REDIRECT
-            bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the QMT VIP</h4><br>' + data.msg);
-            this.isReJoin = false;
-            setTimeout(() => {
-              this.processingSignup = false;
-            }, 400);
+          },
+          error: (error) => {
+            this.registerLoading.set(false);
+            this.alertService.error('', error?.error?.message || error?.message || 'Something went wrong!', Config.alertOptions);
           }
         });
     }
@@ -84,19 +90,25 @@ export class FormsComponent implements AfterViewInit {
     elementsOptions = {
       locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
       appearance: {
-        theme: 'flat'
-      }
+        theme: 'flat',
+        variables: {
+          colorText: '#111827',
+          colorPrimary: '#FF5941',
+          colorTextPlaceholder: '#6b7280',
+          colorBackground: '#ffffff',
+        },
+      },
     };
     cardOptions = {
       style: {
         base: {
-          iconColor: '#fff',
-          color: '#fff',
-          fontWeight: '300',
+          iconColor: '#111827',
+          color: '#111827',
+          fontWeight: '400',
           fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
           fontSize: '18px',
           '::placeholder': {
-            color: '#fff',
+            color: '#6b7280',
           },
         },
       },
@@ -110,8 +122,8 @@ export class FormsComponent implements AfterViewInit {
   contactForm: FormGroup;
 
   loginLoading = signal(false);
-  resetLoading = false;
-  registerLoading = false;
+  resetLoading = signal(false);
+  registerLoading = signal(false);
 
   constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService,) {
     this.router = inject(Router);
@@ -207,7 +219,7 @@ export class FormsComponent implements AfterViewInit {
       return;
     }
     this.loginLoading.set(true);
-    this.apiService.post('MemberLogin?app=djjazzyjeff',{username: this.loginForm.value.email,...this.loginForm.value}, true, true)
+    this.apiService.post(`MemberLogin?app=${environment.projectid}`,{username: this.loginForm.value.email,...this.loginForm.value}, true, true)
       .subscribe((data: any) => {
         this.loginLoading.set(false);
         console.log("MemberLogin", data);
@@ -256,9 +268,9 @@ export class FormsComponent implements AfterViewInit {
 
   onResetSubmit() {
     if (this.resetForm.invalid) return;
-    this.resetLoading = true;
+    this.resetLoading.set(true);
     setTimeout(() => {
-      this.resetLoading = false;
+      this.resetLoading.set(false);
       // TODO: handle reset logic
     }, 1500);
   }
@@ -274,7 +286,7 @@ export class FormsComponent implements AfterViewInit {
       // No-op for now, handled below
     }
     if (this.registerForm.valid) {
-      this.processingSignup = true;
+      this.registerLoading.set(true);
       let endpoint = 'NewMember';
       if (this.selectedPrice == 'free') {
         this.registerForm.value.plan = 'free';
@@ -302,7 +314,7 @@ export class FormsComponent implements AfterViewInit {
         (this.stripe as any).createPaymentMethod(payload).subscribe((p: any) => {
           console.log('Payment Method', p);
           if (p.error?.message) {
-            this.processingSignup = false;
+            this.registerLoading.set(false);
             return;
           }
           this.registerForm.patchValue({

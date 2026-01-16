@@ -6,6 +6,7 @@ import { Video } from '@shared/models/video';
 import { VideoAccessService } from '@shared/services/video-access.service';
 import { TokenService } from '@shared/services/token.service';
 import { Observable } from 'rxjs';
+import { finalize, take } from 'rxjs/operators';
 import { FavoriteId } from '@shared/models/favorite-id';
 import { Config } from '@shared/config';
 import { AlertService } from '@shared/services/alert.service';
@@ -158,11 +159,27 @@ export class VideoCarouselComponent implements OnInit {
     target.src = screenshot;
   }
 
+  onImageLoad(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
+  }
+
   fav(event: any, video: Video, itemId: number) {
     event?.preventDefault();
     event?.stopPropagation();
     console.log("FAV", itemId, event);
-    this.isLoggedIn$.subscribe(valid => {
+    this.isLoggedIn$
+      .pipe(take(1))
+      .subscribe(valid => {
       if (valid) {
         if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
           const fav = {
@@ -173,22 +190,23 @@ export class VideoCarouselComponent implements OnInit {
           if (!this.processingFav) {
             this.processingFav = true;
             this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+              .pipe(finalize(() => {
+                this.processingFav = false;
+              }))
               .subscribe(data => {
                 if (data.error) {
                   this.alertService.error('Error', data.msg, this.alertOptions);
-                } else {
-                  console.log(data.id);
-                  if (data.id > 0) {
-                    video.favId = data.id;
-                    this.alertService.success('Added', data.msg, this.alertOptions);
-                  } else {
-                    video.favId = 0;
-                    this.alertService.info('Removed', data.msg, this.alertOptions);
-                  }
+                  return;
                 }
-                setTimeout(() => {
-                  this.processingFav = false;
-                }, 1000);
+
+                console.log(data.id);
+                if (data.id > 0) {
+                  video.favId = data.id;
+                  this.alertService.success('Added', data.msg, this.alertOptions);
+                } else {
+                  video.favId = 0;
+                  this.alertService.info('Removed', data.msg, this.alertOptions);
+                }
               });
           }
         } else {

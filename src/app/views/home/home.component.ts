@@ -114,7 +114,7 @@ export class HomeComponent {
           this.isLoadingBanner.set(false);
         });
         
-        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('videos', 'pop-up&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
           this.appData.videosLive.set(data.data as Video[]);
           this.featuredVideosSection.data = this.appData.videosLive();
           this.featuredVideosSection.data = mappingFavorites(this.featuredVideosSection.data, this.favoritesService.favorites);
@@ -123,7 +123,7 @@ export class HomeComponent {
           this.isLoadingVideo.set(false);
         });
         
-        this.apiService.getData('videos', 'livestream-house&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('videos', 'stream-raiders&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
           this.topGrillinSection.data = data?.data;
           this.topGrillinSection.data = mappingFavorites(this.topGrillinSection?.data || [], this.favoritesService.favorites);
           this.isLoadingVideoTop.set(false);
@@ -131,7 +131,7 @@ export class HomeComponent {
           this.isLoadingVideoTop.set(false);
         });
 
-        this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('music', '', '', '').subscribe((data: any) => {
           this.mixesSection.data = data?.data;
           this.isLoadingMusic.set(false);
         },(error) => {

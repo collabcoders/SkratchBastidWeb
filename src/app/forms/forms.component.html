@@ -4,8 +4,7 @@
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="loginModalLabel" style="font-size: 24px">Login</h2>
         <button type="button"
@@ -49,8 +48,10 @@
             class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
             [disabled]="loginLoading() || !loginForm.valid">
             @if (loginLoading()) {
-              <span class="loader mr-2"></span>
-            }Login
+              <span class="loader mr-2"></span> Signing in...
+            } @else {
+              Login
+            }
           </button>
         </form>
         <div class="flex justify-center items-center mt-4 text-sm">
@@ -70,8 +71,7 @@
   aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="resetPasswordModalLabel" style="font-size: 24px">
           Reset Password</h2>
@@ -99,8 +99,8 @@
           </div>
           <button type="submit"
             class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
-            [disabled]="resetLoading || !resetForm.valid">
-            @if (resetLoading) {
+            [disabled]="resetLoading() || !resetForm.valid">
+            @if (resetLoading()) {
               <span class="loader mr-2"></span>
             }Send Reset Link
           </button>
@@ -121,8 +121,7 @@
 <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="registerModalLabel" style="font-size: 24px">
           Register</h2>
@@ -250,7 +249,7 @@
           </div>
           @if (!(selectedPrice == '' || selectedPrice == 'free') || isReJoin) {
             <div class="mb-3">
-              <div style="border-radius: 5px; width: 100%; border: 1px solid #fff; padding: 0.33em;">
+              <div class="stripe-card-shell">
                 <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
                   <ngx-stripe-card [options]="cardOptions"></ngx-stripe-card>
                 </ngx-stripe-elements>
@@ -276,8 +275,8 @@
 
           <button type="submit"
             class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
-            [disabled]="registerLoading || !registerForm.valid">
-            @if (registerLoading) {
+            [disabled]="registerLoading() || !registerForm.valid">
+            @if (registerLoading()) {
               <span class="loader mr-2"></span>
             }Join
           </button>
@@ -291,8 +290,7 @@
 <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact
           Us</h2>
@@ -376,8 +374,7 @@
 <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="privacyModalLabel" style="font-size: 24px">Privacy
           Policy</h2>
@@ -422,8 +419,7 @@
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="cancelModalLabel" style="font-size: 24px">
           Cancellation Policy</h2>
@@ -463,8 +459,7 @@
 <div class="modal fade" id="refundModal" tabindex="-1" aria-labelledby="refundModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
     (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content bg-black text-white border border-gray-600 rounded-lg"
-      style="max-height: 90vh; overflow-y: auto">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
         <h2 class="modal-title font-semibold text-center flex-1" id="refundModalLabel" style="font-size: 24px">Refund
           Policy</h2>

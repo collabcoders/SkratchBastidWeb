@@ -21,30 +21,57 @@ interface Product {
   styleUrl: './store-products.component.scss'
 })
 export class StoreProductsComponent {
+  allowedTitles: string[] = [
+    'Skratch Bastid x OBEY: Serato Control Vinyl',
+    "Bastid's BBQ Ball Cap - Available in Black or White",
+    "Bastid's BBQ 2024 Short Sleeve T-Shirt Black",
+    "Bastid's BBQ 2024 Short Sleeve T-Shirt White",
+    'OBEYxBastid - Tee  - Limited Capsule Drop',
+    'OBEYxBastid - Hoodie  - Limited Capsule Drop',
+    'OBEYxBastid - Hat  - Limited Capsule Drop',
+    "Skratch Bastid Socks"
+  ];
   isLoadingProducts: WritableSignal<boolean> = signal(false);
   constructor(private apiService: ApiService, private alertService: AlertService, public appData: AppData) {
     this.isLoadingProducts.set(true);
-    if (environment.ismock) {
-      this.apiService.getSectionData("product").subscribe((data) => {
-        this.appData.products.set(data?.data);
+    if (true) {
+      this.apiService.getSectionData("product", true).subscribe((data) => {
+        const zigzags = [
+          '/img/zigzag/zigzag1.png',
+          '/img/zigzag/zigzag2.png',
+          '/img/zigzag/zigzag3.png',
+          '/img/zigzag/zigzag4.png',
+          '/img/zigzag/zigzag0.png',
+        ];
+
+        const filtered = (data?.data || []).filter((p: Product) =>
+          this.allowedTitles.includes(p.title)
+        );
+
+        const mapped = filtered.map((p: Product, index: number) => ({
+          ...p,
+          zigzag: index < zigzags.length ? zigzags[index] : null,
+        }));
+
+        this.appData.products.set(mapped);
         this.isLoadingProducts.set(false);
       }, (error) => {
           this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
           this.isLoadingProducts.set(false);
       });
     } else {
-        this.apiService.getData('product', '', '').subscribe((data: any) => {
-          this.appData.products.set(data.data as Product[]);
-          this.isLoadingProducts.set(false);
-        }, (error) => {
-           this.apiService.getSectionData("product", true).subscribe((data) => {
-              this.appData.products.set(data?.data);
-              this.isLoadingProducts.set(false);
-            }, (error) => {
-                this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-                this.isLoadingProducts.set(false);
-            });
-        });
+        // this.apiService.getData('product', '', '').subscribe((data: any) => {
+        //   this.appData.products.set(data.data as Product[]);
+        //   this.isLoadingProducts.set(false);
+        // }, (error) => {
+        //    this.apiService.getSectionData("product", true).subscribe((data) => {
+        //       this.appData.products.set(data?.data);
+        //       this.isLoadingProducts.set(false);
+        //     }, (error) => {
+        //         this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+        //         this.isLoadingProducts.set(false);
+        //     });
+        // });
     }
   }
 }

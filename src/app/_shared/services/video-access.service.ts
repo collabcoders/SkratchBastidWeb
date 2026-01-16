@@ -71,9 +71,9 @@ export class VideoAccessService {
 }
 
 export function mappingFavorites(videos: Video[], favorites: Favorite[]) {
-    if (favorites.length > 0) {
+    if (favorites?.length > 0) {
       for (var i = 0; i < videos?.length; i++) {
-        if (favorites.some((item: any) => item.itemId === videos[i].videoId)) {
+        if (favorites?.some((item: any) => item.itemId === videos[i].videoId)) {
           videos[i].favId = 1;
         } else {
           videos[i].favId = 0;

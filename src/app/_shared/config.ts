@@ -1,11 +1,11 @@
 export const Config = {
-    app: 'djjazzyjeff',
-    name: 'djjazzyjeff',
-    website: 'https://djjazzyjeff.com',
-    content: 'https://www.mixapps.io/content/djjazzyjeff/',
-    content_playlist: 'https://djjazzyjeff.com/playlist-images/',
-    store: 'https://shop.djjazzyjeff.com',
-    email: 'lynette@djjazzyjeff.com',
+    app: 'skratchbastid',
+    name: 'skratchbastid',
+    website: 'https://skratchbastid.com',
+    content: 'https://www.mixapps.io/content/skratchbastid/',
+    content_playlist: 'https://skratchbastid.com/playlist-images/',
+    store: 'https://shop.skratchbastid.com',
+    email: 'lynette@skratchbastid.com',
     playlistPassword: '',
 
     facebook: 'https://www.facebook.com/skratchbastid',

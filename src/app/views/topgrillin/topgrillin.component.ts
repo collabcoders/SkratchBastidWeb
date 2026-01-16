@@ -110,7 +110,7 @@ export class TopGrillinComponent {
           this.isLoadingVideo.set(false);
       });
       } else {
-        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('videos', 'stream-raiders&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
           data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
           this.appData.videosLive.set(data.data as Video[]);
           this.videoSection.data = this.appData.videosLive();

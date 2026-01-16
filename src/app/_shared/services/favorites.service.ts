@@ -64,21 +64,21 @@ export class FavoritesService {
         }
       });
     } else {
-      this.apiService.get('Favorites?app=' + Config.app, false, false).subscribe({
-        next: (data) => {
-          if (data.error) {
-          this.alertService.error('Error', data.msg, Config.alertOptions)
-          } else {
-            console.log(this.favorites);
-          }
-          this.favoritesSubject.next(data.data);
-        },
-        error: (error) => {
-          console.error('Failed to load favorites', error);
-          // Set empty array on error
-          this.favoritesSubject.next([]);
-        }
-      });
+      // this.apiService.get('Favorites?app=' + Config.app, false, false).subscribe({
+      //   next: (data) => {
+      //     if (data.error) {
+      //     this.alertService.error('Error', data.msg, Config.alertOptions)
+      //     } else {
+      //       console.log(this.favorites);
+      //     }
+      //     this.favoritesSubject.next(data.data);
+      //   },
+      //   error: (error) => {
+      //     console.error('Failed to load favorites', error);
+      //     // Set empty array on error
+      //     this.favoritesSubject.next([]);
+      //   }
+      // });
     }
   }
 

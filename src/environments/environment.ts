@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   ismock: false,
+  projectid: 'skratchbastid',
   api: 'https://www.mixapps.io',
   stripeKey: 'pk_live_51ONL0ZKnyeTJue4zO1TAj6YxVCYpvNMHAIkXLLV7mF1byYyCr22hntute6uimKXQ6K2WQ4rSXqoRLTpBAxStUr3q00WkYzkjhO',
   //api: 'http://localhost:49280'

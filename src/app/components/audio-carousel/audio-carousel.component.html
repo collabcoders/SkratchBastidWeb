@@ -66,7 +66,9 @@
                 <img
                   [src]="mix.image | imageUrl:300:300:true"
                   [alt]="mix.title || 'Audio Mix'"
-                  class="rounded-lg aspect-square w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  class="rounded-lg aspect-square w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 blur-preview shimmer"
+                  (load)="onImageLoad($event)"
+                  (error)="onImageError($event)"
                 />
                 <!-- Absolute Play Icon Button Overlay -->
                 <button
@@ -125,7 +127,9 @@
                 <img
                   [src]="mix.image | imageUrl:300:300:true"
                   [alt]="mix.title || 'Audio Mix'"
-                  class="rounded-lg aspect-square w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  class="rounded-lg aspect-square w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 blur-preview shimmer"
+                  (load)="onImageLoad($event)"
+                  (error)="onImageError($event)"
                 />
                 <div class="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 duration-300 rounded-lg"></div>
 

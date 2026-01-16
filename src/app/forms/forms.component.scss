@@ -1,10 +1,10 @@
 /* Disabled modal button style */
 button[disabled], .btn[disabled], .w-full[disabled] {
-  opacity: 0.6;
+  opacity: 0.85;
   cursor: not-allowed;
-  background-color: #444 !important;
-  color: #bbb !important;
-  border-color: #666 !important;
+  background-color: #e5e7eb !important;
+  color: #4b5563 !important;
+  border-color: #d1d5db !important;
   box-shadow: none;
 }
 /* Footer styles for Skratch Bastid Web */
@@ -72,7 +72,7 @@ button[disabled], .btn[disabled], .w-full[disabled] {
   display: inline-block;
   width: 1em;
   height: 1em;
-  border: 2px solid #fff;
+  border: 2px solid #d1d5db;
   border-top: 2px solid #FF5941;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
@@ -82,4 +82,105 @@ button[disabled], .btn[disabled], .w-full[disabled] {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Stripe card styling */
+.stripe-card-shell {
+  border-radius: 8px;
+  width: 100%;
+  border: 1px solid #111;
+  padding: 10px;
+  background: #0f0f0f;
+}
+
+.modal-light .stripe-card-shell {
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+/* Light theme for auth/policy/contact modals */
+.modal-light {
+  background: #f9fafb !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-light .modal-header,
+.modal-light .modal-footer {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+.modal-light .modal-body {
+  background-color: #f9fafb !important;
+}
+
+.modal-light .modal-header,
+.modal-light .modal-footer {
+  border-color: #e5e7eb;
+}
+
+.modal-light .modal-title {
+  color: #111827 !important;
+}
+
+.modal-light .btn-close {
+  filter: none;
+  opacity: 0.6;
+}
+
+.modal-light .btn-close:hover {
+  opacity: 1;
+}
+
+.modal-light .text-white,
+.modal-light .text-gray-400,
+.modal-light .text-gray-500,
+.modal-light .text-gray-300,
+.modal-light .text-gray-800 {
+  color: #111827 !important;
+}
+
+.modal-light .bg-black,
+.modal-light .bg-gray-800 {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+}
+
+.modal-light .border-gray-600,
+.modal-light .border-gray-500,
+.modal-light .border-gray-300 {
+  border-color: #e5e7eb !important;
+}
+
+.modal-light .modal-header button,
+.modal-light button.text-white,
+.modal-light button.text-gray-300,
+.modal-light button.text-gray-500 {
+  color: #111827 !important;
+}
+
+.modal-light .border-gray-600,
+.modal-light .border-gray-500 {
+  border-color: #e5e7eb !important;
+}
+
+.modal-light input,
+.modal-light select,
+.modal-light textarea {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-color: #d1d5db !important;
+}
+
+.modal-light input:focus,
+.modal-light select:focus,
+.modal-light textarea:focus {
+  box-shadow: 0 0 0 3px rgba(255, 89, 65, 0.2);
+  border-color: #FF5941 !important;
+}
+
+.modal-light .form-text {
+  color: #4b5563 !important;
 }

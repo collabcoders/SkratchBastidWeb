@@ -41,7 +41,7 @@
                 <a [href]="product.link" target="_blank" rel="noopener noreferrer">
                     <div style="position: relative;">
                         <img [src]="product.image" [alt]="product.title" class="product-image">
-                        <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+                        <img *ngIf="product.zigzag" [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
                     </div>
                     <h2 class="product-title">{{ product.title }}</h2>
                     <p class="product-price">{{ product.price }}</p>

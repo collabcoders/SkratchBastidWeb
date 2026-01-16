@@ -50,10 +50,11 @@ export class VideosComponent implements OnInit {
   selectedCategory: string = 'All';
   searchQuery: string = '';
   currentPage: number = 1;
-  itemsPerPage: number = 12;
+  itemsPerPage: number = 60;
   totalPages: number = 1;
 
   categories: string[] = ['All'];
+  categorieValues: string[] = ['all'];
 
   // Add missing properties referenced in template and methods
   topGrillinVideos: any[] = [
@@ -130,28 +131,29 @@ export class VideosComponent implements OnInit {
           }
         });
 
-        this.apiService.getSectionData('recap').subscribe({
-          next: (data) => {
-            this.bbqRecaps = data?.data?.filter((i: any) => i.summary && i?.category === 'bbq') || [];
-            this.rotwRecords = data?.data?.filter((i: any) => i.summary && i?.category === 'rotw') || [];
-            this.simpleBBQSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'bbq') || [];
-            this.simpleRecordSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'rotw') || [];
-            console.log('Fetched BBQ recaps:', this.bbqRecaps);
-          },
-          error: (err) => {
-            console.error('Failed to fetch categories', err);
-          }
-        });
+        // this.apiService.getSectionData('recap').subscribe({
+        //   next: (data) => {
+        //     this.bbqRecaps = data?.data?.filter((i: any) => i.summary && i?.category === 'bbq') || [];
+        //     this.rotwRecords = data?.data?.filter((i: any) => i.summary && i?.category === 'rotw') || [];
+        //     this.simpleBBQSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'bbq') || [];
+        //     this.simpleRecordSection.data = data?.data?.filter((i: any) => !i.summary && i?.category === 'rotw') || [];
+        //     console.log('Fetched BBQ recaps:', this.bbqRecaps);
+        //   },
+        //   error: (err) => {
+        //     console.error('Failed to fetch categories', err);
+        //   }
+        // });
       } else {
         this.isLoadingCategory.set(true);
-        this.apiService.getData('categories', 'videos', '', 'beats').subscribe((data: any) => {
+        this.apiService.getData('categories', 'videos', '', `${environment.projectid}`).subscribe((data: any) => {
           const categories = data.data as Category[];
           this.categories = ['All', ...categories.map(cat => cat.name)];
+          this.categorieValues = ['All', ...categories.map(cat => cat.value)];
           this.isLoadingCategory.set(false);
         });
         
         this.isLoadingVideo.set(true);
-        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
           data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
           this.topGrillinSection.data = data?.data || [];
           this.tuesdayMorningCoffeeSection.data = data?.data || [];
@@ -162,17 +164,17 @@ export class VideosComponent implements OnInit {
           this.isLoadingVideo.set(false);
         });
         
-        this.isLoadingRecap.set(true);
-        this.apiService.getData('videos', 'livestream--&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
-          data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
-          this.bbqRecaps = data?.data || [];
-          this.rotwRecords = data?.data || [];
-          this.simpleBBQSection.data = data?.data || [];
-          this.simpleRecordSection.data = data?.data || [];
-          this.isLoadingRecap.set(false);
-        },(error) => {
-          this.isLoadingRecap.set(false);
-        });
+        // this.isLoadingRecap.set(true);
+        // this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        //   data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
+        //   this.bbqRecaps = data?.data || [];
+        //   this.rotwRecords = data?.data || [];
+        //   this.simpleBBQSection.data = data?.data || [];
+        //   this.simpleRecordSection.data = data?.data || [];
+        //   this.isLoadingRecap.set(false);
+        // },(error) => {
+        //   this.isLoadingRecap.set(false);
+        // });
       }
   }
 
@@ -180,6 +182,20 @@ export class VideosComponent implements OnInit {
     this.selectedCategory = category;
     this.currentPage = 1; // Reset to first page when category changes
     this.searchQuery = ''; // Clear search when category changes
+    
+    this.isLoadingVideo.set(true);
+    const cat = this.categorieValues[this.categories.indexOf(category)] || 'all';
+    this.apiService.getData('videos', `${cat}&client=hls&sort=date&dir=desc`, '').subscribe((data: any) => {
+      data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
+      this.topGrillinSection.data = data?.data || [];
+      this.tuesdayMorningCoffeeSection.data = data?.data || [];
+      this.topGrillinVideos = data?.data || [];
+      this.tuesdayMorningCoffeeVideos = data?.data || [];
+      this.isLoadingVideo.set(false);
+    },(error) => {
+      this.isLoadingVideo.set(false);
+    });
+      
     this.updatePagination();
   }
 
@@ -257,7 +273,7 @@ export class VideosComponent implements OnInit {
   }
 
   // Get paginated videos for display
-  getFilteredVideos() {
+  getFilteredVideos(): Video[] {
     const filteredVideos = this.getSearchFilteredVideos();
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
@@ -273,7 +289,7 @@ export class VideosComponent implements OnInit {
 
   // Check if showing filtered view (any category except 'All')
   isFilteredView(): boolean {
-    return this.selectedCategory !== 'All';
+    return true;
   }
 
   playVideo(video: Video) {
@@ -362,5 +378,19 @@ export class VideosComponent implements OnInit {
   showScreenshot(event: any, screenshot: string) {
     const target = event.target || event.srcElement || event.currentTarget;
     target.src = screenshot;
+  }
+
+  onImageLoad(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
+  }
+
+  onImageError(event: Event) {
+    const target = event.target as HTMLElement | null;
+    if (target && 'classList' in target) {
+      target.classList.remove('blur-preview', 'shimmer');
+    }
   }
 }
