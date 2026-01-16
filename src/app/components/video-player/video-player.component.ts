@@ -55,7 +55,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   isFirstTime: boolean = true;
   largescreen: boolean = true;
   videoPoster = '/assets/images/video.png';
-  private player: any;
+  private player: any = null;
   isLoadVideo = false;
   isUserBeats = false;
 
@@ -180,15 +180,53 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   distroyVideo() {
-    console.log("distroyVideo", videojs.getPlayers()['videoPlay'])
-    if (videojs.getPlayers()['videoPlay']) {
-      const player = videojs.getPlayer('videoPlay');
-      console.log("player", player);
-      if (player) {
-        player.pause();
-        player.dispose();
+    console.log("this.player", this.player);
+    try {
+      console.log("distroyVideo", videojs.getPlayers()['videoPlay'])
+      if (videojs.getPlayers()['videoPlay']) {
+        const player = videojs.getPlayer('videoPlay');
+        console.log("player", player);
+        if (player  && !player?.isDisposed) {
+          player.pause();
+          player.dispose();
+          console.log("PAUSE")
+        }
       }
+    } catch(err) {
+
     }
+    try {
+      if (this.player && !this.player?.isDisposed_) {
+        this.player?.pause();
+        this.player?.dispose();
+        console.log("PAUSE")
+      }
+    } catch(err) {
+
+    }
+    // const player = this.getPlayerInstance();
+    // console.log("distroyVideo player", player);
+
+    // if (player) {
+    //   try {
+    //     player.pause();
+    //   } catch {}
+    //   try {
+    //     player.dispose();
+    //   } catch {}
+    //   this.player = null;
+    // }
+
+    // // Hard stop and clear the HTML video element to ensure audio does not persist
+    // const el = document.getElementById('videoPlay') as HTMLVideoElement | null;
+    // if (el) {
+    //   try {
+    //     el.pause();
+    //     el.removeAttribute('src');
+    //     el.load();
+    //   } catch {
+    //   }
+    // }
   }
 
   closeModal() {
@@ -228,9 +266,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           return;
         }
         if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
-          this.setPlayer(isrel, videoData);
+          setTimeout(() => {
+            this.setPlayer(isrel, videoData);
+          }, 1000);
         } else if (this.beats && member.beats) {
-          this.setPlayer(isrel, videoData);
+          setTimeout(() => {
+            this.setPlayer(isrel, videoData);
+          }, 1000);
         } else if (this.beats && !member.beats) {
           this.alertBeats();
           return;
@@ -275,6 +317,12 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   setPlayer(isrel: boolean, videoData: Video) {
+    const videoElement = document.getElementById('videoPlay') as HTMLVideoElement | null;
+    if (!videoElement) {
+      console.error('videoPlay element not found');
+      return;
+    }
+
     if (this.video) {
       this.distroyVideo();
       const getVideoUrl = (video: Video) => {
@@ -285,7 +333,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       };
       this.videohls = getVideoUrl(this.video);
       // Remove any existing player instance
-      if (videojs.getPlayers()['videoPlay']) {
+     if (videojs.getPlayers()['videoPlay']) {
         const oldPlayer = videojs.getPlayer('videoPlay');
         if (oldPlayer) {
           oldPlayer.dispose();
@@ -299,7 +347,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         fluid: true,
         children: ['bigPlayButton', 'controlBar']
       };
-      const player = videojs('videoPlay', options);
+      const player = videojs(videoElement, options);
+      this.player = player;
       player.src({
         src: this.videohls,
         type: 'application/x-mpegURL'
@@ -340,6 +389,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         playbackRates: [0.5, 1, 1.5, 2]
       });
 
+      this.player = player;
+
       player.ready(() => {
         console.log('Player is ready');
         this.setupPlayerEvents(player);
@@ -348,9 +399,34 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       console.log('Player already exists');
       const existingPlayer = videojs.getPlayer('videoPlay');
       if (existingPlayer) {
+        this.player = existingPlayer;
         this.setupPlayerEvents(existingPlayer);
       }
     }
+  }
+
+  private getPlayerInstance() {
+    if (this.player) {
+      return this.player;
+    }
+
+    try {
+      const existing = videojs.getPlayer('videoPlay');
+      if (existing) {
+        this.player = existing;
+        return existing;
+      }
+    } catch {}
+
+    try {
+      const fallback = (videojs as any)?.players?.videoPlay;
+      if (fallback) {
+        this.player = fallback;
+        return fallback;
+      }
+    } catch {}
+
+    return null;
   }
 
   setupPlayerEvents(player: any) {
