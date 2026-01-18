@@ -123,8 +123,8 @@ export class HomeComponent {
           this.isLoadingVideo.set(false);
         });
         
-        this.apiService.getData('videos', 'stream-raiders&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
-          this.topGrillinSection.data = data?.data;
+        this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc&limit=10', '').subscribe((data: any) => {
+          this.topGrillinSection.data = data?.data?.slice(0, 10);
           this.topGrillinSection.data = mappingFavorites(this.topGrillinSection?.data || [], this.favoritesService.favorites);
           this.isLoadingVideoTop.set(false);
         },(error) => {

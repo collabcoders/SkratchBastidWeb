@@ -3,8 +3,14 @@
 <div class="mt-[58px]">
   <!-- Audio Sections -->
   <div>
-    @for (section of audioSections; track section.title) {
-    <app-audio-carousel [section]="section" [isLoadingMusic]="onChange(section)"></app-audio-carousel>
+    @if (audioSections?.length! === 0) {
+      <div class="text-center py-10 text-gray-500">
+        No audio sections available.
+      </div>
+    } @else {
+      @for (section of audioSections; track section.title) {
+          <app-audio-carousel [section]="section" [isLoadingMusic]="onChange(section)"></app-audio-carousel>
+      }
     }
   </div>
 
