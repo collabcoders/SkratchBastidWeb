@@ -77,7 +77,7 @@ export class BastidBBQComponent {
             this.isLoadingVideo.set(false);
         });
       } else {
-        this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.apiService.getData('music', 'apple-music&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
           this.appleMusicSection.data = data?.data;
           this.isLoadingMusic.set(false);
         }, (error) => {

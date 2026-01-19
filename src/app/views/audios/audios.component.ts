@@ -82,7 +82,7 @@ export class AudiosComponent {
           this.isMixcloudMusic.set(false);
       });
     } else {
-      this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+      this.apiService.getData('music', 'apple-music&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
         const appleSection = this.audioSections.find(section => section.title === 'Listen on Apple Music');
         if (appleSection) {
           appleSection.data = data?.data;
@@ -91,7 +91,7 @@ export class AudiosComponent {
       }, (error) => {
            this.isLoadingAppleMusic.set(false);
       });
-      this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+      this.apiService.getData('music', 'mixcloud&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
         const mixesSection = this.audioSections.find(section => section.title === 'More Mixes');
         if (mixesSection) {
           mixesSection.data = data?.data;
@@ -100,7 +100,7 @@ export class AudiosComponent {
       }, (error) => {
            this.isMixesMusic.set(false);
       });
-      this.apiService.getData('music', 'mixes&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+      this.apiService.getData('music', 'swltal&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
         const mixcloudSection = this.audioSections.find(section => section.title === 'Songs We Listened To A Lot In...');
         if (mixcloudSection) {
           mixcloudSection.data = data?.data;

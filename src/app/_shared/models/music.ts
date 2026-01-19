@@ -13,7 +13,9 @@ export class Music {
     index: number;
     favId: number;
     featured: number;
+    external: boolean;
     href: string;
+    url: string;
 
     // Constructor
     // (accepts a value so you can initialize engine)
@@ -32,6 +34,8 @@ export class Music {
         favId: number,
         featured: number,
         href: string,
+        external: boolean,
+        url: string,
     ) {
         this.musicId = musicId;
         this.artist = artist;
@@ -47,5 +51,7 @@ export class Music {
         this.favId = favId;
         this.featured = featured;
         this.href = href;
+        this.external = external;
+        this.url = url;
     }
 }

@@ -13,6 +13,7 @@ export interface Mix {
   title: string;
   artist: string;
   href: string;
+  external?: boolean;
 }
 
 export interface MixesSection {
@@ -76,6 +77,10 @@ export class MixesSliderComponent {
   }
   
   playAudio(mix: Music, event: Event): void {
+    if ((mix)?.external) {
+      return;
+    }
+
     if (this.isAudioFile(mix.file)) {
       event.preventDefault();
       event.stopPropagation();
@@ -93,6 +98,11 @@ export class MixesSliderComponent {
 
   initMusicFromURL(i: Music) {
     console.log("initMusic", i);
+    if ((i)?.external) {
+      window.open(i.file || i.url || i.href || i.image, '_blank', 'noopener');
+      return;
+    }
+
     const valid = i?.featured > 0;
     if (valid) {
       this.appData.previewMusicId.set(i.musicId);

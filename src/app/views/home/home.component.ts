@@ -131,7 +131,7 @@ export class HomeComponent {
           this.isLoadingVideoTop.set(false);
         });
 
-        this.apiService.getData('music', '', '', '').subscribe((data: any) => {
+        this.apiService.getData('music', 'mixcloud&client=hls&sort=date&dir=desc', '', '').subscribe((data: any) => {
           this.mixesSection.data = data?.data;
           this.isLoadingMusic.set(false);
         },(error) => {
