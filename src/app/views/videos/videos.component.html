@@ -72,27 +72,36 @@
           <div class="relative flex flex-col w-full group cursor-pointer"
             style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
             <div class="relative overflow-hidden rounded-lg">
-              @if (video.source == 'youtube') {
-                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
-                  [src]="'//img.youtube.com/vi/' + video.sourceId + '/mqdefault.jpg'" [attr.id]="'img_' + video.videoId"
-                  (load)="onImageLoad($event); checkImage($event, video)" (error)="onImageError($event)" [attr.alt]="video.title" />
-              } @else if (video.source == 'vimeo') {
-                <img class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer" [src]="video.screenshot"
-                  [attr.id]="'img_' + video.videoId" (error)="errorImage($event, video); onImageError($event)" (load)="onImageLoad($event); checkImage($event, video)"
-                  [attr.alt]="video.title" />
-              } @else {
-                <img [src]="video.image || video.screenshot" [alt]="video.title" loading="lazy"
-                  class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
-                  (load)="onImageLoad($event)" (error)="onImageError($event)" />
-              }
-              <div class="absolute inset-0 flex items-center justify-center">
+              <img
+                class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
+                [src]="getPoster(video)"
+                [attr.id]="'img_' + video.videoId"
+                loading="lazy"
+                (load)="onImageLoad($event); checkImage($event, video)"
+                (error)="errorImage($event, video); onImageError($event)"
+                (mouseover)="showGif($event, video)"
+                (mouseout)="showScreenshot($event, video)"
+                [attr.alt]="video.title" />
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="white" class="w-8 h-8">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
                 </svg>
               </div>
             </div>
             <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
-            <div class="text-xs font-light">{{ video.date }}</div>
+            <div class="text-[12px] text-gray-600 leading-snug mt-1 space-y-0.5">
+              <div class="text-[12px] text-gray-600 leading-snug mt-1 space-y-0.5">
+                @if (video.featuring?.trim()) {
+                  <div>Featuring: {{ video.featuring }}</div>
+                }
+                @if (formatDate(video.date)) {
+                  <div>Date: {{ formatDate(video.date) }}</div>
+                }
+                @if (video.duration) {
+                  <div>Duration: {{ video.duration }}</div>
+                }
+              </div>
+            </div>
           </div>
           }
         </div>

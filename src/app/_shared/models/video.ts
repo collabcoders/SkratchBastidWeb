@@ -8,6 +8,7 @@ export class Video {
     duration: string;
     image: string;
     screenshot: string;
+    thumbnail?: string;
     hls: string;
     date: string;
 
@@ -29,6 +30,7 @@ export class Video {
         this.duration = init.duration ?? '';
         this.image = init.image ?? '';
         this.screenshot = init.screenshot ?? '';
+        this.thumbnail = init.thumbnail ?? '';
         this.hls = init.hls ?? '';
         this.date = init.date ?? '';
 

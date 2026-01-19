@@ -152,18 +152,7 @@ export class VideosComponent implements OnInit {
           this.isLoadingCategory.set(false);
         });
         
-        this.isLoadingVideo.set(true);
-        this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
-          data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
-          this.topGrillinSection.data = data?.data || [];
-          this.tuesdayMorningCoffeeSection.data = data?.data || [];
-          this.topGrillinVideos = data?.data || [];
-          this.tuesdayMorningCoffeeVideos = data?.data || [];
-          this.isLoadingVideo.set(false);
-        },(error) => {
-          this.isLoadingVideo.set(false);
-        });
-        
+        this.selectCategory('All');
         // this.isLoadingRecap.set(true);
         // this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
         //   data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
@@ -185,13 +174,14 @@ export class VideosComponent implements OnInit {
     
     this.isLoadingVideo.set(true);
     const cat = this.categorieValues[this.categories.indexOf(category)] || 'all';
-    this.apiService.getData('videos', `${cat}&client=hls&sort=date&dir=desc`, '').subscribe((data: any) => {
+    this.apiService.getData('videos', `${cat?.toLowerCase()}&client=hls&sort=date&dir=desc`, '').subscribe((data: any) => {
       data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
       this.topGrillinSection.data = data?.data || [];
       this.tuesdayMorningCoffeeSection.data = data?.data || [];
       this.topGrillinVideos = data?.data || [];
       this.tuesdayMorningCoffeeVideos = data?.data || [];
       this.isLoadingVideo.set(false);
+      this.updatePagination();
     },(error) => {
       this.isLoadingVideo.set(false);
     });
@@ -372,12 +362,46 @@ export class VideosComponent implements OnInit {
 
   showGif(event: any, video: Video) {
     const target = event.target || event.srcElement || event.currentTarget;
-    target.src = video.image;
+    const hoverSrc = this.getHoverMedia(video);
+    if (hoverSrc) {
+      target.src = hoverSrc;
+    }
   }
 
-  showScreenshot(event: any, screenshot: string) {
+  showScreenshot(event: any, video: Video) {
     const target = event.target || event.srcElement || event.currentTarget;
-    target.src = screenshot;
+    const poster = this.getPoster(video);
+    if (poster) {
+      target.src = poster;
+    }
+  }
+
+  getPoster(video: Video): string {
+    const thumbnail = (video as any)?.thumbnail as string | undefined;
+    const isGif = (src?: string) => !!src && src.toLowerCase().includes('.gif');
+
+    if (video.screenshot) {
+      return video.screenshot;
+    }
+
+    if (thumbnail) {
+      return thumbnail;
+    }
+
+    if (video.source === 'youtube' && video.sourceId) {
+      return `//img.youtube.com/vi/${video.sourceId}/mqdefault.jpg`;
+    }
+
+    if (video.image && !isGif(video.image)) {
+      return video.image;
+    }
+
+    return this.videoPoster;
+  }
+
+  getHoverMedia(video: Video): string {
+    const thumbnail = (video as any)?.thumbnail as string | undefined;
+    return video.image || thumbnail || video.screenshot || this.getPoster(video);
   }
 
   onImageLoad(event: Event) {
@@ -392,5 +416,22 @@ export class VideosComponent implements OnInit {
     if (target && 'classList' in target) {
       target.classList.remove('blur-preview', 'shimmer');
     }
+  }
+
+  formatDate(value?: string): string {
+    if (!value) {
+      return '';
+    }
+
+    const parsed = new Date(value);
+    if (isNaN(parsed.getTime())) {
+      return value;
+    }
+
+    return parsed.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 }

@@ -41,7 +41,10 @@ export class StoreProductsComponent {
           '/img/zigzag/zigzag2.png',
           '/img/zigzag/zigzag3.png',
           '/img/zigzag/zigzag4.png',
-          '/img/zigzag/zigzag0.png',
+          '/img/zigzag/zigzag1.png',
+          '/img/zigzag/zigzag2.png',
+          '/img/zigzag/zigzag3.png',
+          '/img/zigzag/zigzag4.png',
         ];
 
         const filtered = (data?.data || []).filter((p: Product) =>
