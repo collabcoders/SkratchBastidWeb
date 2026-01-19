@@ -31,6 +31,10 @@ export class FooterComponent {
 
   newsletterEmail = signal('');
 
+  get year() {
+    return new Date().getFullYear();
+  }
+  
   socialLinks: FooterLink[] = [
     {
       label: 'Instagram',

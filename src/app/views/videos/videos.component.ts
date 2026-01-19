@@ -56,30 +56,21 @@ export class VideosComponent implements OnInit {
   categories: string[] = ['All'];
   categorieValues: string[] = ['all'];
 
-  // Add missing properties referenced in template and methods
-  topGrillinVideos: any[] = [
-  ];
-
-  tuesdayMorningCoffeeVideos: any[] = [];
+  videoGroups = {
+    all: {
+      section: {
+        title: 'All Videos',
+        icon: '/img/videosImg.png',
+        data: [] as Video[],
+      },
+      videos: [] as any[],
+    },
+  };
 
   bbqRecaps: any[] = [];
 
   rotwRecords: any[] = [
   ];
-
-  // Video sections for carousels
-  topGrillinSection: VideoSection = {
-    title: 'New in Top Grillin',
-    icon: '/img/videosImg.png',
-    data: [],
-  };
-
-  tuesdayMorningCoffeeSection: any = {
-    title: 'Tuesday Morning Coffee',
-    icon: '/img/videosImg.png',
-    data: [
-    ],
-  };
 
   simpleBBQSection: BBQRecapSection = {
     title: 'BBQ Recaps',
@@ -120,11 +111,10 @@ export class VideosComponent implements OnInit {
 
         this.apiService.getSectionData('video').subscribe({
           next: (data) => {
-            this.topGrillinSection.data = data?.data?.filter((i: any) => i.category === 'Top Grillin') || [];
-            this.tuesdayMorningCoffeeSection.data = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
-            this.topGrillinVideos = data?.data?.filter((i: any) => i.summary) || [];
-            this.tuesdayMorningCoffeeVideos = data?.data?.filter((i: any) => i.title.includes('Tuesday Morning Coffee')) || [];
-            console.log('Fetched videos:', this.topGrillinVideos);
+            const allVideos = data?.data || [];
+            this.videoGroups.all.section.data = allVideos;
+            this.videoGroups.all.videos = allVideos;
+            console.log('Fetched videos:', this.videoGroups.all.videos);
           },
           error: (err) => {
             console.error('Failed to fetch categories', err);
@@ -176,10 +166,8 @@ export class VideosComponent implements OnInit {
     const cat = this.categorieValues[this.categories.indexOf(category)] || 'all';
     this.apiService.getData('videos', `${cat?.toLowerCase()}&client=hls&sort=date&dir=desc`, '').subscribe((data: any) => {
       data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
-      this.topGrillinSection.data = data?.data || [];
-      this.tuesdayMorningCoffeeSection.data = data?.data || [];
-      this.topGrillinVideos = data?.data || [];
-      this.tuesdayMorningCoffeeVideos = data?.data || [];
+      this.videoGroups.all.section.data = data?.data || [];
+      this.videoGroups.all.videos = data?.data || [];
       this.isLoadingVideo.set(false);
       this.updatePagination();
     },(error) => {
@@ -205,9 +193,9 @@ export class VideosComponent implements OnInit {
   getCategoryVideos() {
     switch (this.selectedCategory) {
       case 'General':
-        return this.topGrillinVideos;
+        return this.videoGroups.all.videos.filter((v: any) => v.category === 'Top Grillin' || v.summary);
       case 'Tuesday Morning Coffee':
-        return this.tuesdayMorningCoffeeVideos;
+        return this.videoGroups.all.videos.filter((v: any) => v.title?.includes('Tuesday Morning Coffee'));
       case 'BBQ Recaps':
         return this.bbqRecaps.map((event: any) => ({
           href: event.href,
@@ -223,26 +211,13 @@ export class VideosComponent implements OnInit {
           timeAgo: record.artist,
         }));
       case 'Popup':
-        return this.topGrillinVideos.filter((video: any) =>
+        return this.videoGroups.all.videos.filter((video: any) =>
           video.title.toLowerCase().includes('pop')
         );
       default:
         // Return all videos combined for 'All' category or any unmatched category
         return [
-          ...this.topGrillinVideos,
-          ...this.tuesdayMorningCoffeeVideos,
-          ...this.bbqRecaps.map((event: any) => ({
-            href: event.href,
-            thumbnail: event.thumbnail,
-            title: event.title,
-            timeAgo: event.date,
-          })),
-          ...this.rotwRecords.map((record: any) => ({
-            href: record.href,
-            thumbnail: record.image,
-            title: record.title,
-            timeAgo: record.artist,
-          }))
+          ...this.videoGroups.all.videos,
         ];;
     }
   }
@@ -256,10 +231,26 @@ export class VideosComponent implements OnInit {
     }
 
     const query = this.searchQuery.toLowerCase();
-    return categoryVideos.filter((video: any) =>
-      video.title.toLowerCase().includes(query) ||
-      (video.timeAgo && video.timeAgo.toLowerCase().includes(query))
-    );
+    const searchFieldOne = 'title';
+    const searchFieldTwo = 'featuring';
+
+    return categoryVideos.filter((video: any) => {
+      const hasFieldOne = !!video[searchFieldOne];
+      const hasFieldTwo = !!video[searchFieldTwo];
+
+      if (hasFieldOne && !hasFieldTwo) {
+        return video[searchFieldOne]?.toLowerCase()?.includes(query);
+      }
+
+      if (!hasFieldOne && hasFieldTwo) {
+        return video[searchFieldTwo]?.toLowerCase()?.includes(query);
+      }
+
+      return (
+        video[searchFieldOne]?.toLowerCase()?.includes(query) ||
+        video[searchFieldTwo]?.toLowerCase()?.includes(query)
+      );
+    });
   }
 
   // Get paginated videos for display

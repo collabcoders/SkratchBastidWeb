@@ -121,11 +121,8 @@
 
   <!-- All Categories View (default sections) -->
   <div >
-    <!-- New in Top Grillin Section -->
-    <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
-
-    <!-- Tuesday Morning Coffee Section -->
-    <app-video-carousel [section]="tuesdayMorningCoffeeSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
+    <!-- All Videos Section -->
+    <app-video-carousel [section]="videoGroups.all.section" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
 
     <!-- BBQ Recaps Section -->
     <app-bbq-recap-carousel [section]="$any(simpleBBQSection)" [isLoadingVideo]="isLoadingRecap"></app-bbq-recap-carousel>
