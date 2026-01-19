@@ -76,14 +76,6 @@ export class FooterComponent {
       label: 'Events',
       href: '/events',
     },
-  ];
-
-  pageLinksColumn2: FooterLink[] = [
-    {
-      label: 'Brand Partnerships',
-      href: 'mailto:management@skratchbastid.com',
-      external: true,
-    },
     {
       label: 'Top Grillin',
       href: '/topgrillin',
@@ -99,6 +91,9 @@ export class FooterComponent {
       href: 'https://shop.skratchbastid.com/',
       external: true,
     },
+  ];
+
+  pageLinksColumn2: FooterLink[] = [
     {
       label: 'Contact',
       href: 'javascript:;',

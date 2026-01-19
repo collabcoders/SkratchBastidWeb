@@ -51,53 +51,15 @@
           </li>
           }
         </ul>
-        <ul
-          class="space-y-2 text-[#8996A2] uppercase font-semibold border-b md:border-0 border-[#29404E] md:pb-0 pb-8"
-        >
-          @for (link of pageLinksColumn2; track link.label) {
-          <li>
-            @if (link.action) {
-            <a href="javascript:;" (click)="handleLinkClick(link)" class="hover:underline">{{ link.label }}</a>
-            } @else {
-            @if (!link.external) {
-            <a [routerLink]="link.href" class="hover:underline">{{ link.label }}</a>
-            } @else {
-            <a href="{{link.href}}" target="_blank" rel="noopener noreferrer" class="hover:underline">{{ link.label }}</a>
-            }
-            }
-          </li>
-          }
-        </ul>
       </div>
     </div>
 
     <!-- Account Section -->
     <div>
-      <h3 class="!text-lg font-bold mb-4 uppercase">Account</h3>
-      <ul
-        class="space-y-2 text-[#8996A2] uppercase font-semibold border-b md:border-0 border-[#29404E] md:pb-0 pb-8"
-      >
-        @for (link of accountLinks; track link.label) {
-        <li>
-          <a href="javascript:;" (click)="handleLinkClick(link)" class="hover:underline">
-            {{ link.label }}
-          </a>
-        </li>
-        }
-      </ul>
-
-      <h3 class="!text-lg font-bold mb-4 mt-6 uppercase">Legal</h3>
-      <ul
-        class="space-y-2 text-[#8996A2] uppercase font-semibold border-b md:border-0 border-[#29404E] md:pb-0 pb-8"
-      >
-        @for (link of legalLinks; track link.label) {
-        <li>
-          <a href="javascript:;" (click)="handleLinkClick(link)" class="hover:underline">
-            {{ link.label }}
-          </a>
-        </li>
-        }
-      </ul>
+      <h3 class="!text-lg font-bold mb-4 uppercase">Contact</h3>
+      <div class="text-[#8996A2] border-b md:border-0 border-[#29404E] md:pb-0 pb-8 leading-relaxed">
+        <span class="cursor-pointer link" style="text-decoration: underline; color: #ff5941;" (click)="openContactModal()">Contact us</span> regarding brand partnerships, booking inquiries, Skratch Bastid online store support, website technical support, Top Grillin' account support, billing inquiries, or any general inquiries. <span class="cursor-pointer link" style="text-decoration: underline; color: #ff5941;" (click)="openContactModal()">Click here</span> to open our contact form and your message will be automatically routed to the appropriate team member.
+      </div>
     </div>
 
     <!-- Newsletter Section -->
