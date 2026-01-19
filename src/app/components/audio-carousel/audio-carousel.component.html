@@ -122,8 +122,8 @@
                 <!-- External Link -->
                 <a
                   [href]="mix.file"
-                  [attr.rel]="mix.file?.includes('http') ? 'noopener noreferrer' : null"
-                  [attr.target]="mix.file?.includes('http') ? '_blank' : null"
+                  [attr.rel]="mix.file.includes('http') ? 'noopener noreferrer' : null"
+                  [attr.target]="mix.file.includes('http') ? '_blank' : null"
                   class="group relative block"
                 >
                   <img
