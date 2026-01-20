@@ -1,10 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioService } from '@shared/services/audio.service';
+import { ImagePipe } from '@shared/pipes/image.pipe';
 
 @Component({
   selector: 'app-audio-player-bar',
-  imports: [CommonModule],
+  imports: [CommonModule, ImagePipe],
   templateUrl: './audio-player-bar.component.html',
   styleUrl: './audio-player-bar.component.scss',
 })

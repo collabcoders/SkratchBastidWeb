@@ -23,7 +23,7 @@
         <div class="flex items-center space-x-3 flex-1 min-w-0">
           <div class="relative">
             <img
-              [src]="audioService.currentTrack()?.image"
+              [src]="audioService.currentTrack()?.image | imageUrl:300:300:true"
               [alt]="audioService.currentTrack()?.title"
               class="w-10 h-10 rounded-lg object-cover"
             />
@@ -93,7 +93,7 @@
       <div class="flex items-center space-x-3 flex-1 min-w-0">
         <div class="relative">
           <img
-            [src]="audioService.currentTrack()?.image"
+            [src]="audioService.currentTrack()?.image | imageUrl:300:300:true"
             [alt]="audioService.currentTrack()?.title"
             class="w-12 h-12 rounded-lg object-cover"
           />

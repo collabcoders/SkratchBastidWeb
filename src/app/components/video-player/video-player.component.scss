@@ -475,6 +475,46 @@ $link: #00d3e6;
   // Add any specific styling for v-small class if needed
 }
 
+.video-shell {
+  position: relative;
+  padding-top: 56.25%;
+  background: #000;
+}
+
+.video-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Keep resize control away from fullscreen button */
+.video-shell .resize {
+  bottom: 3.25rem !important;
+  right: 1rem !important;
+}
+
+@media (max-width: 768px) {
+  .video-shell .resize {
+    bottom: 3rem !important;
+    right: 0.75rem !important;
+  }
+}
+
+/* Force Video.js progress and time controls to show for VOD */
+.video-js .vjs-progress-control,
+.video-js .vjs-current-time,
+.video-js .vjs-duration,
+.video-js .vjs-time-divider {
+  display: flex !important;
+  align-items: center;
+}
+
+.video-js .vjs-time-divider {
+  width: auto;
+}
+
 .hidden-time {
   display: none !important;
 }

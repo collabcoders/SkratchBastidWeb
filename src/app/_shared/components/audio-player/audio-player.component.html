@@ -23,6 +23,7 @@
 
             @if (music != null) {
                 <div class="player-img">
+                    HEre?
                     <img [src]="music.image | imageUrl:180:180:true" [alt]="music.title" (error)="errorImage($event)" />
                 </div>
             } @else {
@@ -114,6 +115,7 @@
             <div class="modal2-body">
                 @if (music != null) {
                     <div class="player-audio-img">
+                        here?
                         <img [src]="music.image | imageUrl:1000:1000:true" [alt]="music.title" (error)="errorImage($event)" />
                     </div>
                 } @else {

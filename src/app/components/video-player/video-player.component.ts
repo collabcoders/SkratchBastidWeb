@@ -58,6 +58,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   private player: any = null;
   isLoadVideo = false;
   isUserBeats = false;
+  private playerInitialized = false;
 
   // Bookmarks
   bookmarkobj: Bookmark = new Bookmark();
@@ -79,6 +80,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   // Related videos
   relatedvideos: Video[] = [];
+
+  private viewReady = false;
+  private pendingVideo: { data: Video; isrel: boolean } | null = null;
+
+  @ViewChild('videoEl') videoElementRef!: ElementRef<HTMLVideoElement>;
 
 
   // Always bind distroyVideo to this instance in the constructor
@@ -141,6 +147,30 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     setTimeout(() => {
       this.initializePlayer();
     }, 100);
+
+    this.viewReady = true;
+    if (this.pendingVideo) {
+      const { data, isrel } = this.pendingVideo;
+      this.pendingVideo = null;
+      this.setPlayer(isrel, data);
+    }
+
+    const modalEl = document.getElementById('videoModal');
+    if (modalEl) {
+      modalEl.addEventListener('shown.bs.modal', () => {
+        // Ensure player exists when modal opens
+        const existing = this.getPlayerInstance();
+        if (!existing) {
+          this.initializePlayer();
+        }
+
+        const player = this.getPlayerInstance();
+        if (player && this.videohls) {
+          player.src({ src: this.videohls, type: 'application/x-mpegURL' });
+          player.play();
+        }
+      });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -157,12 +187,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     }
 
     if (changes?.['video']?.currentValue?.videoId === changes?.['video']?.previousValue?.videoId) {
-      if (videojs.getPlayers()['videoPlay']) {
-        var player = videojs('videoPlay');
-        console.log("player", player);
-        if (player) {
-          player.play();
-        }
+      const player = this.getPlayerInstance();
+      if (player && !player.isDisposed?.()) {
+        player.play();
       }
     }
   }
@@ -182,23 +209,21 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   distroyVideo() {
     console.log("this.player", this.player);
     try {
-      console.log("distroyVideo", videojs.getPlayers()['videoPlay'])
-      if (videojs.getPlayers()['videoPlay']) {
-        const player = videojs.getPlayer('videoPlay');
-        console.log("player", player);
-        if (player  && !player?.isDisposed) {
-          player.pause();
-          player.dispose();
-          console.log("PAUSE")
-        }
+      const player = this.getPlayerInstance();
+      if (player && !player?.isDisposed?.()) {
+        player.pause();
+        player.currentTime(0);
+        player.poster(this.videoPoster);
+        console.log("PAUSE")
       }
     } catch(err) {
 
     }
     try {
       if (this.player && !this.player?.isDisposed_) {
-        this.player?.pause();
-        this.player?.dispose();
+        this.player.pause();
+        this.player.currentTime(0);
+        this.player.poster(this.videoPoster);
         console.log("PAUSE")
       }
     } catch(err) {
@@ -235,13 +260,6 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.videohls = '';
     this.videotitle = '';
     this.videoId = 0;
-    // Clear video source to force reload next time
-    if (videojs.getPlayers()['videoPlay']) {
-      const player = videojs.getPlayer('videoPlay');
-      if (player) {
-        player.src('');
-      }
-    }
     $('#videoModal').modal('hide');
     this.isClose.next(this.video);
   }
@@ -317,9 +335,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   setPlayer(isrel: boolean, videoData: Video) {
-    const videoElement = document.getElementById('videoPlay') as HTMLVideoElement | null;
-    if (!videoElement) {
-      console.error('videoPlay element not found');
+    const videoElement = this.videoElementRef?.nativeElement;
+    if (!videoElement || !this.viewReady) {
+      this.pendingVideo = { data: videoData, isrel };
       return;
     }
 
@@ -332,13 +350,18 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         return 'https://player.vimeo.com/external/' + video.sourceId + '.m3u8?s=' + video.hls;
       };
       this.videohls = getVideoUrl(this.video);
-      // Remove any existing player instance
-     if (videojs.getPlayers()['videoPlay']) {
-        const oldPlayer = videojs.getPlayer('videoPlay');
-        if (oldPlayer) {
-          oldPlayer.dispose();
+      const existing = this.getPlayerInstance();
+      if (existing && !existing.isDisposed?.()) {
+        this.player = existing;
+        existing.src({ src: this.videohls, type: 'application/x-mpegURL' });
+        existing.play();
+        if (!this.playerInitialized) {
+          this.setupPlayerEvents(existing);
+          this.playerInitialized = true;
         }
+        return;
       }
+
       // Always create a new player with autoplay true
       const options = {
         autoplay: true,
@@ -355,12 +378,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       });
       player.ready(() => {
         player.play();
-        this.setupPlayerEvents(player);
+        if (!this.playerInitialized) {
+          this.setupPlayerEvents(player);
+          this.playerInitialized = true;
+        }
       });
       setTimeout(() => {
-        if (videojs('videoPlay').remainingTime && videojs('videoPlay').duration) {
-          console.log("REMAINING", videojs('videoPlay').remainingTime());
-          console.log("DURATION", videojs('videoPlay').duration());
+        const active = this.getPlayerInstance();
+        if (active && !active.isDisposed?.() && active.remainingTime && active.duration) {
+          console.log("REMAINING", active.remainingTime());
+          console.log("DURATION", active.duration());
         }
         this.cdr.detectChanges();
       }, 1000);
@@ -368,20 +395,15 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   initializePlayer() {
-    const videoElement = document.getElementById('videoPlay');
+    const videoElement = this.videoElementRef?.nativeElement;
     if (!videoElement) {
-      console.error('Video element not found');
-      // Try again after a short delay
-      setTimeout(() => {
-        this.initializePlayer();
-      }, 500);
       return;
     }
 
     // Don't dispose existing player here, just ensure it exists
     if (!videojs.getPlayers()['videoPlay']) {
       // Initialize new player only if it doesn't exist
-      const player = videojs('videoPlay', {
+      const player = videojs(videoElement, {
         controls: true,
         fluid: true,
         responsive: true,
@@ -393,26 +415,37 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
       player.ready(() => {
         console.log('Player is ready');
-        this.setupPlayerEvents(player);
+        if (!this.playerInitialized) {
+          this.setupPlayerEvents(player);
+          this.playerInitialized = true;
+        }
       });
     } else {
       console.log('Player already exists');
       const existingPlayer = videojs.getPlayer('videoPlay');
       if (existingPlayer) {
         this.player = existingPlayer;
-        this.setupPlayerEvents(existingPlayer);
+        if (!this.playerInitialized) {
+          this.setupPlayerEvents(existingPlayer);
+          this.playerInitialized = true;
+        }
       }
     }
   }
 
   private getPlayerInstance() {
     if (this.player) {
-      return this.player;
+      if (this.player.isDisposed?.()) {
+        this.player = null;
+        this.playerInitialized = false;
+      } else {
+        return this.player;
+      }
     }
 
     try {
       const existing = videojs.getPlayer('videoPlay');
-      if (existing) {
+      if (existing && !existing.isDisposed?.()) {
         this.player = existing;
         return existing;
       }
@@ -420,7 +453,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
     try {
       const fallback = (videojs as any)?.players?.videoPlay;
-      if (fallback) {
+      if (fallback && !fallback.isDisposed?.()) {
         this.player = fallback;
         return fallback;
       }
@@ -468,57 +501,15 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       }
     });
     
-    player.on('timeupdate', () => {
-      this.timeUpdate();
-    });
-    
     player.on('error', (e: any) => {
-      console.error('Video player error:', e);
+      const src = typeof player?.currentSrc === 'function' ? player.currentSrc() : this.videohls;
+      const detail = typeof player?.error === 'function' ? player.error() : undefined;
+      console.error('Video player error:', e, 'detail:', detail, 'source:', src);
     });
   }
 
   timeUpdate(val?: number) {
-    const time = document.getElementsByClassName('vjs-remaining-time');
-    const duration = document.getElementsByClassName('vjs-remaining-time-display');
-    const widthDuration: any = document.getElementsByClassName('vjs-play-progress');
-    if (!val) {
-      if (time?.length > 0) {
-        if (time[time?.length - 1].children?.length > 1) {
-          time[time?.length - 1].children[1].setAttribute('class', 'hidden-time');
-        }
-      }
-      if (widthDuration?.length > 0) {
-        // const result = (100 - ((videojs(`videoPlay`).remainingTime() / videojs(`videoPlay`)?.duration() || 0) * 100));
-        const result = 70
-        widthDuration[widthDuration?.length - 1].style.width = result + '%';
-      }
-      if (duration && duration?.length > 0) {
-        var toHHMMSS = (secs: any) => {
-          var sec_num = parseInt(secs);
-          var hours   = Math.floor(sec_num / 3600)
-          var minutes = Math.floor(sec_num / 60) % 60
-          var seconds = sec_num % 60
-
-          return [hours,minutes,seconds]
-              .map(v => v < 10 ? "0" + v : v)
-              .filter((v,i) => v !== "00" || i > 0)
-              .join(":")
-        }
-        duration[duration.length - 1].innerHTML = "" + toHHMMSS(videojs(`videoPlay`).remainingTime());
-      }
-    } else {
-        if (time?.length > 0) {
-          if (time[time?.length - 1].children?.length > 1) {
-            time[time?.length - 1].children[1].setAttribute('class', 'hidden-time');
-          }
-        }
-        if (widthDuration?.length > 0) {
-          widthDuration[widthDuration?.length - 1].style.width = 0 + '%';
-        }
-        if (duration && duration?.length > 0) {
-          duration[duration.length - 1].innerHTML = "" + '00:00:00';
-      }
-    }
+    // No-op: allow native Video.js controls to manage progress/duration
   }
 
   showreldetails(item: Video | null, isrel: boolean) {
@@ -934,8 +925,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   setCurrentTime(time: number) {
-    let player = videojs('videoPlay');
-    player.currentTime(time);
+    const player = this.getPlayerInstance();
+    if (player && !player.isDisposed?.()) {
+      player.currentTime(time);
+    }
   }
 
   changetimeformate(time: number) {
@@ -947,8 +940,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   getCurrentTime() {
-    let player = videojs('videoPlay');
-    return player.currentTime();
+    const player = this.getPlayerInstance();
+    if (player && !player.isDisposed?.()) {
+      return player.currentTime();
+    }
+    return 0;
   }
 
   changeTimeFormat(time: number) {
