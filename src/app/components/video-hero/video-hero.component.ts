@@ -32,6 +32,9 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   @ViewChild('videoElement', { static: true }) videoElement!: ElementRef<HTMLVideoElement>;
   @Input({ required: true }) isLoadingBanner!: Signal<boolean>;
 
+  readonly transitionMs = 600;
+  readonly lastDirection = signal<'next' | 'prev'>('next');
+
   private router = Router;
   private environmentInjector = inject(EnvironmentInjector);
   private autoRotateTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -41,6 +44,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   isMuted = signal(true);
   currentVideoIndex = signal(0);
+  isTransitioning = signal(false);
   progress = signal(0);
 
   get videos(): Ads[] {
@@ -87,13 +91,13 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   previousVideo() {
     const currentIndex = this.currentVideoIndex();
     const newIndex = currentIndex === 0 ? this.videos.length - 1 : currentIndex - 1;
-    this.setIndexAndSchedule(newIndex);
+    this.setIndexAndSchedule(newIndex, 'prev');
   }
 
   nextVideo() {
     const currentIndex = this.currentVideoIndex();
     const newIndex = currentIndex === this.videos.length - 1 ? 0 : currentIndex + 1;
-    this.setIndexAndSchedule(newIndex);
+    this.setIndexAndSchedule(newIndex, 'next');
   }
 
   loadVideo() {
@@ -109,7 +113,13 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     if (index < 0 || index >= this.videos.length) {
       return;
     }
-    this.setIndexAndSchedule(index);
+    const currentIndex = this.currentVideoIndex();
+    const direction: 'next' | 'prev' = index === currentIndex
+      ? 'next'
+      : index > currentIndex
+        ? 'next'
+        : 'prev';
+    this.setIndexAndSchedule(index, direction);
   }
 
   private setupAutoRotate() {
@@ -176,13 +186,32 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     }
   }
 
-  private setIndexAndSchedule(newIndex: number) {
+  private setIndexAndSchedule(newIndex: number, direction: 'next' | 'prev') {
+    if (this.isTransitioning() || newIndex === this.currentVideoIndex()) {
+      return;
+    }
+
+    this.clearAutoRotateTimer();
+    this.clearProgressTimer();
+    this.cancelProgressRaf();
+    this.progress.set(0);
+
+    this.lastDirection.set(direction);
+    this.isTransitioning.set(true);
     this.currentVideoIndex.set(newIndex);
     this.loadVideo();
-    this.scheduleRotationForCurrent();
+
+    setTimeout(() => {
+      this.isTransitioning.set(false);
+      this.scheduleRotationForCurrent();
+    }, this.transitionMs);
   }
 
   private scheduleRotationForCurrent() {
+    if (this.isTransitioning()) {
+      return;
+    }
+
     this.clearAutoRotateTimer();
     this.clearProgressTimer();
     this.cancelProgressRaf();
@@ -209,7 +238,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     const banners = this.appData.banners();
     const loading = this.isLoadingBanner ? this.isLoadingBanner() : false;
 
-    if (!banners.length || loading) {
+    if (!banners.length || loading || this.isTransitioning()) {
       this.clearAutoRotateTimer();
       this.clearProgressTimer();
       this.cancelProgressRaf();

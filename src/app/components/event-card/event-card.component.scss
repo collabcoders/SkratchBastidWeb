@@ -1,4 +1,8 @@
 /* Event Card Component Styles */
+:host {
+  display: block;
+  width: 100%;
+}
 .hover-effect {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -6,6 +10,22 @@
 .hover-effect:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.event-card__media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #f9fafb;
+}
+
+.event-card__image {
+  object-fit: contain;
+  width: 100%;
+  height: auto;
+  max-height: 520px;
+  display: block;
 }
 
 .event-card__link {

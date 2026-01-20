@@ -1,8 +1,8 @@
-<div class="event-card hover-effect flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm w-full">
-  <div class="relative h-56 w-full bg-gray-100">
+<div class="event-card hover-effect flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm w-full">
+  <div class="event-card__media relative w-full bg-gray-100">
     @if (event().image) {
       <img
-        class="h-full w-full object-cover"
+        class="event-card__image w-full object-contain"
         [src]="event().image"
         [alt]="event().title || 'Event image'"
         loading="lazy"

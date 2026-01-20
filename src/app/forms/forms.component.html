@@ -30,9 +30,9 @@
                 <div class="text-sm text-gray-500">Check back soon for new show announcements!</div>
               </div>
             } @else {
-              <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mx-auto">
+              <div class="modal-events-masonry w-full max-w-6xl mx-auto">
                 @for (event of upcomingEvents; track event.eventId) {
-                  <app-event-card class="h-full" [event]="event"></app-event-card>
+                  <app-event-card class="modal-event-item" [event]="event"></app-event-card>
                 }
               </div>
             }

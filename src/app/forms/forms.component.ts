@@ -237,10 +237,10 @@ export class FormsComponent implements AfterViewInit, OnInit {
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
       if (event?.constructor?.name === 'NavigationEnd' && event.url) {
-        const hasToken = !!this.token.getToken();
+        const isAuthenticated = !!this.token.getToken() && !this.token.isExpired();
 
         if (event.url.includes('/login')) {
-          if (hasToken) {
+          if (isAuthenticated) {
             return;
           }
           setTimeout(() => this.openLoginModal(), 0);
@@ -248,7 +248,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
         }
 
         if (event.url.includes('/join')) {
-          if (hasToken) {
+          if (isAuthenticated) {
             return;
           }
           setTimeout(() => this.openRegisterModal(), 0);
@@ -443,7 +443,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   openLoginModal() {
     if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+      const el = document.getElementById('loginModal');
+      if (!el) { return; }
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, { backdrop: 'static', keyboard: false });
       modal.show();
     } else if (typeof $ !== 'undefined') {
       $('#loginModal').modal('show');
@@ -452,7 +454,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   openRegisterModal() {
     if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('registerModal'));
+      const el = document.getElementById('registerModal');
+      if (!el) { return; }
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, { backdrop: 'static', keyboard: false });
       modal.show();
     } else if (typeof $ !== 'undefined') {
       $('#registerModal').modal('show');

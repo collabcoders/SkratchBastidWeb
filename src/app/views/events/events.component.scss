@@ -1,1 +1,22 @@
 /* Events Component Styles */
+
+.events-masonry {
+	column-gap: 1.5rem;
+	column-width: 320px;
+	display: block;
+}
+
+@media (max-width: 1023px) {
+	.events-masonry {
+		column-width: 280px;
+	}
+}
+
+.event-masonry-item {
+	display: inline-block;
+	width: 100%;
+	margin: 0 0 1.5rem;
+	break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	column-break-inside: avoid;
+}
