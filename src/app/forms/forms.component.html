@@ -291,12 +291,12 @@
     data-bs-keyboard="false" aria-hidden="true">
     <form [formGroup]="contactForm" (ngSubmit)="saveContact()" class="needs-validation" novalidate>
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content modal-login">
+            <div class="modal-content modal-login modal-light">
 
-                <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-                  <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact Us</h2>
+                <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center bg-white !bg-white !bg-white text-gray-900">
+                  <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px; color: #333;">Contact Us</h2>
                   <button type="button"
-                    class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+                    class="text-gray-700 hover:text-gray-900 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
                     data-bs-dismiss="modal" aria-label="Close">×</button>
                 </div>
 
