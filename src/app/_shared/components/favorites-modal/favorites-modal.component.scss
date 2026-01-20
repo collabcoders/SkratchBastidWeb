@@ -36,7 +36,7 @@
 }
 
 /* Modal content animation */
-.bg-black.rounded-lg {
+.bg-white.rounded-xl {
   animation: slideUp 0.3s ease-out;
 }
 
@@ -51,10 +51,10 @@
   }
 }
 
-/* Custom scrollbar for the content area */
+/* Custom scrollbar for the content area - light */
 .overflow-y-auto {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
 }
 
 .overflow-y-auto::-webkit-scrollbar {
@@ -66,12 +66,12 @@
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(107, 114, 128, 0.4);
   border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(75, 85, 99, 0.6);
 }
 
 /* Grid layout responsive adjustments */
@@ -88,14 +88,17 @@
 }
 
 /* Video thumbnail hover effects */
-.group:hover .group-hover\\:opacity-100 {
+.group:hover .group-hover\:opacity-100 {
   opacity: 1;
 }
 
-/* Play button hover effect */
-.bg-white.bg-opacity-20:hover {
-  background-color: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
+.hover-img {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.group:hover .hover-img {
+  opacity: 1;
 }
 
 p {
@@ -105,7 +108,7 @@ p {
 /* Heart button hover effect */
 .text-red-500:hover {
   color: #dc2626;
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 /* Line clamp utility for text truncation */

@@ -61,7 +61,7 @@
 
         <!-- Navigation Controls -->
         @if (videos.length > 1) {
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
           <!-- Previous Button -->
           <button (click)="previousVideo()"
             class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
@@ -85,6 +85,26 @@
           </button>
         </div>
         }
+      </div>
+
+      <!-- Position Indicators (bottom-right) -->
+      @if (videos.length > 1) {
+        <div class="indicator-wrapper">
+          @for (banner of videos; track banner.adId; let i = $index) {
+            <button type="button" (click)="goToIndex(i)" class="indicator-dot" [ngClass]="{'active': currentVideoIndex() === i}">
+              {{ i + 1 }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Progress bar (bottom full width) -->
+  @if (videos.length) {
+    <div class="progress-wrapper">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progress()"></div>
       </div>
     </div>
   }

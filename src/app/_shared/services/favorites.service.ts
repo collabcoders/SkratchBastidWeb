@@ -6,6 +6,7 @@ import { environment } from '@env/environment';
 import { Config } from '@shared/config';
 import { FavoriteId } from '@shared/models/favorite-id';
 import { AlertService } from './alert.service';
+import { TokenService } from './token.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class FavoritesService {
   private favoritesSubject = new BehaviorSubject<Favorite[]>([]);
   public favorites$ = this.favoritesSubject.asObservable();
 
-  constructor(private apiService: ApiService, private alertService: AlertService,) {
+  constructor(private apiService: ApiService, private alertService: AlertService, private token: TokenService,) {
     this.loadFavorites();
   }
 
@@ -38,6 +39,13 @@ export class FavoritesService {
   }
 
   loadFavorites() {
+    // Skip fetching favorites when not logged in
+    const token = this.token.getToken();
+    if (!token) {
+      this.favoritesSubject.next([]);
+      return;
+    }
+
     if (environment.ismock) {
       this.apiService.getSectionData("favorite").subscribe({
         next: (data) => {

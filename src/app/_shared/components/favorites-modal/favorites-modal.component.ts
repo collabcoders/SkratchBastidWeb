@@ -18,6 +18,7 @@ export class FavoritesModalComponent implements OnInit {
 
   favorites: Favorite[] = [];
   loading = false;
+  private readonly videoPoster = '/public/logo.png';
 
   constructor(
     private videoService: VideoService,
@@ -44,6 +45,49 @@ export class FavoritesModalComponent implements OnInit {
     if (event.target === event.currentTarget) {
       this.onClose();
     }
+  }
+
+  getPoster(favorite: Favorite): string {
+    const isGif = (src?: string) => !!src && src.toLowerCase().includes('.gif');
+    if (favorite.image && !isGif(favorite.image)) {
+      return favorite.image;
+    }
+    return favorite.image;
+  }
+
+  getHoverMedia(favorite: Favorite): string {
+    return favorite.image || this.videoPoster;
+  }
+
+  showGif(event: any, favorite: Favorite) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    const hoverSrc = this.getHoverMedia(favorite);
+    if (hoverSrc) {
+      target.src = hoverSrc;
+    }
+  }
+
+  showScreenshot(event: any, favorite: Favorite) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    const poster = this.getPoster(favorite);
+    if (poster) {
+      target.src = poster;
+    }
+  }
+
+  checkImage(event: any, favorite: Favorite) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    const imgElement = new Image();
+    imgElement.src = target.src;
+    imgElement.addEventListener('error', () => {
+      target.src = this.videoPoster;
+      imgElement.onload = null;
+    });
+  }
+
+  errorImage(event: any, favorite: Favorite) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    target.src = this.videoPoster;
   }
 
   playVideo(favorite: Favorite) {

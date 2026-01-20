@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, signal, ChangeDetectionStrategy, OnInit, OnDestroy, Signal, Input } from '@angular/core';
+import { Component, ElementRef, ViewChild, signal, ChangeDetectionStrategy, OnInit, OnDestroy, Signal, Input, effect, EffectRef, runInInjectionContext, EnvironmentInjector, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Ads } from '@shared/models/ads';
@@ -33,9 +33,15 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   @Input({ required: true }) isLoadingBanner!: Signal<boolean>;
 
   private router = Router;
+  private environmentInjector = inject(EnvironmentInjector);
+  private autoRotateTimeout: ReturnType<typeof setTimeout> | null = null;
+  private rotationEffect?: EffectRef;
+  private progressInterval: ReturnType<typeof setInterval> | null = null;
+  private progressRaf: number | null = null;
 
   isMuted = signal(true);
   currentVideoIndex = signal(0);
+  progress = signal(0);
 
   get videos(): Ads[] {
     return this.appData.banners();
@@ -50,10 +56,15 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.setupVideo();
     this.isLoggedIn$ = this.token.isValid(undefined);
+    this.setupAutoRotate();
   }
 
   ngOnDestroy() {
     // Clean up video if needed
+    this.clearAutoRotateTimer();
+    this.clearProgressTimer();
+    this.cancelProgressRaf();
+    this.rotationEffect?.destroy();
   }
 
   setupVideo() {
@@ -76,23 +87,138 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   previousVideo() {
     const currentIndex = this.currentVideoIndex();
     const newIndex = currentIndex === 0 ? this.videos.length - 1 : currentIndex - 1;
-    this.currentVideoIndex.set(newIndex);
-    this.loadVideo();
+    this.setIndexAndSchedule(newIndex);
   }
 
   nextVideo() {
     const currentIndex = this.currentVideoIndex();
     const newIndex = currentIndex === this.videos.length - 1 ? 0 : currentIndex + 1;
-    this.currentVideoIndex.set(newIndex);
-    this.loadVideo();
+    this.setIndexAndSchedule(newIndex);
   }
 
   loadVideo() {
-    if (this.videoElement?.nativeElement) {
-      const video = this.videoElement.nativeElement;
-      video.src = this.videos[this.currentVideoIndex()].image;
-      video.load();
+    const video = this.videoElement?.nativeElement;
+    if (!video) {
+      return;
     }
+    video.src = this.videos[this.currentVideoIndex()].image;
+    video.load();
+  }
+
+  goToIndex(index: number) {
+    if (index < 0 || index >= this.videos.length) {
+      return;
+    }
+    this.setIndexAndSchedule(index);
+  }
+
+  private setupAutoRotate() {
+    if (this.rotationEffect) {
+      return;
+    }
+
+    this.rotationEffect = runInInjectionContext(this.environmentInjector, () =>
+      effect(() => this.handleAutoRotateEffect())
+    );
+  }
+
+  private clearAutoRotateTimer() {
+    if (this.autoRotateTimeout) {
+      clearTimeout(this.autoRotateTimeout);
+      this.autoRotateTimeout = null;
+    }
+  }
+
+  private startProgress(seconds: number) {
+    const durationMs = Math.max(1, seconds) * 1000;
+    const start = performance.now();
+
+    this.progress.set(0);
+    this.clearProgressTimer();
+    this.cancelProgressRaf();
+
+    const tick = () => {
+      const elapsed = performance.now() - start;
+      const pct = Math.min(100, (elapsed / durationMs) * 100);
+      this.progress.set(pct);
+
+      if (pct < 100) {
+        this.progressRaf = requestAnimationFrame(tick);
+      } else {
+        this.cancelProgressRaf();
+      }
+    };
+
+    // Fallback interval in case RAF is throttled heavily
+    this.progressInterval = setInterval(() => {
+      const elapsed = performance.now() - start;
+      const pct = Math.min(100, (elapsed / durationMs) * 100);
+      this.progress.set(pct);
+      if (pct >= 100) {
+        this.clearProgressTimer();
+      }
+    }, 250);
+
+    this.progressRaf = requestAnimationFrame(tick);
+  }
+
+  private clearProgressTimer() {
+    if (this.progressInterval) {
+      clearInterval(this.progressInterval);
+      this.progressInterval = null;
+    }
+  }
+
+  private cancelProgressRaf() {
+    if (this.progressRaf !== null) {
+      cancelAnimationFrame(this.progressRaf);
+      this.progressRaf = null;
+    }
+  }
+
+  private setIndexAndSchedule(newIndex: number) {
+    this.currentVideoIndex.set(newIndex);
+    this.loadVideo();
+    this.scheduleRotationForCurrent();
+  }
+
+  private scheduleRotationForCurrent() {
+    this.clearAutoRotateTimer();
+    this.clearProgressTimer();
+    this.cancelProgressRaf();
+    this.progress.set(0);
+
+    if (!this.videos.length) {
+      return;
+    }
+
+    const current = this.videos[this.currentVideoIndex()];
+    const seconds = Number(current?.seconds) || 5;
+    const delayMs = Math.max(1, seconds) * 1000;
+
+    this.startProgress(seconds);
+
+    this.autoRotateTimeout = setTimeout(() => {
+      if (this.videos.length > 1) {
+        this.nextVideo();
+      }
+    }, delayMs);
+  }
+
+  private handleAutoRotateEffect() {
+    const banners = this.appData.banners();
+    const loading = this.isLoadingBanner ? this.isLoadingBanner() : false;
+
+    if (!banners.length || loading) {
+      this.clearAutoRotateTimer();
+      this.clearProgressTimer();
+      this.cancelProgressRaf();
+      this.progress.set(0);
+      return;
+    }
+
+    // Re-run scheduling when banners change or index changes
+    this.scheduleRotationForCurrent();
   }
 
   getCurrentVideo(): Ads {

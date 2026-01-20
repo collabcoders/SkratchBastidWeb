@@ -6,6 +6,7 @@ import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
 import { Config } from '@shared/config';
 import { TokenService } from '@shared/services/token.service';
+import { FavoritesService } from '@shared/services/favorites.service';
 import { AppData } from '../app.data';
 import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '@env/environment';
@@ -62,6 +63,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
               console.log(data);
               if (this.isReJoin) {
                 this.token.set(data?.data);
+                this.token.isValid(true);
+                this.favoritesService.loadFavorites();
                 // this.logIn.emit(); // Uncomment if you have logIn EventEmitter
               }
               // HIDE REGISTER MODAL
@@ -162,7 +165,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.loadUpcomingEvents();
   }
 
-  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService,) {
+  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService,) {
     this.router = inject(Router);
 
     this.loginForm = this.fb.group({
@@ -234,6 +237,24 @@ export class FormsComponent implements AfterViewInit, OnInit {
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
       if (event?.constructor?.name === 'NavigationEnd' && event.url) {
+        const hasToken = !!this.token.getToken();
+
+        if (event.url.includes('/login')) {
+          if (hasToken) {
+            return;
+          }
+          setTimeout(() => this.openLoginModal(), 0);
+          return;
+        }
+
+        if (event.url.includes('/join')) {
+          if (hasToken) {
+            return;
+          }
+          setTimeout(() => this.openRegisterModal(), 0);
+          return;
+        }
+
         if (event.url.includes('/privacypolicy')) {
           setTimeout(() => this.openPrivacyModal(), 0);
         } else if (event.url.includes('/cancelpolicy')) {
@@ -242,10 +263,6 @@ export class FormsComponent implements AfterViewInit, OnInit {
           setTimeout(() => this.openRefundModal(), 0);
         } else if (event.url.includes('/contact')) {
           setTimeout(() => this.openContactModal(), 0);
-        } else if (event.url.includes('/login')) {
-          setTimeout(() => this.openLoginModal(), 0);
-        } else if (event.url.includes('/join')) {
-          setTimeout(() => this.openRegisterModal(), 0);
         } else if (event.url.includes('/events')) {
           setTimeout(() => this.openUpcomingEventsModal(), 0);
         }
@@ -291,6 +308,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
           this.alertService.error('Error', data.msg);
         } else {
           this.token.set(data.data);
+          this.token.isValid(true);
+          this.favoritesService.loadFavorites();
           if (typeof bootstrap !== 'undefined') {
             const modalEl = document.getElementById('loginModal');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -392,29 +411,13 @@ export class FormsComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    // Listen for Bootstrap modal close events and navigate to '/'
-    const modalIds = [
-      'loginModal',
-      'registerModal',
-      'contactModal',
-      'profileModal',
-      'privacyModal',
-      'cancelModal',
-      'refundModal',
-    ];
-    modalIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('hidden.bs.modal', () => {
-          this.router.navigate(['/']);
-        });
-        if (id === 'profileModal') {
-          el.addEventListener('show.bs.modal', () => {
-            this.loadProfileModal(false);
-          });
-        }
-      }
-    });
+    // Attach profile modal load hook without redirecting on close
+    const profileEl = document.getElementById('profileModal');
+    if (profileEl) {
+      profileEl.addEventListener('show.bs.modal', () => {
+        this.loadProfileModal(false);
+      });
+    }
   }
   // ...existing code...
 
@@ -775,7 +778,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
     } else {
       this.apiService.getData('events', '', '').subscribe({
         next: (data: any) => {
-          this.upcomingEvents = filteredByDate(data?.data || []);
+          // this.upcomingEvents = filteredByDate(data?.data || []);
+          this.upcomingEvents = (data?.data || []);
           this.isLoadingUpcoming.set(false);
         },
         error: () => {
