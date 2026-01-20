@@ -18,7 +18,6 @@ import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/aud
     HeaderComponent,
     FooterComponent,
     AudioCarouselComponent,
-    BBQRecapCarouselComponent,
     BBQSignupFormComponent,
     AudioPlayerBarComponent,
   ],

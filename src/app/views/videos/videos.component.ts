@@ -45,7 +45,6 @@ import { finalize, take } from 'rxjs/operators';
     VideoCarouselComponent,
     BBQRecapCarouselComponent,
     RecordCarouselComponent,
-    VideoPlayerComponent,
     SearchComponent,
     PaginationComponent,
   ],

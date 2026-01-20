@@ -94,8 +94,8 @@
                   } @else {
                     <a
                       [href]="mix.file"
-                      [attr.rel]="mix.file?.includes('http') ? 'noopener noreferrer' : null"
-                      [attr.target]="mix.file?.includes('http') ? '_blank' : null"
+                      [attr.rel]="mix.file.includes('http') ? 'noopener noreferrer' : null"
+                      [attr.target]="mix.file.includes('http') ? '_blank' : null"
                       class="bg-white bg-opacity-90 rounded-full p-3 shadow-lg transition-transform duration-300 group-hover:scale-110"
                       aria-label="Open external audio"
                     >

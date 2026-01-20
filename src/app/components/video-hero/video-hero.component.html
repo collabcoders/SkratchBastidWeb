@@ -35,7 +35,7 @@
 
       <div class="flex items-center gap-4">
         <!-- Audio Control (video/mp4 only) -->
-        @if ((getCurrentVideo().category?.toLowerCase() == 'video') || (getCurrentVideo().image?.toLowerCase()?.indexOf('.mp4') != -1)) {
+        @if ((getCurrentVideo().category.toLowerCase() == 'video') || (getCurrentVideo().image.toLowerCase().indexOf('.mp4') != -1)) {
           <button (click)="toggleMute()"
             class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
             [title]="isMuted() ? 'Unmute' : 'Mute'">
