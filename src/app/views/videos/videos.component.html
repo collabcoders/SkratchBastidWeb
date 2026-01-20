@@ -72,6 +72,15 @@
           <div class="relative flex flex-col w-full group cursor-pointer"
             style="flex-shrink: 0; scroll-snap-align: start" (click)="playVideo(video)">
             <div class="relative overflow-hidden rounded-lg">
+              <button
+                type="button"
+                class="absolute z-10 top-2 right-2 w-9 h-9 flex items-center justify-center rounded-full bg-black/60 hover:bg-black/80 transition"
+                (click)="fav($event, video)"
+                [attr.aria-label]="(video.favId ?? 0) > 0 ? 'Remove from favorites' : 'Add to favorites'">
+                <svg class="w-5 h-5" [ngClass]="{'text-red-500': (video.favId ?? 0) > 0, 'text-white': (video.favId ?? 0) <= 0}" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
               <img
                 class="rounded-lg drop-shadow-lg aspect-video w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110 blur-preview shimmer"
                 [src]="getPoster(video)"

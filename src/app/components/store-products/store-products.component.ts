@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
@@ -32,6 +32,8 @@ export class StoreProductsComponent {
     "Skratch Bastid Socks"
   ];
   isLoadingProducts: WritableSignal<boolean> = signal(false);
+  @ViewChild('storeCarousel') storeCarousel!: ElementRef<HTMLDivElement>;
+
   constructor(private apiService: ApiService, private alertService: AlertService, public appData: AppData) {
     this.isLoadingProducts.set(true);
     if (true) {
@@ -76,5 +78,15 @@ export class StoreProductsComponent {
         //     });
         // });
     }
+  }
+
+  scrollLeft() {
+    if (!this.storeCarousel) return;
+    this.storeCarousel.nativeElement.scrollBy({ left: -260, behavior: 'smooth' });
+  }
+
+  scrollRight() {
+    if (!this.storeCarousel) return;
+    this.storeCarousel.nativeElement.scrollBy({ left: 260, behavior: 'smooth' });
   }
 }

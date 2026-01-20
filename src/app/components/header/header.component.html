@@ -14,9 +14,15 @@
         @for (link of navLinks; track $index) {
         <div [class]="'link-container ' + link.hoverColor">
           @if (!link.external) {
-            <a [routerLink]="[link.href]" [style]="{ color: isActive(link.href) ? link.color : 'inherit' }">
-              {{ link.label }}
-            </a>
+            @if (link.label === 'Events') {
+              <a href="javascript:;" (click)="openEventsModal()" [style]="{ color: isActive(link.href) ? link.color : 'inherit' }">
+                {{ link.label }}
+              </a>
+            } @else {
+              <a [routerLink]="[link.href]" [style]="{ color: isActive(link.href) ? link.color : 'inherit' }">
+                {{ link.label }}
+              </a>
+            }
           } @else {
             <a [href]="link.href" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
           }
@@ -103,7 +109,11 @@
     <nav class="flex flex-col gap-4">
       @for (link of navLinks; track $index) {
         @if (!link.external) {
-          <a [routerLink]="[link.href]" (click)="closeMobileMenu()" class="text-lg font-semibold">{{ link.label }}</a>
+          @if (link.label === 'Events') {
+            <a href="javascript:;" (click)="openEventsModal()" class="text-lg font-semibold">{{ link.label }}</a>
+          } @else {
+            <a [routerLink]="[link.href]" (click)="closeMobileMenu()" class="text-lg font-semibold">{{ link.label }}</a>
+          }
         } @else {
           <a [href]="link.href" target="_blank" rel="noopener noreferrer" (click)="closeMobileMenu()" class="text-lg font-semibold">{{ link.label }}</a>
         }
@@ -122,7 +132,7 @@
     } @else {
 
       <div class="flex flex-col gap-2 mt-2">
-        <button (click)="openProfileModal()" class="block w0fyll py-2 font-bold c-pointer font-bold rcursor-pointer">My Profile</button>
+        <button (click)="openProfileModal()" class="block w-full text-left py-2 font-bold">My Profile</button>
         <button (click)="logout(); closeMobileMenu();" class="block w-full text-left py-2 font-bold">Logout</button>
       </div>
     }

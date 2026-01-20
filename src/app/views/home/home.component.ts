@@ -62,7 +62,7 @@ export class HomeComponent {
 
   // Mixes Section
   mixesSection: MixesSection = {
-    title: 'Mixes',
+    title: 'Latest Mixes',
     icon: '/img/latest_mixes.png',
     data: [],
     signUpText: 'Sign up',
@@ -131,8 +131,8 @@ export class HomeComponent {
           this.isLoadingVideoTop.set(false);
         });
 
-        this.apiService.getData('music', 'mixcloud&client=hls&sort=date&dir=desc', '', '').subscribe((data: any) => {
-          this.mixesSection.data = data?.data;
+        this.apiService.getData('music', '', '', '').subscribe((data: any) => {
+          this.mixesSection.data = data?.data?.slice(0, 10);
           this.isLoadingMusic.set(false);
         },(error) => {
           this.isLoadingMusic.set(false);

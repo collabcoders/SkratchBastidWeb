@@ -260,3 +260,26 @@ re-captcha.is-invalid>div {
 #profileModal .modal-body {
   padding-top: 12px;
 }
+
+/* Fullscreen modals on mobile */
+:host ::ng-deep {
+  @media (max-width: 768px) {
+    .modal-dialog {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0;
+      height: 100%;
+      padding: 0 12px;
+    }
+
+    .modal-content {
+      min-height: 100vh;
+      border-radius: 0;
+    }
+
+    .modal-body {
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+  }
+}

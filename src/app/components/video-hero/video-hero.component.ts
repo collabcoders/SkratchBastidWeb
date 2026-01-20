@@ -116,7 +116,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
           featuring: data.data.featuring,
           image: data.data.image,
           date: data.data.date,
-          favId: 0,
+          favId: data.data.favId ?? 0,
           hls: data.data.hls,
           category: data.data.category
         } as Video;

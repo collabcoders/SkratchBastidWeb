@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -29,6 +29,12 @@ import { Category } from '@shared/models/category';
 import { VideoService } from '@shared/services/video.service';
 import { mappingFavorites, VideoAccessService } from '@shared/services/video-access.service';
 import { FavoritesService } from '@shared/services/favorites.service';
+import { TokenService } from '@shared/services/token.service';
+import { AlertService } from '@shared/services/alert.service';
+import { FavoriteId } from '@shared/models/favorite-id';
+import { Config } from '@shared/config';
+import { Observable, Subscription } from 'rxjs';
+import { finalize, take } from 'rxjs/operators';
 
 @Component({
   imports: [
@@ -46,7 +52,7 @@ import { FavoritesService } from '@shared/services/favorites.service';
   templateUrl: './videos.component.html',
   styleUrls: ['./videos.component.scss'],
 })
-export class VideosComponent implements OnInit {
+export class VideosComponent implements OnInit, OnDestroy {
   selectedCategory: string = 'All';
   searchQuery: string = '';
   currentPage: number = 1;
@@ -87,10 +93,21 @@ export class VideosComponent implements OnInit {
   isLoadingVideo: WritableSignal<boolean> = signal(false);
   isLoadingCategory: WritableSignal<boolean> = signal(false);
   isLoadingRecap: WritableSignal<boolean> = signal(false);
+  private favSub?: Subscription;
+  isLoggedIn$!: Observable<boolean>;
+  processingFav = false;
+  alertOptions = { autoClose: true, keepAfterRouteChange: false };
 
-  constructor(private apiService: ApiService, private favoritesService: FavoritesService, private videoAccessService: VideoAccessService, public appData: AppData, private videoService: VideoService) {}
+  constructor(private apiService: ApiService,
+    private favoritesService: FavoritesService,
+    private videoAccessService: VideoAccessService,
+    public appData: AppData,
+    private videoService: VideoService,
+    private token: TokenService,
+    private alertService: AlertService) {}
 
   ngOnInit(): void {
+      this.isLoggedIn$ = this.token.isValid(undefined);
       if (environment.ismock) {
         this.apiService.getData('videos', this.selectedCategory, '&sort=date&dir=desc').subscribe((data: any) => {
           console.log("DATA", data);
@@ -155,6 +172,17 @@ export class VideosComponent implements OnInit {
         //   this.isLoadingRecap.set(false);
         // });
       }
+
+    this.favSub = this.videoService.getFavId().subscribe(({ itemId, favId }) => {
+      if (!itemId) return;
+      const updateList = (list: Video[]) => list.map(v => v.videoId === itemId ? { ...v, favId } : v);
+      this.videoGroups.all.section.data = updateList(this.videoGroups.all.section.data || []);
+      this.videoGroups.all.videos = updateList(this.videoGroups.all.videos || []);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.favSub?.unsubscribe();
   }
 
   selectCategory(category: string): void {
@@ -295,7 +323,7 @@ export class VideosComponent implements OnInit {
       screenshot: video.screenshot,
       date: video.date || new Date().toISOString(),
       audio1: '',
-      favId: 0,
+      favId: video.favId ?? 0,
       featured: 0
     };
 
@@ -319,6 +347,71 @@ export class VideosComponent implements OnInit {
         }
       }
     }, 100);
+  }
+
+  fav(event: any, video: Video) {
+    if (!event || event.type !== 'click') {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.processingFav) {
+      return;
+    }
+
+    this.processingFav = true;
+
+    this.isLoggedIn$
+      ?.pipe(take(1))
+      .subscribe(valid => {
+        if (valid) {
+          const member = this.token.getMember();
+          if (member?.status === 'current' || member?.status === 'canceled') {
+            const fav: FavoriteId = {
+              favId: video.favId ?? 0,
+              itemId: video.videoId,
+              section: 'video'
+            };
+
+            this.apiService.post(`UpdateFavorites?app=${Config.app}`, fav, false, false)
+              .pipe(finalize(() => {
+                setTimeout(() => {
+                  this.processingFav = false;
+                }, 400);
+              }))
+              .subscribe(data => {
+                if (data?.error) {
+                  this.alertService.error('Error', data.msg, this.alertOptions);
+                  return;
+                }
+
+                if (data?.id > 0) {
+                  video.favId = data.id;
+                  this.videoService.setFavoriteState(video.videoId, data.id);
+                  this.alertService.success('Favorites', 'Media added to your Favorites.', this.alertOptions);
+                } else {
+                  video.favId = 0;
+                  this.videoService.setFavoriteState(video.videoId, 0);
+                  this.alertService.info('Favorites', 'Removed from Favorites.', this.alertOptions);
+                }
+              }, () => {
+                this.processingFav = false;
+              });
+            return;
+          }
+        }
+
+        // not logged in or no access
+        const hasAccess = this.videoAccessService.checkVideoAccess(true);
+        if (!hasAccess) {
+          this.processingFav = false;
+          return;
+        }
+        setTimeout(() => {
+          this.processingFav = false;
+        }, 400);
+      });
   }
 
   videoPoster = '/public/logo.png';

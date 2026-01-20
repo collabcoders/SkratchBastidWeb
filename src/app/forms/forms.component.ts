@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -13,6 +13,8 @@ import { RecaptchaModule } from '../lib';
 import { RecaptchaErrorParameters } from '../lib';
 import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 import countriesJson from '../../assets/data/countries.json';
+import { Event as EventModel } from '@shared/models/event';
+import { EventCardComponent } from '../components/event-card/event-card.component';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -28,12 +30,12 @@ interface FooterLink {
 @Component({
   selector: 'app-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule, ImageCropperModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule, ImageCropperModule, EventCardComponent],
   templateUrl: './forms.component.html',
   styleUrls: ['./forms.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FormsComponent implements AfterViewInit {
+export class FormsComponent implements AfterViewInit, OnInit {
     apiPost(endpoint: string) {
       // Use registerForm for this context
       console.log('registerForm.value', this.registerForm.value);
@@ -134,6 +136,10 @@ export class FormsComponent implements AfterViewInit {
   processingPassword = false;
   captchaKey: string = environment?.captcha?.key || '';
 
+  // Upcoming events modal state
+  upcomingEvents: EventModel[] = [];
+  isLoadingUpcoming: WritableSignal<boolean> = signal(false);
+
   // Profile modal state
   countries: any = (countriesJson as any) || [];
   cropImgPreview = 'https://magmob.djjazzyjeff.com/content/user.png';
@@ -151,6 +157,10 @@ export class FormsComponent implements AfterViewInit {
   loginLoading = signal(false);
   resetLoading = signal(false);
   registerLoading = signal(false);
+
+  ngOnInit(): void {
+    this.loadUpcomingEvents();
+  }
 
   constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService,) {
     this.router = inject(Router);
@@ -236,6 +246,8 @@ export class FormsComponent implements AfterViewInit {
           setTimeout(() => this.openLoginModal(), 0);
         } else if (event.url.includes('/join')) {
           setTimeout(() => this.openRegisterModal(), 0);
+        } else if (event.url.includes('/events')) {
+          setTimeout(() => this.openUpcomingEventsModal(), 0);
         }
       }
     });
@@ -682,12 +694,12 @@ export class FormsComponent implements AfterViewInit {
       });
   }
 
-  onProfileFileChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input?.files || input.files.length === 0) {
+  onProfileFileChange(event: any) {
+    const input = event?.target as HTMLInputElement | null;
+    if (!input || !input?.files || input?.files?.length === 0) {
       return;
     }
-    const file = input.files[0];
+    const file = input?.files[0];
     this.fileName = file.name;
     this.imageType = file.type;
     this.imgChangeEvt = event;
@@ -716,7 +728,7 @@ export class FormsComponent implements AfterViewInit {
   }
 
   showCancel(e: Event) {
-    e.preventDefault();
+    e?.preventDefault();
     this.openCancelModal();
   }
 
@@ -730,6 +742,63 @@ export class FormsComponent implements AfterViewInit {
 
   invalid(control: AbstractControl | null): boolean {
     return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  loadUpcomingEvents() {
+    this.isLoadingUpcoming.set(true);
+
+    const filteredByDate = (events: any[] = []) => {
+      const tomorrow = new Date();
+      tomorrow.setHours(0, 0, 0, 0);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      return events.filter((event: any) => {
+        if (!event?.date) return false;
+        const eventDate = new Date(event.date);
+        return eventDate <= tomorrow;
+      });
+    };
+
+    if (environment.ismock) {
+      this.apiService.getSectionData('event').subscribe({
+        next: (data) => {
+          const events = data?.data?.filter((event: any) => event.upcoming === true) || [];
+          this.upcomingEvents = events;
+          // this.upcomingEvents = filteredByDate(events);
+          this.isLoadingUpcoming.set(false);
+        },
+        error: (error) => {
+          this.isLoadingUpcoming.set(false);
+          this.alertService.error('', error?.error?.message || error?.message || 'Something went wrong!', Config.alertOptions);
+        },
+      });
+    } else {
+      this.apiService.getData('events', '', '').subscribe({
+        next: (data: any) => {
+          this.upcomingEvents = filteredByDate(data?.data || []);
+          this.isLoadingUpcoming.set(false);
+        },
+        error: () => {
+          this.isLoadingUpcoming.set(false);
+        },
+      });
+    }
+  }
+
+  openUpcomingEventsModal() {
+    if (!this.upcomingEvents.length) {
+      this.loadUpcomingEvents();
+    }
+
+    if (typeof bootstrap !== 'undefined') {
+      const modalEl = document.getElementById('upcomingEventsModal');
+      if (modalEl) {
+        const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        instance.show();
+      }
+    } else if (typeof $ !== 'undefined') {
+      $('#upcomingEventsModal').modal('show');
+    }
   }
 
   invalidCss(control: AbstractControl | null) {

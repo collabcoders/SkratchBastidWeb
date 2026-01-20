@@ -58,6 +58,20 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   }
 
+  openEventsModal() {
+    this.closeMobileMenu();
+    const modalId = 'upcomingEventsModal';
+    const modalEl = document.getElementById(modalId);
+    if (typeof bootstrap !== 'undefined' && modalEl) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+      return;
+    }
+    if (typeof $ !== 'undefined') {
+      $('#'+modalId).modal('show');
+    }
+  }
+
   showFavorites() {
     this.favoritesService.showModal();
   }

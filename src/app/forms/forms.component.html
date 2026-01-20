@@ -1,4 +1,48 @@
 <!-- Modals moved here from previous footer.component.html -->
+
+<!-- Upcoming Events Modal -->
+<div class="modal fade" id="upcomingEventsModal" tabindex="-1" aria-labelledby="upcomingEventsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl mx-auto" style="max-width: 1200px">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
+      <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
+        <h2 class="modal-title font-semibold text-center flex-1" id="upcomingEventsModalLabel" style="font-size: 24px">Upcoming Shows</h2>
+        <button type="button" class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent" data-bs-dismiss="modal" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body px-6 pb-6">
+        <div class="mt-4">
+          @if (isLoadingUpcoming()) {
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mx-auto">
+              @for (skeleton of [0,1,2,3,4,5]; track skeleton) {
+                <div class="animate-pulse rounded-2xl border border-gray-200 bg-white overflow-hidden">
+                  <div class="h-56 w-full bg-gray-200"></div>
+                  <div class="p-4 space-y-3">
+                    <div class="h-4 w-3/4 bg-gray-200 rounded"></div>
+                    <div class="h-4 w-1/2 bg-gray-200 rounded"></div>
+                    <div class="h-3 w-full bg-gray-100 rounded"></div>
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            @if (upcomingEvents.length === 0) {
+              <div class="flex flex-col items-center justify-center py-12 bg-gray-50 rounded-lg shadow-inner mx-4 my-6">
+                <div class="text-lg font-semibold text-gray-700 mb-1">No Upcoming Events</div>
+                <div class="text-sm text-gray-500">Check back soon for new show announcements!</div>
+              </div>
+            } @else {
+              <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl mx-auto">
+                @for (event of upcomingEvents; track event.eventId) {
+                  <app-event-card class="h-full" [event]="event"></app-event-card>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Login Modal -->
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">

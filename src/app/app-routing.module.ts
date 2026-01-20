@@ -28,7 +28,7 @@ const routes: Routes = [
   { path: 'videos', component: VideosComponent },
   // { path: 'videos/:id', component: VideoDetailComponent },
   { path: 'audios', component: AudiosComponent },
-  { path: 'events', component: EventsComponent },
+  { path: 'events', component: HomeComponent },
   { path: 'topgrillin', component: TopGrillinComponent },
   { path: 'bastidbbq', component: BastidBBQComponent},
   { path: 'newsletter', component: NewsletterComponent },

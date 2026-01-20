@@ -1,11 +1,11 @@
 import { ApiService } from '@shared/services/api.service';
-import { Component, input, ElementRef, ViewChild, inject, Signal, Input, OnInit } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, inject, Signal, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
 import { Video } from '@shared/models/video';
 import { VideoAccessService } from '@shared/services/video-access.service';
 import { TokenService } from '@shared/services/token.service';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { finalize, take } from 'rxjs/operators';
 import { FavoriteId } from '@shared/models/favorite-id';
 import { Config } from '@shared/config';
@@ -49,7 +49,7 @@ export interface VideoSection {
   templateUrl: './video-carousel.component.html',
   styleUrl: './video-carousel.component.scss',
 })
-export class VideoCarouselComponent implements OnInit {
+export class VideoCarouselComponent implements OnInit, OnDestroy {
   section = input.required<VideoSection>();
   private videoService = inject(VideoService);
   @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
@@ -62,6 +62,7 @@ export class VideoCarouselComponent implements OnInit {
     keepAfterRouteChange: false
   };
   isLoggedIn$!: Observable<boolean>;
+  private favSub?: Subscription;
   constructor(private videoAccessService: VideoAccessService, 
     private token: TokenService,
     private apiService: ApiService,
@@ -71,7 +72,15 @@ export class VideoCarouselComponent implements OnInit {
 
   ngOnInit() {
     this.isLoggedIn$ = this.token.isValid(undefined);
-    
+    this.favSub = this.videoService.getFavId().subscribe(({ itemId, favId }) => {
+      const section = this.section();
+      if (!section?.data || section.data.length === 0 || !itemId) return;
+      section.data = section.data.map(v => v.videoId === itemId ? { ...v, favId } : v);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.favSub?.unsubscribe();
   }
   
   scrollLeft() {

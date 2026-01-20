@@ -15,7 +15,7 @@ export class VideoService {
   play$ = this.play.asObservable();
   private reset = new BehaviorSubject<boolean>(false);
   reset$ = this.reset.asObservable();
-  favoriteId = new BehaviorSubject<number>(0);
+  favoriteState = new BehaviorSubject<{ itemId: number; favId: number }>({ itemId: 0, favId: 0 });
   isLoggedIn$!: Observable<boolean>;
 
   constructor(private api: ApiService,
@@ -31,11 +31,15 @@ export class VideoService {
   }
 
   setFavId(id: number) {
-    this.favoriteId.next(id);
+    this.favoriteState.next({ itemId: id, favId: id > 0 ? id : 0 });
   }
 
   getFavId() {
-    return this.favoriteId;
+    return this.favoriteState.asObservable();
+  }
+
+  setFavoriteState(itemId: number, favId: number) {
+    this.favoriteState.next({ itemId, favId });
   }
 
   stopVideo() {
@@ -55,7 +59,7 @@ export class VideoService {
       featuring: video.featuring,
       image: video.image,
       date: video.date,
-      favId: 0,
+      favId: video.favId ?? 0,
       hls: video.hls,
       category: video.category
     } as Video;

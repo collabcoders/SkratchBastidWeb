@@ -957,10 +957,21 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   processingFav = false;
   fav(event: any, video: Video, itemId: number) {
-    event?.preventDefault();
-    event?.stopPropagation();
-    console.log("FAV", itemId, event);
-    this.isLoggedIn$.subscribe(valid => {
+    // Only respond to deliberate clicks
+    if (!event || event.type !== 'click') {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("FAV1", itemId, event);
+    if (this.processingFav) {
+      return;
+    }
+
+    this.processingFav = true;
+
+    this.isLoggedIn$.pipe(take(1)).subscribe(valid => {
       if (valid) {
         if (this.token.getMember().status == 'current' || this.token.getMember().status == 'canceled') {
           const fav = {
@@ -968,27 +979,30 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
             itemId: itemId,
             section: 'video'
           } as FavoriteId;
-          if (!this.processingFav) {
-            this.processingFav = true;
-            this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
-              .subscribe(data => {
-                if (data.error) {
-                  this.alertService.error('Error', data.msg, this.alertOptions);
+          this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+            .subscribe(data => {
+              console.log("FAV1", data);
+              if (data.error) {
+                this.alertService.error('Error', data.msg, this.alertOptions);
+              } else {
+                console.log(data.id);
+                if (data.id > 0) {
+                  video.favId = data.id;
+                  this.alertService.success('Favorites', 'Media added to your Favorites.', this.alertOptions);
+                  console.log("Media Added");
+                  this.videoService.setFavoriteState(itemId, data.id);
                 } else {
-                  console.log(data.id);
-                  if (data.id > 0) {
-                    video.favId = data.id;
-                    this.alertService.success('Added', data.msg, this.alertOptions);
-                  } else {
-                    video.favId = 0;
-                    this.alertService.info('Removed', data.msg, this.alertOptions);
-                  }
+                  video.favId = 0;
+                  this.alertService.info('Favorites', 'Removed from Favorites.', this.alertOptions);
+                  this.videoService.setFavoriteState(itemId, 0);
                 }
-                setTimeout(() => {
-                  this.processingFav = false;
-                }, 1000);
-              });
-          }
+              }
+              setTimeout(() => {
+                this.processingFav = false;
+              }, 500);
+            }, () => {
+              this.processingFav = false;
+            });
         } else {
           const hasAccess = this.videoAccessService.checkVideoAccess(true);
 
@@ -1007,6 +1021,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         }
         // bootbox.alert('<h4>Members Only</h4><br>' + 'Sorry, the Favorites feature is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
+      setTimeout(() => {
+        this.processingFav = false;
+      }, 500);
     });
   }
 }
