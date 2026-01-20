@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -7,6 +7,7 @@ import { ApiService } from '@shared/services/api.service';
 import { Config } from '@shared/config';
 import { TokenService } from '@shared/services/token.service';
 import { FavoritesService } from '@shared/services/favorites.service';
+import { UploaderService } from '@shared/services/uploader.service';
 import { AppData } from '../app.data';
 import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '@env/environment';
@@ -16,6 +17,7 @@ import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
 import countriesJson from '../../assets/data/countries.json';
 import { Event as EventModel } from '@shared/models/event';
 import { EventCardComponent } from '../components/event-card/event-card.component';
+import { firstValueFrom } from 'rxjs';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -165,7 +167,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.loadUpcomingEvents();
   }
 
-  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService,) {
+  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService, private uploader: UploaderService, private cdr: ChangeDetectorRef,) {
     this.router = inject(Router);
 
     this.loginForm = this.fb.group({
@@ -233,6 +235,11 @@ export class FormsComponent implements AfterViewInit, OnInit {
       newPassword: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     }, { validators: this.passwordsMatchValidator });
+
+    this.uploader.progressSource.subscribe((p) => {
+      this.progress = p || 0;
+      this.cdr.markForCheck();
+    });
 
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
@@ -453,6 +460,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
   }
 
   openRegisterModal() {
+    this.resetRegisterForm();
     if (typeof bootstrap !== 'undefined') {
       const el = document.getElementById('registerModal');
       if (!el) { return; }
@@ -461,6 +469,25 @@ export class FormsComponent implements AfterViewInit, OnInit {
     } else if (typeof $ !== 'undefined') {
       $('#registerModal').modal('show');
     }
+  }
+
+  private resetRegisterForm() {
+    this.registerForm.reset({
+      email: '',
+      firstName: '',
+      lastName: '',
+      phone: '',
+      password: '',
+      confirmPassword: '',
+      plan: '',
+    });
+    this.registerForm.markAsPristine();
+    this.registerForm.markAsUntouched();
+    this.selectedPrice = '';
+    this.selectedFrequency = '';
+    this.isReJoin = false;
+    (this.registerForm as any).formSubmitAttempt = false;
+    this.cdr.markForCheck();
   }
 
   openContactModal() {
@@ -491,6 +518,12 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.alertService.clear();
     this.processingProfile = false;
     this.imageChanged = false;
+    this.imgChangeEvt = null;
+    this.imageUrl = '';
+    this.fileName = 'No file selected';
+    this.imageType = 'image/jpeg';
+    this.isUploading = false;
+    this.progress = 0;
     this.profileForm.reset();
     this.passwordForm.reset();
     this.cropImgPreview = 'https://magmob.djjazzyjeff.com/content/user.png';
@@ -517,7 +550,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
           lastName: this.memberProfile?.lastName || '',
           email: this.memberProfile?.email || '',
           phone: this.memberProfile?.phone || '',
-          sms: this.memberProfile?.sms ?? true,
+          sms: !!this.memberProfile?.sms,
           city: this.memberProfile?.city || '',
           state: this.memberProfile?.state || '',
           country: this.memberProfile?.country || '',
@@ -525,6 +558,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
           confirmPassword: this.memberProfile?.password || '',
         });
         this.profileForm.markAsPristine();
+        this.cdr.markForCheck();
 
         if (openAfterLoad) {
           if (typeof bootstrap !== 'undefined') {
@@ -618,7 +652,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
   initSaveProfile() {
     this.alertService.clear();
     this.profileForm.markAllAsTouched();
-    if (this.imageChanged && this.cropImgPreview) {
+    if (this.cropImgPreview) {
       this.profileForm.patchValue({ image: this.cropImgPreview });
     }
     if (this.profileForm.invalid) {
@@ -627,9 +661,33 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.saveProfile();
   }
 
-  saveProfile() {
+  async saveProfile() {
     this.processingProfile = true;
-    const payload = { ...this.profileForm.value };
+    this.cdr.markForCheck();
+
+    let imageValue = this.profileForm.get('image')?.value || '';
+    const shouldUpload = !!imageValue && imageValue?.startsWith('data:image');
+
+    console.log("shouldUpload", shouldUpload);
+    console.log("shouldUpload", this.cropImgPreview, imageValue);
+    if (shouldUpload) {
+      try {
+        imageValue = await this.uploadCroppedImage();
+        this.profileForm.patchValue({ image: imageValue });
+      } catch (err: any) {
+        this.processingProfile = false;
+        this.alertService.error('Error', err?.message || 'Image upload failed.', Config.alertOptions);
+        this.cdr.markForCheck();
+        return;
+      }
+    } else if (this.cropImgPreview && !imageValue) {
+      imageValue = this.cropImgPreview;
+    }
+
+    const payload = { ...this.profileForm.value } as any;
+    payload.sms = this.profileForm.get('sms')?.value ? 1 : 0;
+    payload.image = imageValue || '';
+
     this.apiService.post('UpdateMember?app=' + Config.app, payload, true, true)
       .subscribe({
         next: (data: any) => {
@@ -648,10 +706,12 @@ export class FormsComponent implements AfterViewInit, OnInit {
             }
           }
           this.processingProfile = false;
+          this.cdr.markForCheck();
         },
         error: (error) => {
           this.processingProfile = false;
           this.alertService.error('', error?.error?.message || error?.message || 'Something went wrong!', Config.alertOptions);
+          this.cdr.markForCheck();
         }
       });
   }
@@ -707,19 +767,68 @@ export class FormsComponent implements AfterViewInit, OnInit {
       return;
     }
     const file = input?.files[0];
-    this.fileName = file.name;
+    this.fileName = file.name || 'avatar.png';
     this.imageType = file.type;
     this.imgChangeEvt = event;
     const reader = new FileReader();
     reader.onload = () => {
-      this.imageUrl = reader.result;
+      const base64 = reader.result as string;
+      this.imageUrl = base64;
       this.imageChanged = true;
+      this.cropImgPreview = base64;
+      this.profileForm.patchValue({ image: base64 });
+      this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
   }
 
   cropImg(event: ImageCroppedEvent) {
     this.cropImgPreview = event.base64 || '';
+    if (this.cropImgPreview) {
+      this.profileForm.patchValue({ image: this.cropImgPreview });
+    }
+    this.imageChanged = !!this.cropImgPreview;
+    this.cdr.markForCheck();
+  }
+
+  private dataURItoBlob(dataURI: string): Blob {
+    const parts = dataURI.split(',');
+    const byteString = atob(parts[1] || '');
+    const mimeString = parts[0]?.split(':')[1]?.split(';')[0] || this.imageType || 'image/png';
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  }
+
+  private async uploadCroppedImage(): Promise<string> {
+    let imageValue = this.profileForm.get('image')?.value || '';
+    if (!imageValue) {
+      throw new Error('No image to upload.');
+    }
+    const blob = this.dataURItoBlob(imageValue);
+    const fileName = this.fileName || 'avatar.png';
+    const mimeType = this.imageType || 'image/png';
+    const file = new File([blob], fileName, { type: mimeType });
+
+    this.isUploading = true;
+    this.cdr.markForCheck();
+
+    try {
+      const result = await firstValueFrom(this.uploader.upload(file));
+      if (typeof result !== 'string' || !result) {
+        throw new Error('Image upload failed.');
+      }
+      if (result.startsWith('Server Error')) {
+        throw new Error(result);
+      }
+      return result;
+    } finally {
+      this.isUploading = false;
+      this.cdr.markForCheck();
+    }
   }
 
   imgLoad() {
@@ -819,5 +928,12 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   invalidProfileCss(control: AbstractControl | null) {
     return this.invalidCss(control);
+  }
+
+  onSmsChange(event: Event) {
+    const checked = (event.target as HTMLInputElement)?.checked;
+    this.profileForm.get('sms')?.setValue(checked, { emitEvent: true });
+    this.profileForm.get('sms')?.markAsDirty();
+    console.log("onSmsChange", checked);
   }
 }

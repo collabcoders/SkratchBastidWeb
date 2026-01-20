@@ -283,6 +283,30 @@ re-captcha.is-invalid>div {
   padding-top: 12px;
 }
 
+.cropper-centered {
+  display: block;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+#profileModal .form-check-input {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #6b7280;
+  box-shadow: none;
+  background-color: #fff;
+}
+
+#profileModal .form-check-input:checked {
+  background-color: #FF5941 !important;
+  border-color: #FF5941 !important;
+}
+
+#profileModal .form-check-label {
+  color: #111827;
+  font-weight: 600;
+}
+
 /* Fullscreen modals on mobile */
 :host ::ng-deep {
   @media (max-width: 768px) {

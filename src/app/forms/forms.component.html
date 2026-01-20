@@ -460,11 +460,11 @@
           </div>
           <div class="row">
             <div class="col-md-12">
-              <image-cropper [imageChangedEvent]="imgChangeEvt" [maintainAspectRatio]="true"
+              <image-cropper class="cropper-centered" [imageChangedEvent]="imgChangeEvt" [maintainAspectRatio]="true"
                 [aspectRatio]="4 / 4" [resizeToWidth]="256" format="png" backgroundColor="#262626"
+                [alignImage]="'center'" [autoCrop]="true"
                 (imageCropped)="cropImg($event)" (imageLoaded)="imgLoad()"
-                (cropperReady)="initCropper()" (loadImageFailed)="imgFailed()"
-                style="visibility: hidden;">
+                (cropperReady)="initCropper()" (loadImageFailed)="imgFailed()">
               </image-cropper>
             </div>
           </div>
@@ -531,7 +531,7 @@
           </div>
           <div class="d-flex align-items-center gap-2 mb-3 ps-1 sms">
             <div class="form-check mb-0">
-              <input class="form-check-input" type="checkbox" formControlName="sms" value="true" id="sms" checked>
+              <input class="form-check-input" type="checkbox" formControlName="sms" id="sms" (change)="onSmsChange($event)">
               <label class="form-check-label" for="sms">Allow SMS</label>
             </div>
           </div>
