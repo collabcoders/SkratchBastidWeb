@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
@@ -9,6 +9,8 @@ import { TokenService } from '@shared/services/token.service';
 import { AppData } from '../app.data';
 import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '@env/environment';
+import { RecaptchaModule } from '../lib';
+import { RecaptchaErrorParameters } from '../lib';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -24,7 +26,7 @@ interface FooterLink {
 @Component({
   selector: 'app-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule,],
   templateUrl: './forms.component.html',
   styleUrls: ['./forms.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -120,6 +122,11 @@ export class FormsComponent implements AfterViewInit {
   resetForm: FormGroup;
   registerForm: FormGroup;
   contactForm: FormGroup;
+  memberProfile: any = null;
+  showcaptcha = true;
+  okcaptcha = false;
+  processingContact = false;
+  captchaKey: string = environment?.captcha?.key || '';
 
   loginLoading = signal(false);
   resetLoading = signal(false);
@@ -166,7 +173,9 @@ export class FormsComponent implements AfterViewInit {
 
     this.contactForm = this.fb.group({
       name: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern('^\\+?[0-9\\s\\-]{7,}$')]],
       email: ['', [Validators.required, Validators.email]],
+      topic: ['', Validators.required],
       subject: ['', Validators.required],
       message: ['', Validators.required],
     });
@@ -426,7 +435,12 @@ export class FormsComponent implements AfterViewInit {
   saveContact() {
     this.alertService.clear();
     console.log("contactForm", this.contactForm);
+    if (!this.okcaptcha) {
+      this.alertService.error('', 'Please complete the captcha.', Config.alertOptions);
+      return;
+    }
     if (this.contactForm.valid) {
+      this.processingContact = true;
       this.isLoadingContact.set(true);
       let endpoint = 'Contact';
       const payload = this.contactForm.value;
@@ -437,10 +451,12 @@ export class FormsComponent implements AfterViewInit {
             console.log(data);
             this.alertService.error('Error', data.msg, Config.alertOptions)
             setTimeout(() => {
+              this.processingContact = false;
               this.isLoadingContact.set(false);
             }, 400);
           } else {
             this.contactForm.reset();
+            this.okcaptcha = false;
             // SET TOKEN
             console.log(data);
             bootbox.alert(data);
@@ -452,6 +468,7 @@ export class FormsComponent implements AfterViewInit {
               $('#contactModal').modal('show');
             }
             setTimeout(() => {
+              this.processingContact = false;
               this.isLoadingContact.set(false);
             }, 400);
           }
@@ -459,5 +476,29 @@ export class FormsComponent implements AfterViewInit {
     } else {
       this.contactForm.markAllAsTouched();
     }
+  }
+
+  resolved(captchaResponse: string | null) {
+    this.okcaptcha = !!captchaResponse;
+  }
+
+  onError(_error: RecaptchaErrorParameters) {
+    this.okcaptcha = false;
+  }
+
+  invalid(control: AbstractControl | null): boolean {
+    return !!control && control.invalid && (control.dirty || control.touched);
+  }
+
+  invalidCss(control: AbstractControl | null) {
+    return { 'is-invalid': this.invalid(control) };
+  }
+
+  invalidProfile(control: AbstractControl | null): boolean {
+    return this.invalid(control);
+  }
+
+  invalidProfileCss(control: AbstractControl | null) {
+    return this.invalidCss(control);
   }
 }

@@ -287,87 +287,110 @@
 </div>
 
 <!-- Contact Modal -->
-<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"
-    (hidden.bs.modal)="router.navigate(['/'])">
-    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
-      <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact
-          Us</h2>
-        <button type="button"
-          class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
-          data-bs-dismiss="modal" aria-label="Close">×</button>
-      </div>
-      <div class="modal-body px-6 pb-6">
-        <form class="space-y-4" [formGroup]="contactForm" (ngSubmit)="saveContact()">
-          <div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                </svg>
-              </div>
-              <input type="text"
-                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactName" formControlName="name" placeholder="Name" style="font-size: 18px" />
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" data-bs-backdrop="static"
+    data-bs-keyboard="false" aria-hidden="true">
+    <form [formGroup]="contactForm" (ngSubmit)="saveContact()" class="needs-validation" novalidate>
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content modal-login">
+
+                <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
+                  <h2 class="modal-title font-semibold text-center flex-1" id="contactModalLabel" style="font-size: 24px">Contact Us</h2>
+                  <button type="button"
+                    class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+                    data-bs-dismiss="modal" aria-label="Close">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <div>
+                        <p style="color: #333; font-size: 14px; font-weight: 400; margin-top: 10px; margin-bottom: 10px;">
+                          Regarding brand partnerships, booking inquiries, Skratch Bastid online store
+                          support, website technical support, Top Grillin' account support, billing inquiries, or any
+                          general inquiries. Click here to open our contact form and your message will be
+                          automatically routed to the appropriate team member.
+                        </p>
+                    </div>
+
+                    <div class="input-group mb-3 has-validation">
+                        <input type="text" formControlName="name" aria-label="Name"
+                            class="form-control placeholder-white"
+                            [ngClass]="invalidProfileCss(contactForm.controls['name'])" placeholder="Name"
+                            [attr.readonly]="memberProfile && memberProfile.email ? true : null">
+                        <div *ngIf="invalidProfile(contactForm.controls['name'])"
+                            class="invalid-tooltip left-error-tip">
+                            Name required
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control placeholder-white" formControlName="phone"
+                            placeholder="Mobile Phone" aria-label="Mobile Phone"
+                            [ngClass]="invalidProfileCss(contactForm.controls['phone'])"
+                            [attr.readonly]="memberProfile && memberProfile.email ? true : null">
+                        <div *ngIf="invalidProfile(contactForm.controls['phone'])"
+                            class="invalid-tooltip left-error-tip">
+                            invalid phone number format
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3" *ngIf="!isReJoin">
+                        <input type="text" formControlName="email" class="form-control placeholder-white"
+                            [placeholder]="'Email'" [ngClass]="invalidCss(contactForm.controls['email'])"
+                            placeholder="Email" [attr.readonly]="memberProfile && memberProfile.email ? true : null"
+                            aria-label="Email">
+                        <div *ngIf="invalid(contactForm.controls['email'])" class="invalid-tooltip left-error-tip">
+                            A valid email address is required
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <select class="form-select" formControlName="topic"
+                            [ngClass]="invalidCss(contactForm.controls['topic'])">
+                            <option value="" selected>Select Topic</option>
+                            <option value="Booking Inquiry">Booking Inquiry</option>
+                            <option value="Online Store Support">Online Store Support</option>
+                            <option value="Technical/Account Support">Technical/Account Support</option>
+                            <option value="General Inquiry">General Inquiry</option>
+                        </select>
+                        <div *ngIf="invalid(contactForm.controls['topic'])" class="invalid-tooltip left-error-tip">
+                            Topic is required
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 has-validation signup-top-row">
+                        <input type="text" formControlName="subject" aria-label="Subject"
+                            class="form-control placeholder-white"
+                            [ngClass]="invalidCss(contactForm.controls['subject'])" placeholder="Subject">
+                        <div *ngIf="invalid(contactForm.controls['subject'])"
+                            class="invalid-tooltip left-error-tip">
+                            Subject required
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3 has-validation signup-top-row">
+                        <textarea type="text" formControlName="message" aria-label="Message"
+                            class="form-control placeholder-white"
+                            [ngClass]="invalidCss(contactForm.controls['message'])"
+                            placeholder="Message"></textarea>
+                        <div *ngIf="invalid(contactForm.controls['message'])"
+                            class="invalid-tooltip left-error-tip">
+                            Message required
+                        </div>
+                    </div>
+                </div>
+                @if (showcaptcha) {
+                <div class="captcha">
+                  <re-captcha [siteKey]="captchaKey" (resolved)="resolved($event)" (errored)="onError($event)" errorMode="handled">
+                  </re-captcha>
+                </div>
+                }
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary center" [disabled]="processingContact || !okcaptcha">
+                        <i *ngIf="processingContact" class="fas fa-circle-notch fa-spin"></i>&nbsp; {{'Submit'}}
+                    </button>
+                </div>
             </div>
-            @if (contactForm.get('name')?.invalid && (contactForm.get('name')?.touched || contactForm.get('name')?.dirty)) {
-              <div class="text-red-500 text-xs mt-1">Name required</div>
-            }
-          </div>
-          <div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                </svg>
-              </div>
-              <input type="email"
-                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactEmail" formControlName="email" placeholder="Email" style="font-size: 18px" />
-            </div>
-            @if (contactForm.get('email')?.invalid && (contactForm.get('email')?.touched || contactForm.get('email')?.dirty)) {
-              <div class="text-red-500 text-xs mt-1">Valid email required</div>
-            }
-          </div>
-          <div>
-            <div class="relative">
-              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              <input type="text"
-                class="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-                id="contactSubject" formControlName="subject" placeholder="Subject" style="font-size: 18px" />
-            </div>
-            @if (contactForm.get('subject')?.invalid && (contactForm.get('subject')?.touched || contactForm.get('subject')?.dirty)) {
-              <div class="text-red-500 text-xs mt-1">Subject required</div>
-            }
-          </div>
-          <div>
-            <label for="contactMessage" class="block text-left mb-2 font-bold text-white" style="font-size: 18px">Message</label>
-            <textarea
-              class="w-full px-4 py-2 border border-gray-500 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-              id="contactMessage" formControlName="message" rows="4" placeholder="Enter your message..." style="font-size: 18px"></textarea>
-            @if (contactForm.get('message')?.invalid && (contactForm.get('message')?.touched || contactForm.get('message')?.dirty)) {
-              <div class="text-red-500 text-xs mt-1">Message required</div>
-            }
-          </div>
-          <button type="submit"
-            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
-            [disabled]="isLoadingContact() || !contactForm.valid">
-            @if (isLoadingContact()) {
-              <span class="loader mr-2"></span>
-            }Send Message
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
+        </div>
+    </form>
 </div>
 
 <!-- Privacy Policy Modal -->

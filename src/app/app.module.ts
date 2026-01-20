@@ -37,6 +37,19 @@ import { FavoritesModalComponent } from '@shared/components/favorites-modal/favo
 import { VipLoginDialogComponent } from '@shared/components/vip-login-dialog/vip-login-dialog.component';
 import { BastidBBQDetailComponent } from './views/bastidbbq-detail/bastidbbq-detail.component';
 import { RotwDetailComponent } from './views/rotw-detail/rotw-detail.component';
+import {
+  RecaptchaModule,
+  RecaptchaFormsModule,
+  RecaptchaV3Module,
+  RecaptchaLoaderOptions,
+  RECAPTCHA_LOADER_OPTIONS,
+  RECAPTCHA_SETTINGS,
+  RecaptchaSettings,
+  RECAPTCHA_V3_SITE_KEY,
+  RecaptchaErrorParameters,
+} from './lib';
+import { ConfigService } from './lib/config.service';
+
 // import { VideosComponent as v } from './views/videos/videos.component';
 // import { HomeComponent as h } from './views/home/home.component';
 
@@ -44,6 +57,11 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
   'tooltipClass': 'ng-tooltip',
   'showDelay': 0
 }
+
+function appLoadFactory(config: ConfigService) {
+  return () => config.loadConfig();
+}
+
 
 @NgModule({
   declarations: [
@@ -77,11 +95,46 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
     VipLoginDialogComponent,
     BastidBBQDetailComponent,
     RotwDetailComponent,
-    NgxStripeModule.forRoot(environment.stripeKey)
+    NgxStripeModule.forRoot(environment.stripeKey),
+    RecaptchaModule,
+    RecaptchaFormsModule,
+    RecaptchaV3Module,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true },
-    DatePipe
+    DatePipe,
+      {
+      provide: APP_INITIALIZER,
+      useFactory: appLoadFactory,
+      deps: [ConfigService],
+      multi: true,
+    },
+    {
+      provide: RECAPTCHA_V3_SITE_KEY,
+      useFactory: (config: ConfigService) => {
+        console.log("RECAPTCHA_V3_SITE_KEY");
+        return { siteKeyV3: environment.captcha.key };
+      },
+      deps: [ConfigService],
+    },
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useFactory: (config: ConfigService): RecaptchaSettings => ({
+        siteKey: config.getSafe("siteKeyV2") ?? "",
+      }),
+      deps: [ConfigService],
+    },
+    {
+      provide: RECAPTCHA_LOADER_OPTIONS,
+      useValue: {
+        onBeforeLoad(url) {
+          const langOverride = parseLangFromHref();
+          if (langOverride) url.searchParams.set("hl", langOverride);
+
+          return { url };
+        },
+      } as RecaptchaLoaderOptions,
+    },
   ],
   schemas: [
     CUSTOM_ELEMENTS_SCHEMA
@@ -89,3 +142,13 @@ export const MyDefaultTooltipOptions: TooltipOptions = {
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function parseLangFromHref(): "fr" | "de" | "" {
+  const [lang] = new URLSearchParams(window.location.search).getAll("lang");
+
+  if (lang === "fr" || lang === "de") {
+    return lang;
+  }
+
+  return "";
+}

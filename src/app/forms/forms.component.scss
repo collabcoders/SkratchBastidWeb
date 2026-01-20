@@ -184,3 +184,13 @@ button[disabled], .btn[disabled], .w-full[disabled] {
 .modal-light .form-text {
   color: #4b5563 !important;
 }
+
+.captcha {
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+re-captcha.is-invalid>div {
+  border: 1px solid #dc3545 !important;
+  border-radius: 0.2rem;
+}

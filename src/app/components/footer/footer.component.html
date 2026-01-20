@@ -1,9 +1,9 @@
 <footer class="bg-[#142129] text-white relative">
   <div
-    class="relative z-10 grid grid-cols-1 md:grid-cols-5 gap-8 md:py-20 py-5 md:px-20 px-6 bg-[#142129]"
+    class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:py-20 py-5 md:px-20 px-6 bg-[#142129]"
   >
     <!-- Logo Section -->
-    <div class="md:w-3/5 border-b md:border-0 border-[#29404E] md:pb-0 pb-8 pt-12 md:pt-0">
+    <div class="md:col-span-3 md:pr-4 w-full border-b md:border-0 border-[#29404E] md:pb-0 pb-8 pt-12 md:pt-0">
   <a routerLink="/join" class="">
         <img
           src="https://cdn.shopify.com/s/files/1/0275/0188/7533/files/skratch_bastid_beard_logo_360x.png?v=1614314315"
@@ -11,18 +11,63 @@
           class="w-24 mb-4"
         />
       </a>
-      <a href="https://music.apple.com/ng/artist/skratch-bastid/82190619" rel="noopener noreferrer">
-        <img src="/img/appleMusic.png" alt="Small Image" class="w-32" />
-      </a>
+      <div class="footer-icons mt-6 flex flex-wrap gap-1 items-center">
+        <a (click)="triggerNav($event,'instagram')" tooltip="Instagram" class="footer-icon footer-icon-ig">
+          <i class="fab fa-instagram"></i>
+        </a>
+        <a (click)="triggerNav($event,'facebook')" tooltip="Facebook" class="footer-icon footer-icon-fb">
+          <i class="fab fa-facebook-f"></i>
+        </a>
+        <a (click)="triggerNav($event,'twitter')" tooltip="Twitter" class="footer-icon footer-icon-tw">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+              d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"
+            />
+          </svg>
+        </a>
+        <a (click)="triggerNav($event,'youtube')" tooltip="YouTube" class="footer-icon footer-icon-yt">
+          <i class="fab fa-youtube"></i>
+        </a>
+        <a (click)="triggerNav($event,'tiktok')" tooltip="Tik Tok" class="footer-icon footer-icon-tt">
+          <i class="fab fa-tiktok"></i>
+        </a>
+        <a (click)="triggerNav($event,'cameo')" tooltip="Cameo" class="footer-icon footer-icon-co">
+          <img src="../assets/images/co-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'soundcloud')" tooltip="Sound Cloud" class="footer-icon footer-icon-sc">
+          <img src="../assets/images/sc-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'mixcloud')" tooltip="Mix Cloud" class="footer-icon footer-icon-mc">
+          <img src="../assets/images/mc-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'twitch')" tooltip="Twitch" class="footer-icon footer-icon-tc">
+          <img src="../assets/images/tc-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'spotify')" tooltip="Spotify" class="footer-icon footer-icon-sp">
+          <img src="../assets/images/sp-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'applemusic')" tooltip="Apple Music" class="footer-icon footer-icon-am">
+          <img src="../assets/images/am-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'tidal')" tooltip="Tidal" class="footer-icon footer-icon-td">
+          <img src="../assets/images/td-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'bandcamp')" tooltip="Bandcamp" class="footer-icon footer-icon-bc">
+          <img src="../assets/images/bc-icon.png">
+        </a>
+        <a (click)="triggerNav($event,'discord')" tooltip="Discord" class="footer-icon footer-icon-dc">
+          <img src="../assets/images/dc-icon.png">
+        </a>
+      </div>
     </div>
 
-    <!-- Socials Section -->
-    <div class="md:w-3/5">
-      <h3 class="!text-lg font-bold mb-4 uppercase">Socials</h3>
-        <ul
+    <!-- Pages Section -->
+    <div class="md:col-span-2 w-full">
+      <h3 class="!text-lg font-bold mb-4 uppercase">Pages</h3>
+      <ul
         class="space-y-2 text-[#8996A2] uppercase font-semibold border-b md:border-0 border-[#29404E] md:pb-0 pb-8"
       >
-        @for (link of socialLinks; track link.label) {
+        @for (link of pageLinksColumn1; track link.label) {
         <li>
           @if (!link.external) {
           <a [routerLink]="link.href" class="hover:underline">{{ link.label }}</a>
@@ -34,28 +79,8 @@
       </ul>
     </div>
 
-    <!-- Pages Section -->
-    <div>
-      <h3 class="!text-lg font-bold mb-4 uppercase">Pages</h3>
-      <div class="grid grid-cols-2 gap-x-4">
-        <ul
-          class="space-y-2 text-[#8996A2] uppercase font-semibold border-b md:border-0 border-[#29404E] md:pb-0 pb-8"
-        >
-          @for (link of pageLinksColumn1; track link.label) {
-          <li>
-            @if (!link.external) {
-            <a [routerLink]="link.href" class="hover:underline">{{ link.label }}</a>
-            } @else {
-            <a href="{{link.href}}" target="_blank" rel="noopener noreferrer" class="hover:underline">{{ link.label }}</a>
-            }
-          </li>
-          }
-        </ul>
-      </div>
-    </div>
-
     <!-- Account Section -->
-    <div>
+    <div class="md:col-span-4 md:pr-4 w-full">
       <h3 class="!text-lg font-bold mb-4 uppercase">Contact</h3>
       <div class="text-[#8996A2] border-b md:border-0 border-[#29404E] md:pb-0 pb-8 leading-relaxed">
         <span class="cursor-pointer link" style="text-decoration: underline; color: #ff5941;" (click)="openContactModal()">Contact us</span> regarding brand partnerships, booking inquiries, Skratch Bastid online store support, website technical support, Top Grillin' account support, billing inquiries, or any general inquiries. <span class="cursor-pointer link" style="text-decoration: underline; color: #ff5941;" (click)="openContactModal()">Click here</span> to open our contact form and your message will be automatically routed to the appropriate team member.
@@ -63,7 +88,7 @@
     </div>
 
     <!-- Newsletter Section -->
-    <div>
+    <div class="md:col-span-3 w-full">
       <h3 class="!text-lg font-bold mb-4 uppercase">Latest News</h3>
       <p class="mb-4 text-[#8996A2]">Get the latest updates by subscribing to our newsletter.</p>
       <div class="flex flex-col">
@@ -102,7 +127,7 @@
   </div>
 
   <!-- Copyright -->
-  <div class="relative z-10 text-center text-sm text-[#4E5D6B] py-6 px-4">
+  <div class="relative z-10 text-center text-sm text-[#4E5D6B] py-6 px-4 bg-[#0f1a22]">
     © {{ year }} Skratch Bastid. All Rights Reserved.
   </div>
 </footer>

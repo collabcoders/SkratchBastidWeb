@@ -60,6 +60,7 @@
     "@angular/compiler-cli": "20.0.2",
     "@types/node": "^12.11.1",
     "@types/video.js": "^7.3.50",
+    "@types/grecaptcha": "^3.0.9",
     "typescript": "~5.8.0"
   }
 }

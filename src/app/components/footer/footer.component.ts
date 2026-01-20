@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Config } from '@shared/config';
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
+import { NavigateService } from '@shared/services/navigate.service';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -26,7 +27,7 @@ interface FooterLink {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
-  constructor(private apiService: ApiService, private alertService: AlertService) {
+  constructor(private apiService: ApiService, private alertService: AlertService, private nav: NavigateService) {
   }
 
   newsletterEmail = signal('');
@@ -131,6 +132,68 @@ export class FooterComponent {
       action: () => this.openRefundModal(),
     },
   ];
+
+  triggerNav(event: any, target: string, offset: number = 0) {
+    switch(target) {
+      case 'facebook': {
+        target = Config.facebook;
+        break;
+      }
+      case 'youtube': {
+        target = Config.youtube;
+        break;
+      }
+      case 'spotify': {
+        target = Config.spotify;
+        break;
+      }
+      case 'mixcloud': {
+        target = Config.mixcloud;
+        break;
+      }
+      case 'soundcloud': {
+        target = Config.soundcloud;
+        break;
+      }
+      case 'twitter': {
+        target = Config.twitter;
+        break;
+      }
+      case 'twitch': {
+        target = Config.twitch;
+        break;
+      }
+      case 'tiktok': {
+        target = Config.tiktok;
+        break;
+      }
+      case 'tidal': {
+        target = Config.tidal;
+        break;
+      }
+      case 'cameo': {
+        target = Config.cameo;
+        break;
+      }
+      case 'applemusic': {
+        target = Config.applemusic;
+        break;
+      }
+      case 'bandcamp': {
+        target = Config.bandcanp;
+        break;
+      }
+      case 'discord': {
+        target = Config.discord;
+        break;
+      }
+      default: {
+        target = Config.instagram;
+        break;
+      }
+    }
+    this.nav.goto(target, offset);
+  }
 
   handleLinkClick(link: FooterLink) {
     // If the link is a policy route, open modal instead of navigating

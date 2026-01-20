@@ -1,69 +1,297 @@
-footer {
-  &::before {
-    background: rgba(0, 0, 0, 0.5);
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+.footer {
+  position: absolute !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  background: rgba(0, 0, 0, 0.5);
+  min-height: 250px;
+  padding-top: 20px;
+  padding-bottom: 50px;
+}
+
+.footer-menu-header {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  padding-bottom: 10px;
+}
+
+.footer-text {
+  padding-top: 10px;
+  color: #a0a0a0;
+  font-size: 14px;
+}
+
+.privacy-body {
+  background: #242424 !important;
+  color: #fff !important;
+  font-size: 14px;
+  padding: 10px 40px 40px 40px;
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 0.5em;
+    height: 0.5em;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, .1);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, .2);
+    }
   }
 }
 
-/* Footer link hover styles */
-/* More specific: footer content links */
-footer .relative.z-10 a,
-footer .relative.z-10 ul a,
-footer .relative.z-10 li a,
-footer .relative.z-10 .nav-link {
-  color: #8996A2 !important;
-  transition: color 0.18s ease, transform 0.12s ease !important;
+.privacy-link {
+  display: inline-block;
+  padding-bottom: 5px;
+  color: #ff5941;
 }
 
-footer .relative.z-10 a:hover,
-footer .relative.z-10 ul a:hover,
-footer .relative.z-10 li a:hover,
-footer .relative.z-10 .nav-link:hover {
-  color: #ffffff !important;
-  transform: translateX(4px) !important;
-  text-decoration: none !important;
+.footer-icons {
+  margin-left: 0;
+  padding-top: 10px;
 }
 
-/* Social icons and small images */
-footer img {
-  transition: transform 0.18s ease, filter 0.18s ease;
+.footer-icon {
+  cursor: pointer;
+  margin-left: 0;
+  padding: 0;
+  border-radius: 50%;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 8px;
+  width: 42px;
+  height: 42px;
+  line-height: 0;
+
+  >i,
+  >svg {
+    color: #000;
+    font-size: 22px;
+    height: 22px;
+    width: 22px;
+    display: block;
+    line-height: 1;
+  }
+
+  >img {
+    height: 22px;
+    width: 22px;
+    display: block;
+    line-height: 1;
+  }
+
+  text-align: center;
 }
 
-footer img:hover {
-  transform: translateY(-4px) scale(1.02) !important;
-  filter: brightness(1.05) saturate(1.05) !important;
+.footer-icon:hover,
+.footer-icon:active {
+  background-color: #fff;
 }
 
-/* Newsletter input and submit button polish */
-footer input[type='email'] {
-  transition: box-shadow 0.18s ease, border-color 0.18s ease;
+.footer-icon-ig {
+  display: inline-block;
+  background-color: #e95950;
 }
 
-footer input[type='email']:focus {
-  box-shadow: 0 6px 18px rgba(255, 89, 65, 0.08);
-  border-color: #FF5941;
-  outline: none;
+.footer-icon-fb {
+  display: inline-block;
+  background-color: #4267B2;
 }
 
-footer button[type='submit'] svg {
-  transition: transform 0.2s ease;
+.footer-icon-tw {
+  display: inline-block;
+  background-color: rgb(220, 220, 220);
 }
 
-footer button[type='submit']:hover svg {
-  transform: translateX(6px) !important;
+.footer-icon-tt {
+  display: inline-block;
+  background-color: #00f2eb;
 }
 
-/* Modal close button hover */
-.modal .modal-header button:hover {
-  color: #ff9a7f;
+.footer-icon-sc {
+  display: inline-block;
+  background-color: #ff5500;
 }
 
-/* Reduce modal backdrop darkness slightly */
-.modal-backdrop.show {
-  opacity: 0.45 !important;
+.footer-icon-sp {
+  display: inline-block;
+  background-color: #1ccc5b;
+}
+
+.footer-icon-tc {
+  display: inline-block;
+  background-color: #8a42f2;
+}
+
+.footer-icon-mc {
+  display: inline-block;
+  background-color: #5000ff;
+}
+
+.footer-icon-td {
+  display: inline-block;
+  background-color: #848585;
+}
+
+.footer-icon-am {
+  display: inline-block;
+  background-color: #ed2c43;
+}
+
+.footer-icon-co {
+  display: inline-block;
+  background-color: #ff037c;
+}
+
+.footer-icon-yt {
+  display: inline-block;
+  background-color: #FF0000;
+}
+.footer-icon-bc {
+  display: inline-block;
+  background-color: #26a4c5;
+}
+
+.footer-icon-dc {
+  display: inline-block;
+  background-color: #5c6af3;
+}
+
+.copyright,
+.copyright-xs {
+  color: #fff;
+  position: relative;
+  padding-top: 40px;
+  vertical-align: baseline;
+  bottom: 20px;
+  font-size: 14px;
+}
+
+.copyright {
+  text-align: left;
+}
+
+.copyright-xs {
+  text-align: center;
+}
+
+.copyright-container {
+  display: block;
+}
+
+.copyright-xs-container {
+  display: none;
+}
+
+/* Email Mailing List*/
+.email {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.email input.inputbox {
+  background: none;
+}
+
+.email input.inputbox {
+  background: none repeat scroll 0 0 #242424;
+  border: 1px solid #fff;
+  border-radius: 50px;
+  -moz-border-radius: 50px;
+  -webkit-border-radius: 50px;
+  -ms-border-radius: 50px;
+  -o-border-radius: 50px;
+  color: #fff;
+  height: 45px;
+  line-height: 45px;
+  padding: 5px 4px 5px 15px;
+}
+
+.email input.inputbox {
+  background: none repeat scroll 0 0 #242424;
+  border: 1px solid #6f6f6f;
+}
+
+.email .button {
+  background: none repeat scroll 0 0 transparent;
+  border: medium none;
+  color: #717171;
+  display: inline-block;
+  font-size: 25px;
+  height: 35px;
+  margin-left: -35px;
+  padding-left: 0;
+  width: 30px;
+
+  >i,
+  >svg {
+    padding-top: 5px;
+  }
+}
+
+.email .button:hover {
+  color: #fff;
+}
+
+.email .button .fa {
+  left: 0;
+  top: 4px;
+}
+
+.footer-spacer {
+  width: 100%;
+  height: 325px;
+  display: block;
+  clear: both;
+}
+
+
+@media (max-width: 768px) {
+  .email {
+    text-align: center;
+  }
+
+  .footer {
+    padding-bottom: 100px;
+  }
+
+  .footer-logo-container {
+    padding-top: 40px;
+  }
+
+  .footer-menu-header {
+    text-align: center;
+  }
+
+  .footer-menu {
+    text-align: center;
+  }
+
+  .footer-social {
+    float: none;
+    margin: 30px auto;
+  }
+
+  .footer-menu-header {
+    padding-top: 25px;
+  }
+
+  .footer-text,
+  .footer-icons {
+    text-align: center;
+  }
+
+  .copyright-container {
+    display: none;
+  }
+
+  .copyright-xs-container {
+    display: block;
+  }
 }
