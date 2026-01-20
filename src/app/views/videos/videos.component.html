@@ -29,7 +29,7 @@
           <img src="/img/videosImg.png" alt="{{ selectedCategory }}" class="w-8 h-8" />
           <h1 class="text-[28px] md:text-[36px] font-bold text-gray-800">{{ selectedCategory }}</h1>
         </div>
-        <div class="md:flex-shrink-0">
+        <div class="hidden md:flex md:flex-shrink-0 justify-start md:justify-end">
           <app-pagination
             [currentPage]="currentPage"
             [totalPages]="totalPages"
