@@ -26,27 +26,49 @@
 .hero-media {
   position: absolute;
   inset: 0;
-  will-change: transform, opacity;
+  will-change: transform;
 }
 
-.hero-media.sliding.slide-next {
-  animation: heroSlideNext var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1);
+// Incoming slide (new slide entering)
+.hero-media.incoming.slide-next {
+  animation: heroSlideInFromRight var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-.hero-media.sliding.slide-prev {
-  animation: heroSlidePrev var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1);
+.hero-media.incoming.slide-prev {
+  animation: heroSlideInFromLeft var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes heroSlideNext {
-  0% { transform: translateX(20%); opacity: 0; }
-  35% { opacity: 1; }
-  100% { transform: translateX(0); opacity: 1; }
+// Outgoing slide (old slide exiting)
+.hero-media.outgoing.slide-next {
+  animation: heroSlideOutToLeft var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes heroSlidePrev {
-  0% { transform: translateX(-20%); opacity: 0; }
-  35% { opacity: 1; }
-  100% { transform: translateX(0); opacity: 1; }
+.hero-media.outgoing.slide-prev {
+  animation: heroSlideOutToRight var(--hero-transition-ms) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+// Slide in from right (for next direction)
+@keyframes heroSlideInFromRight {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+// Slide in from left (for prev direction)
+@keyframes heroSlideInFromLeft {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+// Slide out to left (for next direction - old slide)
+@keyframes heroSlideOutToLeft {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+// Slide out to right (for prev direction - old slide)
+@keyframes heroSlideOutToRight {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
 }
 // Video Hero Component Styles
 

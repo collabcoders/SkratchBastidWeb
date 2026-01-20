@@ -34,6 +34,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   readonly transitionMs = 600;
   readonly lastDirection = signal<'next' | 'prev'>('next');
+  readonly previousVideoIndex = signal<number | null>(null);
 
   private router = Router;
   private environmentInjector = inject(EnvironmentInjector);
@@ -196,6 +197,8 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     this.cancelProgressRaf();
     this.progress.set(0);
 
+    // Store the current index as the previous before changing
+    this.previousVideoIndex.set(this.currentVideoIndex());
     this.lastDirection.set(direction);
     this.isTransitioning.set(true);
     this.currentVideoIndex.set(newIndex);
@@ -203,6 +206,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       this.isTransitioning.set(false);
+      this.previousVideoIndex.set(null);
       this.scheduleRotationForCurrent();
     }, this.transitionMs);
   }
@@ -252,6 +256,11 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   getCurrentVideo(): Ads {
     return this.videos[this.currentVideoIndex()];
+  }
+
+  getPreviousVideo(): Ads | null {
+    const prevIndex = this.previousVideoIndex();
+    return prevIndex !== null ? this.videos[prevIndex] : null;
   }
 
   // goToVideos() {

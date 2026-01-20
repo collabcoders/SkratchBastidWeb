@@ -5,8 +5,26 @@
     </div>
   }
   @if (videos.length! > 0) {
+    <!-- Outgoing slide (previous slide sliding out) -->
+    @if (isTransitioning() && getPreviousVideo()) {
+      <div class="hero-media outgoing"
+        [class.slide-next]="lastDirection() === 'next'"
+        [class.slide-prev]="lastDirection() === 'prev'">
+        @if (getPreviousVideo()!.image.indexOf('.mp4') != -1) {
+          <video class="absolute inset-0 w-full h-full object-cover scale-110 origin-top" muted
+            autoplay loop playsinline [src]="getPreviousVideo()!.image">
+          </video>
+        } @else {
+          <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top">
+            <img [src]="getPreviousVideo()!.image" [alt]="getPreviousVideo()!.title" class="inset-0 w-full h-full object-cover scale-110 origin-top" />
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Incoming slide (current slide sliding in) -->
     <div class="hero-media"
-      [class.sliding]="isTransitioning()"
+      [class.incoming]="isTransitioning()"
       [class.slide-next]="lastDirection() === 'next'"
       [class.slide-prev]="lastDirection() === 'prev'">
       <!-- Background Video -->
