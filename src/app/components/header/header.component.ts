@@ -15,6 +15,9 @@ interface NavLink {
   external?: boolean;
 }
 
+declare const bootstrap: any;
+declare const $: any;
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -57,6 +60,18 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   showFavorites() {
     this.favoritesService.showModal();
+  }
+
+  openProfileModal() {
+    this.accountMenuOpen = false;
+    this.closeMobileMenu();
+    const modalEl = document.getElementById('profileModal');
+    if (typeof bootstrap !== 'undefined' && modalEl) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+      modal.show();
+    } else if (typeof $ !== 'undefined') {
+      $('#profileModal').modal('show');
+    }
   }
 
   logout() {

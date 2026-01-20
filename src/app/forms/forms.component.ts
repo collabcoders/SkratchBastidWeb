@@ -11,6 +11,8 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '@env/environment';
 import { RecaptchaModule } from '../lib';
 import { RecaptchaErrorParameters } from '../lib';
+import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
+import countriesJson from '../../assets/data/countries.json';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -26,7 +28,7 @@ interface FooterLink {
 @Component({
   selector: 'app-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule,],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule, ImageCropperModule],
   templateUrl: './forms.component.html',
   styleUrls: ['./forms.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -122,11 +124,29 @@ export class FormsComponent implements AfterViewInit {
   resetForm: FormGroup;
   registerForm: FormGroup;
   contactForm: FormGroup;
+  profileForm: FormGroup;
+  passwordForm: FormGroup;
   memberProfile: any = null;
   showcaptcha = true;
   okcaptcha = false;
   processingContact = false;
+  processingProfile = false;
+  processingPassword = false;
   captchaKey: string = environment?.captcha?.key || '';
+
+  // Profile modal state
+  countries: any = (countriesJson as any) || [];
+  cropImgPreview = 'https://magmob.djjazzyjeff.com/content/user.png';
+  imgChangeEvt: any = null;
+  imageChanged = false;
+  imageType = 'image/jpeg';
+  fileName = 'No file selected';
+  imageUrl: string | ArrayBuffer | null = '';
+  progress = 0;
+  infoMessage: string | null = null;
+  isUploading = false;
+  subscrSum = '';
+  cancelOption = false;
 
   loginLoading = signal(false);
   resetLoading = signal(false);
@@ -145,9 +165,9 @@ export class FormsComponent implements AfterViewInit {
     });
 
     this.registerForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required, Validators.pattern('[0-9]{10,}')]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
@@ -179,6 +199,27 @@ export class FormsComponent implements AfterViewInit {
       subject: ['', Validators.required],
       message: ['', Validators.required],
     });
+
+    this.profileForm = this.fb.group({
+      alias: ['', Validators.required],
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', [Validators.required, Validators.pattern('^\\+?[0-9\\s\\-]{7,}$')]],
+      sms: [true],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      country: ['', Validators.required],
+      image: [''],
+      memberId: [''],
+    }, { validators: this.passwordsMatchValidator });
+
+    this.passwordForm = this.fb.group({
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+    }, { validators: this.passwordsMatchValidator });
 
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
@@ -213,9 +254,11 @@ export class FormsComponent implements AfterViewInit {
   }
 
   passwordsMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirm = form.get('confirmPassword')?.value;
-    return password === confirm ? null : { passwordsMismatch: true };
+    const password = form.get('password') || form.get('newPassword');
+    const confirm = form.get('confirmPassword');
+    const passwordVal = password?.value;
+    const confirmVal = confirm?.value;
+    return passwordVal === confirmVal ? null : { passwordsMismatch: true };
   }
 
   showReJoin(id: any) { bootbox.alert('Upgrade logic for id: ' + id); }
@@ -342,6 +385,7 @@ export class FormsComponent implements AfterViewInit {
       'loginModal',
       'registerModal',
       'contactModal',
+      'profileModal',
       'privacyModal',
       'cancelModal',
       'refundModal',
@@ -352,6 +396,11 @@ export class FormsComponent implements AfterViewInit {
         el.addEventListener('hidden.bs.modal', () => {
           this.router.navigate(['/']);
         });
+        if (id === 'profileModal') {
+          el.addEventListener('show.bs.modal', () => {
+            this.loadProfileModal(false);
+          });
+        }
       }
     });
   }
@@ -402,6 +451,75 @@ export class FormsComponent implements AfterViewInit {
     } else if (typeof $ !== 'undefined') {
       $('#contactModal').modal('show');
     }
+  }
+
+  openProfileModal() {
+    this.loadProfileModal(true);
+  }
+
+  openChangePasswordModal() {
+    this.passwordForm.reset();
+    this.processingPassword = false;
+    if (typeof bootstrap !== 'undefined') {
+      const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+      modal.show();
+    } else if (typeof $ !== 'undefined') {
+      $('#changePasswordModal').modal('show');
+    }
+  }
+
+  private loadProfileModal(openAfterLoad: boolean) {
+    this.alertService.clear();
+    this.processingProfile = false;
+    this.imageChanged = false;
+    this.profileForm.reset();
+    this.passwordForm.reset();
+    this.cropImgPreview = 'https://magmob.djjazzyjeff.com/content/user.png';
+
+    const member = this.token.getMember();
+    const memberId = member?.memberId || 0;
+
+    this.subscrSum = 'Loading Subscription Info...';
+    this.cancelOption = false;
+
+    this.apiService.getItem('member', memberId, '', false).subscribe({
+      next: (data: any) => {
+        this.memberProfile = data?.data;
+        const imagePath = this.memberProfile?.image || '';
+        const resolvedImage = imagePath?.startsWith('http') ? imagePath : (imagePath ? `${Config.content}${imagePath}` : this.cropImgPreview);
+        this.cropImgPreview = resolvedImage;
+
+        this.subscrSum = '';
+        this.profileForm.patchValue({
+          memberId: this.memberProfile?.memberId || '',
+          alias: this.memberProfile?.alias || '',
+          image: imagePath || '',
+          firstName: this.memberProfile?.firstName || '',
+          lastName: this.memberProfile?.lastName || '',
+          email: this.memberProfile?.email || '',
+          phone: this.memberProfile?.phone || '',
+          sms: this.memberProfile?.sms ?? true,
+          city: this.memberProfile?.city || '',
+          state: this.memberProfile?.state || '',
+          country: this.memberProfile?.country || '',
+          password: this.memberProfile?.password || '',
+          confirmPassword: this.memberProfile?.password || '',
+        });
+        this.profileForm.markAsPristine();
+
+        if (openAfterLoad) {
+          if (typeof bootstrap !== 'undefined') {
+            const modal = new bootstrap.Modal(document.getElementById('profileModal'));
+            modal.show();
+          } else if (typeof $ !== 'undefined') {
+            $('#profileModal').modal('show');
+          }
+        }
+      },
+      error: (error: any) => {
+        this.alertService.error('Error', error?.error?.message || 'Unable to load profile.', Config.alertOptions);
+      }
+    });
   }
 
   openPrivacyModal() {
@@ -476,6 +594,130 @@ export class FormsComponent implements AfterViewInit {
     } else {
       this.contactForm.markAllAsTouched();
     }
+  }
+
+  initSaveProfile() {
+    this.alertService.clear();
+    this.profileForm.markAllAsTouched();
+    if (this.imageChanged && this.cropImgPreview) {
+      this.profileForm.patchValue({ image: this.cropImgPreview });
+    }
+    if (this.profileForm.invalid) {
+      return;
+    }
+    this.saveProfile();
+  }
+
+  saveProfile() {
+    this.processingProfile = true;
+    const payload = { ...this.profileForm.value };
+    this.apiService.post('UpdateMember?app=' + Config.app, payload, true, true)
+      .subscribe({
+        next: (data: any) => {
+          if (data.error) {
+            this.alertService.error('Error', data.msg, Config.alertOptions);
+          } else {
+            this.alertService.success('Saved', data.msg, Config.alertOptions);
+            if (typeof bootstrap !== 'undefined') {
+              const modalEl = document.getElementById('profileModal');
+              const instance = bootstrap.Modal.getInstance(modalEl);
+              if (instance) {
+                instance.hide();
+              }
+            } else if (typeof $ !== 'undefined') {
+              $('#profileModal').modal('hide');
+            }
+          }
+          this.processingProfile = false;
+        },
+        error: (error) => {
+          this.processingProfile = false;
+          this.alertService.error('', error?.error?.message || error?.message || 'Something went wrong!', Config.alertOptions);
+        }
+      });
+  }
+
+  savePassword() {
+    this.alertService.clear();
+    this.passwordForm.markAllAsTouched();
+    if (this.passwordForm.invalid) {
+      return;
+    }
+
+    const memberId = this.profileForm.get('memberId')?.value || this.memberProfile?.memberId || this.token.getMember()?.memberId;
+    if (!memberId) {
+      this.alertService.error('Error', 'Unable to determine member ID.', Config.alertOptions);
+      return;
+    }
+
+    const payload = {
+      memberId,
+      password: this.passwordForm.get('newPassword')?.value,
+      confirmPassword: this.passwordForm.get('confirmPassword')?.value,
+    };
+
+    this.processingPassword = true;
+    this.apiService.post('UpdateMember?app=' + Config.app, payload, true, true)
+      .subscribe({
+        next: (data: any) => {
+          if (data.error) {
+            this.alertService.error('Error', data.msg, Config.alertOptions);
+          } else {
+            this.alertService.success('Password Updated', data.msg, Config.alertOptions);
+            if (typeof bootstrap !== 'undefined') {
+              const modalEl = document.getElementById('changePasswordModal');
+              const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+              instance.hide();
+            } else if (typeof $ !== 'undefined') {
+              $('#changePasswordModal').modal('hide');
+            }
+            this.passwordForm.reset();
+          }
+          this.processingPassword = false;
+        },
+        error: (error) => {
+          this.processingPassword = false;
+          this.alertService.error('', error?.error?.message || error?.message || 'Something went wrong!', Config.alertOptions);
+        }
+      });
+  }
+
+  onProfileFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input?.files || input.files.length === 0) {
+      return;
+    }
+    const file = input.files[0];
+    this.fileName = file.name;
+    this.imageType = file.type;
+    this.imgChangeEvt = event;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imageUrl = reader.result;
+      this.imageChanged = true;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cropImg(event: ImageCroppedEvent) {
+    this.cropImgPreview = event.base64 || '';
+  }
+
+  imgLoad() {
+    // cropper ready
+  }
+
+  initCropper() {
+    // cropper initialized
+  }
+
+  imgFailed() {
+    this.alertService.error('Error', 'Image failed to load. Please try another file.', Config.alertOptions);
+  }
+
+  showCancel(e: Event) {
+    e.preventDefault();
+    this.openCancelModal();
   }
 
   resolved(captchaResponse: string | null) {

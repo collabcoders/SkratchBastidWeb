@@ -267,7 +267,7 @@ export class VideoCarouselComponent implements OnInit {
             // Dialog will be shown automatically by the service
             return;
           }
-          // bootbox.alert('<h4>Mag Mob VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
+          // bootbox.alert('<h4>VIP Only</h4><br>' + 'Sorry, the Favorites feature is reserved for VIP subscribers only.  Please click the Upgrade button (link on the top-right) to get access.');
         }
       } else {
         const hasAccess = this.videoAccessService.checkVideoAccess(true);
@@ -276,7 +276,7 @@ export class VideoCarouselComponent implements OnInit {
           // Dialog will be shown automatically by the service
           return;
         }
-        // bootbox.alert('<h4>Mag Mob Only</h4><br>' + 'Sorry, the Favorites feature is reserved for Mag Mob members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
+        // bootbox.alert('<h4>Members Only</h4><br>' + 'Sorry, the Favorites feature is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
   }

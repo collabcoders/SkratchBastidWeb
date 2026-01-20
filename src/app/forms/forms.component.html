@@ -393,6 +393,186 @@
     </form>
 </div>
 
+<!-- Profile Modal -->
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" data-bs-backdrop="static"
+  data-bs-keyboard="false" aria-hidden="true">
+  <form [formGroup]="profileForm" (ngSubmit)="initSaveProfile()" class="needs-validation" novalidate>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content modal-login modal-light">
+        <div class="modal-header">
+          <span class="subscription-text">{{subscrSum}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" *ngIf="cancelOption" (click)="showCancel($event)" class="cancel-btn">[Cancel]</a>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+            aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h5 class="modal-title" id="profileModalLabel">Update Profile</h5>
+          <div class="row">
+            <div class="col-md-12 d-flex justify-content-center">
+              <label for="file-input">
+                <img [src]="cropImgPreview" class="pic-preview" />
+                <div class="img-text">Choose an Image...</div>
+              </label>
+              <input id="file-input" type="file" name="file"
+                (change)="onProfileFileChange($event)">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <image-cropper [imageChangedEvent]="imgChangeEvt" [maintainAspectRatio]="true"
+                [aspectRatio]="4 / 4" [resizeToWidth]="256" format="png" backgroundColor="#262626"
+                (imageCropped)="cropImg($event)" (imageLoaded)="imgLoad()"
+                (cropperReady)="initCropper()" (loadImageFailed)="imgFailed()"
+                style="visibility: hidden;">
+              </image-cropper>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 d-flex justify-content-center">
+              <div class="form-text text-center" *ngIf="infoMessage">
+                <div class="message-body text-center">
+                </div>
+              </div>
+              <div class="progress" *ngIf="!infoMessage">
+                <progress class="progress-bar bg-success" aria-valuemin="0"
+                  [attr.aria-valuenow]="progress" max="100"
+                  [ngStyle]="{'width.%': progress}"></progress>
+              </div>
+            </div>
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-user-secret"></i></span>
+            <input type="text" formControlName="alias" class="form-control"
+              [ngClass]="invalidProfileCss(profileForm.get('alias'))"
+              placeholder="Alias or Nickname" aria-label="Alias or Nickname">
+            <div *ngIf="invalidProfile(profileForm.get('alias'))"
+              class="invalid-tooltip left-error-tip">
+              Alias or Nickname is required (Just use your first name if you don't have one)
+            </div>
+          </div>
+
+          <div class="input-group mb-3 has-validation">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <input type="text" formControlName="firstName" aria-label="First Name" class="form-control"
+              [ngClass]="invalidProfileCss(profileForm.get('firstName'))"
+              placeholder="First Name">
+            <div *ngIf="invalidProfile(profileForm.get('firstName'))"
+              class="invalid-tooltip left-error-tip">
+              First name required
+            </div>
+            <input type="text" formControlName="lastName" aria-label="Last Name" class="form-control"
+              [ngClass]="invalidProfileCss(profileForm.get('lastName'))"
+              placeholder="Last Name">
+            <div *ngIf="invalidProfile(profileForm.get('lastName'))"
+              class="invalid-tooltip right-error-tip">
+              Last name required
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="text" formControlName="email" class="form-control"
+              [ngClass]="invalidProfileCss(profileForm.get('email'))" placeholder="Email"
+              aria-label="Email">
+            <div *ngIf="invalidProfile(profileForm.get('email'))"
+              class="invalid-tooltip left-error-tip">
+              A valid email address is required
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+            <input type="text" class="form-control" formControlName="phone" placeholder="Mobile Phone"
+              aria-label="Mobile Phone" [ngClass]="invalidProfileCss(profileForm.get('phone'))">
+            <div *ngIf="invalidProfile(profileForm.get('phone'))"
+              class="invalid-tooltip left-error-tip">
+              invalid phone number format
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-3 ps-1 sms">
+            <div class="form-check mb-0">
+              <input class="form-check-input" type="checkbox" formControlName="sms" value="true" id="sms" checked>
+              <label class="form-check-label" for="sms">Allow SMS</label>
+            </div>
+          </div>
+          <hr class="form-line">
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+            <input type="text" formControlName="city" aria-label="City" class="form-control"
+              placeholder="City" [ngClass]="invalidProfileCss(profileForm.get('city'))">
+            <div *ngIf="invalidProfile(profileForm.get('city'))"
+              class="invalid-tooltip left-error-tip">
+              City is required
+            </div>
+            <input type="text" formControlName="state" aria-label="State" class="form-control"
+              placeholder="State" [ngClass]="invalidProfileCss(profileForm.get('state'))">
+            <div *ngIf="invalidProfile(profileForm.get('state'))"
+              class="invalid-tooltip center-error-tip">
+              State is required
+            </div>
+          </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-globe"></i></span>
+            <select class="form-select" formControlName="country"
+              [ngClass]="invalidProfileCss(profileForm.get('country'))">
+              <option value="" selected>Country</option>
+              <option *ngFor="let country of countries" [value]="country.code">{{country.name}}</option>
+            </select>
+            <div *ngIf="invalidProfile(profileForm.get('country'))"
+              class="invalid-tooltip left-error-tip">
+              Country is required
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" formControlName="image">
+          <input type="hidden" formControlName="memberId">
+          <button type="button" class="btn btn-outline-secondary me-2" (click)="openChangePasswordModal()">
+            Change Password
+          </button>
+          <button type="submit" class="btn btn-primary" [disabled]="processingProfile">
+            Update Profile
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px">
+    <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
+      <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
+        <h2 class="modal-title font-semibold text-center flex-1" id="changePasswordModalLabel" style="font-size: 24px">Change Password</h2>
+        <button type="button"
+          class="text-gray-700 hover:text-gray-900 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
+          data-bs-dismiss="modal" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body px-6 pb-6">
+        <form class="space-y-4" [formGroup]="passwordForm" (ngSubmit)="savePassword()">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <input type="password" class="w-full border rounded-lg px-3 py-2" formControlName="newPassword" placeholder="New password">
+            @if (passwordForm.get('newPassword')?.invalid && (passwordForm.get('newPassword')?.touched || passwordForm.get('newPassword')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Minimum 6 characters</div>
+            }
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            <input type="password" class="w-full border rounded-lg px-3 py-2" formControlName="confirmPassword" placeholder="Confirm new password">
+            @if (passwordForm.hasError('passwordsMismatch') && (passwordForm.get('confirmPassword')?.touched || passwordForm.get('confirmPassword')?.dirty)) {
+              <div class="text-red-500 text-xs mt-1">Passwords must match</div>
+            }
+          </div>
+          <button type="submit" class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition" [disabled]="passwordForm.invalid || processingPassword">
+            Update Password
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Privacy Policy Modal -->
 <div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px"

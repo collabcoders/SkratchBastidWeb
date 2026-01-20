@@ -73,8 +73,7 @@
         </button>
         @if (accountMenuOpen) {
           <div class="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-2xl z-50 border border-gray-200 flex flex-col py-2">
-            <a href="https://wp.skratchbastid.com/account/" target="_blank" rel="noopener" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">My Account</a>
-            <a [routerLink]="['/profile']" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">My Profile</a>
+            <a href="#" (click)="openProfileModal()" class="block px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">My Profile</a>
             <button (click)="logout()" class="block w-full text-left px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-100">Logout</button>
           </div>
         }
@@ -124,7 +123,7 @@
 
       <div class="flex flex-col gap-2 mt-2">
         <a href="https://wp.skratchbastid.com/account/" target="_blank" rel="noopener" class="block py-2 font-bold">My Account</a>
-        <a [routerLink]="['/profile']" (click)="closeMobileMenu()" class="block py-2 font-bold">My Profile</a>
+        <a (click)="openProfileModal()" class="block py-2 font-bold c-pointer font-bold rcursor-pointer">My Profile</a>
         <button (click)="logout(); closeMobileMenu();" class="block w-full text-left py-2 font-bold">Logout</button>
       </div>
     }
