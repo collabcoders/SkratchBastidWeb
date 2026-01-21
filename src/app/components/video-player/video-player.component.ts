@@ -343,13 +343,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
     if (this.video) {
       this.distroyVideo();
-      const getVideoUrl = (video: Video) => {
-        if (video.hls && (video.hls.startsWith('http://') || video.hls.startsWith('https://') || video.hls.includes('.m3u8'))) {
-          return video.hls;
-        }
-        return 'https://player.vimeo.com/external/' + video.sourceId + '.m3u8?s=' + video.hls;
-      };
-      this.videohls = getVideoUrl(this.video);
+      this.videohls = this.resolveHlsUrl(this.video);
       const existing = this.getPlayerInstance();
       if (existing && !existing.isDisposed?.()) {
         this.player = existing;
@@ -742,8 +736,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       .subscribe(valid => {
         if (valid) {
           const member = this.token.getMember();
+          console.log("member", member);
           this.bookmarkobj.time = this.getCurrentTime();
           this.bookmarkobj.memberId = member?.memberId;
+          this.bookmarkobj.userId = member?.memberId;
           this.bookmarkobj.videoId = this.videoId;
 
           this.apiService
@@ -953,6 +949,34 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     const x = minutes < 10 ? "0" + minutes : minutes;
     const y = seconds < 10 ? "0" + seconds : seconds;
     return x + ":" + y;
+  }
+
+  private resolveHlsUrl(video: Video): string {
+    if (!video) {
+      return '';
+    }
+
+    const decoded = this.decodeHls(video.hls);
+
+    if (decoded && (decoded.startsWith('http://') || decoded.startsWith('https://') || decoded.includes('.m3u8'))) {
+      return decoded;
+    }
+
+    const signature = encodeURIComponent(decoded || '');
+    const sourceId = encodeURIComponent(video.sourceId || '');
+    return sourceId ? `https://player.vimeo.com/external/${sourceId}.m3u8?s=${signature}` : '';
+  }
+
+  private decodeHls(hls?: string): string {
+    if (!hls) {
+      return '';
+    }
+    const unescaped = hls.replace(/&amp;/g, '&');
+    try {
+      return decodeURIComponent(unescaped);
+    } catch {
+      return unescaped;
+    }
   }
 
   processingFav = false;

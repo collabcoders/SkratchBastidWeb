@@ -198,6 +198,12 @@
                           <h5 class="fw-bold mb-2 mt-0 text-capitalize mt-2 pe-2">
                             <a href="javascript:;" class="text-decoration-none">{{ item.title }}</a>
                           </h5>
+                          @if (item.featuring) {
+                            <p class="mb-1 text-white-50 text-sm pe-2">Featuring: {{ item.featuring }}</p>
+                          }
+                          @if (item.duration) {
+                            <p class="mb-0 text-white-50 text-sm pe-2">Duration: {{ item.duration }}</p>
+                          }
                         </div>
                       </div>
                     </div>

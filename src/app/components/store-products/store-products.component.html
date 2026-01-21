@@ -77,7 +77,9 @@
                                 <a [href]="product.link" target="_blank" rel="noopener noreferrer">
                                     <div style="position: relative;">
                                         <img [src]="product.image" [alt]="product.title" class="rounded-lg aspect-square object-cover w-[200px]" />
-                                        <img *ngIf="product.zigzag" [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+                                        @if (product.zigzag) {
+                                            <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
+                                        }
                                     </div>
                                     <div class="mt-2" style="width: 200px">
                                         <div class="font-semibold mt-4 mb-2 text-[16px] leading-tight truncate">{{ product.title }}</div>
