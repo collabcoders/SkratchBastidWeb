@@ -29,6 +29,11 @@ interface FooterLink {
   action?: () => void;
 }
 
+type PricingOption = {
+  value: string;
+  text: string;
+};
+
 
 @Component({
   selector: 'app-forms',
@@ -191,15 +196,20 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
     // Listen for plan changes to update selectedPrice and selectedFrequency
     this.registerForm.get('plan')?.valueChanges.subscribe((plan) => {
+      const monthlyVal = this.monthlyOptionValue();
+      const yearlyVal = this.yearlyOptionValue();
+
       if (plan === 'free') {
         this.selectedPrice = 'free';
         this.selectedFrequency = '';
-      } else if (plan === 'monthly') {
-        this.selectedPrice = '$9.99';
-        this.selectedFrequency = 'monthly';
-      } else if (plan === 'yearly') {
-        this.selectedPrice = '$99.99';
-        this.selectedFrequency = 'yearly';
+      } else if (plan === monthlyVal) {
+        const { price, frequency } = this.extractPriceAndFrequency(this.monthlyOption()?.text);
+        this.selectedPrice = price;
+        this.selectedFrequency = frequency;
+      } else if (plan === yearlyVal) {
+        const { price, frequency } = this.extractPriceAndFrequency(this.yearlyOption()?.text);
+        this.selectedPrice = price;
+        this.selectedFrequency = frequency;
       } else {
         this.selectedPrice = '';
         this.selectedFrequency = '';
@@ -281,9 +291,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
         if (this.appData.planOpen() === 'free') {
           this.registerForm.get('plan')?.setValue('free');
         } else if (this.appData.planOpen() === 'monthly') {
-          this.registerForm.get('plan')?.setValue('monthly');
+          this.registerForm.get('plan')?.setValue(this.monthlyOptionValue());
         } else if (this.appData.planOpen() === 'yearly') {
-          this.registerForm.get('plan')?.setValue('yearly');
+          this.registerForm.get('plan')?.setValue(this.yearlyOptionValue());
         }
       }
     })
@@ -935,5 +945,40 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.profileForm.get('sms')?.setValue(checked, { emitEvent: true });
     this.profileForm.get('sms')?.markAsDirty();
     console.log("onSmsChange", checked);
+  }
+
+  private monthlyOption(): PricingOption | undefined {
+    return this.appData.pricingOptions().find((option) => /monthly/i.test(option.text));
+  }
+
+  private yearlyOption(): PricingOption | undefined {
+    return this.appData.pricingOptions().find((option) => /yearly/i.test(option.text));
+  }
+
+  monthlyOptionValue(): string {
+    return this.monthlyOption()?.value || 'monthly';
+  }
+
+  yearlyOptionValue(): string {
+    return this.yearlyOption()?.value || 'yearly';
+  }
+
+  monthlyOptionLabel(): string {
+    return this.monthlyOption()?.text || 'Monthly';
+  }
+
+  yearlyOptionLabel(): string {
+    return this.yearlyOption()?.text || 'Yearly';
+  }
+
+  private extractPriceAndFrequency(text?: string): { price: string; frequency: string } {
+    if (!text) {
+      return { price: '', frequency: '' };
+    }
+    const [price, freq] = text.split('/');
+    return {
+      price: price?.trim() || '',
+      frequency: (freq || '').trim().toLowerCase() || '',
+    };
   }
 }

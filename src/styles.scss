@@ -16,14 +16,19 @@
 }
 @import 'tailwindcss';
 
-/* Custom font for BBQ page */
+/* Use Poppins for BBQ page */
 @font-face {
-  font-family: 'Blur Bold';
+  font-family: 'Poppins';
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  /* Fallback to system fonts until custom font is loaded */
-  src: local('Impact'), local('Franklin Gothic Bold'), local('Arial Black');
+  /* Prefer local Poppins; Google Fonts import in index.html provides the web source */
+  src: local('Poppins Bold'), local('Poppins-Bold'), local('Poppins');
+}
+
+html, body {
+  // font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif !important;
 }
 
 a {

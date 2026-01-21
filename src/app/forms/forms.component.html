@@ -274,8 +274,8 @@
                 id="registerPlan" formControlName="plan" required style="font-size: 18px">
                 <option value="" disabled selected>Plans</option>
                 <option value="free">Free</option>
-                <option value="monthly">Monthly - $9.99</option>
-                <option value="yearly">Yearly - $99.99</option>
+                <option [value]="monthlyOptionValue()">{{ monthlyOptionLabel() }}</option>
+                <option [value]="yearlyOptionValue()">{{ yearlyOptionLabel() }}</option>
               </select>
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                 <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">

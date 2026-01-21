@@ -10,7 +10,8 @@ export const environment = {
   captcha: {
       key: '6LdO8tcqAAAAAPljZtMoYFcW_SlAyeG8mLSLDunI',
   },
-  stripeKey: 'pk_live_51ONL0ZKnyeTJue4zO1TAj6YxVCYpvNMHAIkXLLV7mF1byYyCr22hntute6uimKXQ6K2WQ4rSXqoRLTpBAxStUr3q00WkYzkjhO',
+  stripeKey: 'pk_live_m9Ix69thAe1KiclzNNwc1QZE00waWBLKvH',
+  prodId: 'prod_RvMADg6RCwpL34',
   //api: 'http://localhost:49280'
 };
 

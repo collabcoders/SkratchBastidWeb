@@ -20,6 +20,11 @@ import { Video } from '@shared/models/video';
 import { mappingFavorites } from '@shared/services/video-access.service';
 import { FavoritesService } from '@shared/services/favorites.service';
 
+type PricingOption = {
+  value: string;
+  text: string;
+};
+
 @Component({
   selector: 'app-topgrillin',
   imports: [
@@ -76,6 +81,14 @@ export class TopGrillinComponent {
     }
 
     get currentPrice() {
+      const option = this.isAnnual ? this.yearlyOption() : this.monthlyOption();
+      const price = this.extractPriceNumber(option?.text);
+
+      if (price) {
+        const amount = this.isAnnual ? price / 12 : price;
+        return this.formatPrice(amount);
+      }
+
       return this.isAnnual ? '9.99' : '12.99';
     }
 
@@ -133,5 +146,25 @@ export class TopGrillinComponent {
     openSignup() {
       this.appData.planOpen.set(this.isAnnual ? 'yearly' : 'monthly');
       this.router.navigate(['/join']);
+    }
+
+    private monthlyOption(): PricingOption | undefined {
+      return this.appData.pricingOptions().find((option) => /monthly/i.test(option.text));
+    }
+
+    private yearlyOption(): PricingOption | undefined {
+      return this.appData.pricingOptions().find((option) => /yearly/i.test(option.text));
+    }
+
+    private extractPriceNumber(text?: string): number | null {
+      if (!text) return null;
+      const [pricePart] = text.split('/');
+      const numeric = (pricePart || '').replace(/[^0-9.]/g, '').trim();
+      const value = parseFloat(numeric);
+      return Number.isFinite(value) ? value : null;
+    }
+
+    private formatPrice(value: number): string {
+      return value.toFixed(2).replace(/\.00$/, '');
     }
 }
