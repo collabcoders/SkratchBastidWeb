@@ -1,0 +1,77 @@
+// Marquee strip on hero
+.hero-marquee {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	overflow: hidden;
+	background: rgba(0, 0, 0, 0.75);
+	padding: 0.75rem 0;
+	z-index: 20;
+}
+
+.hero-marquee__track {
+	display: flex;
+	align-items: center;
+	width: 200%;
+	animation: hero-marquee 10s linear infinite;
+	white-space: nowrap;
+	text-transform: uppercase;
+	font-weight: 700;
+	font-style: italic;
+	letter-spacing: 0.08em;
+	font-size: 0.95rem;
+}
+
+.hero-marquee__track span {
+	display: inline-block;
+	min-width: 50%;
+	padding-right: 3rem;
+}
+
+@keyframes hero-marquee {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(-50%);
+	}
+}
+
+.hero-parallax {
+	background-attachment: fixed;
+	background-position: center;
+	background-size: cover;
+	will-change: background-position;
+	transition: background-position 120ms ease-out;
+}
+
+@media (max-width: 768px) {
+	.hero-parallax {
+		background-attachment: scroll;
+	}
+}
+
+/* Reveal on scroll */
+.reveal {
+	opacity: 0;
+	transform: translateY(24px);
+	transition: opacity 320ms ease-out, transform 420ms ease-out;
+}
+
+.reveal-left {
+	transform: translateX(-32px);
+}
+
+.reveal-right {
+	transform: translateX(32px);
+}
+
+.reveal-up {
+	transform: translateY(32px);
+}
+
+.is-visible {
+	opacity: 1;
+	transform: translate3d(0, 0, 0);
+}
