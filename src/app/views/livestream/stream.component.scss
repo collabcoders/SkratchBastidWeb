@@ -1,0 +1,127 @@
+.stream {
+    min-height: 100vh;
+    width: 100%;
+    padding-top: 72px; /* offset fixed header */
+    padding-bottom: 16px;
+    overflow-x: hidden;
+}
+
+.stream .row {
+    margin: 0;
+}
+
+.stream .col-md-12 {
+    padding: 0;
+}
+
+.ls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.tite-col {
+    padding: 0 !important;
+}
+
+.ls-container {
+    margin: 10px auto;
+    clear: both;
+    display: flex;
+    width: 100%;
+    max-width: 1460px;
+    background: #000000;
+    border-radius: 8px;
+    height: calc(100vh - 120px);
+    align-items: stretch;
+}
+
+.ls-container > .ls-chat-container > iframe {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    background: #000000;
+}
+
+.ls-container > .ls-player-container > * > iframe {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    background: #000000;
+}
+
+
+.ls-chat-container {
+    position: relative;
+    width: 350px;
+    height: 100%;
+}
+
+.ls-player-container {
+    position: relative;
+    flex-grow: 1;
+    height: 100%;
+}
+
+.ls-player-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+mux-player {
+    --captions-button: none;
+    --airplay-button: none;
+    --pip-button: none;
+    --volume-range: none;
+    --time-range: none;
+    --time-display: none;
+    --duration-display: none;
+    --rendition-selectmenu: none;
+}
+
+@media (max-width: 768px) {
+    .ls-container {
+        width: 100%;
+        clear: both;
+        display: block;
+        height: auto;
+    }
+    .ls-container > .ls-chat-container > iframe {
+        border-top: none;
+        border-left: none;
+        border-bottom: none;
+    }
+    .ls-container > .ls-player-container > * > iframe {
+        border-top: none;
+        border-right: none;
+        border-bottom: none;
+    }
+    .ls-chat-container {
+        display: block;
+        width: 100%;
+        height: 320px;
+        margin-top: 12px;
+    }
+    .ls-player-container {
+        position: relative;
+        width: 100%;
+        clear: both;
+        display: block;
+        height: 60vh;
+        min-height: 280px;
+    }
+    .ls-player-wrapper {
+        height: 100%;
+    }
+}
+
+@media (min-width: 768px) {
+}

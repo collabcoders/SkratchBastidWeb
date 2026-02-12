@@ -1,0 +1,29 @@
+<app-header></app-header>
+
+<div class="stream" id="stream">
+    <div class="row">
+        <div class="col-md-12 tite-col">
+            <div class="ls-container">
+                <div class="ls-player-container">
+                    <div class="ls-player-wrapper">
+                        <mux-player
+                            class="ls"
+                            autoplay="any"
+                            allow="fullscreen"
+                            [attr.poster]="offline_livestream_placehoder"
+                            stream-type="live"
+                            [attr.playback-id]="stream"
+                            metadata-video-title="Magnificent Livestream"
+                            controls>
+                        </mux-player>
+                    </div>
+                </div>
+                <div class="ls-chat-container">
+                    <iframe [src]="(chat || '') | safe" class="ls" allowTransparency="true"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>

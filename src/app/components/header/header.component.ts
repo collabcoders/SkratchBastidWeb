@@ -170,6 +170,13 @@ export class HeaderComponent implements OnDestroy, OnInit {
       hoverImage: '/img/imgHover/audioHover.png',
     },
     {
+      label: 'Livestream',
+      href: '/livestream',
+      hoverColor: 'hover:text-[#00C2FF]',
+      color: '#00C2FF',
+      hoverImage: '/img/imgHover/videosHover.png',
+    },
+    {
       label: 'Events',
       href: '/events',
       hoverColor: 'hover:text-[#85C441]',

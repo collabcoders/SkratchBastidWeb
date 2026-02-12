@@ -29,6 +29,7 @@ export const Config = {
     authorizationHeader: 'Authorization',
     bannerRefresh: 1,
     expireHours: 24,
+    offline_livestream_placehoder: "https://www.mixapps.io/content/djjazzyjeff/livestream-offline.png",
 
     alertOptions: {
         autoClose: true,
