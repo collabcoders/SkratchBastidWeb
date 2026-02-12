@@ -7,12 +7,12 @@ export const environment = {
   ismock: false,
   projectid: 'skratchbastid',
   api: 'https://www.mixapps.io',
+  //api: 'http://localhost:49280',
   captcha: {
       key: '6LdO8tcqAAAAAPljZtMoYFcW_SlAyeG8mLSLDunI',
   },
   stripeKey: 'pk_live_m9Ix69thAe1KiclzNNwc1QZE00waWBLKvH',
-  prodId: 'prod_RvMADg6RCwpL34',
-  //api: 'http://localhost:49280'
+  prodId: 'prod_RvMADg6RCwpL34'
 };
 
 /*
