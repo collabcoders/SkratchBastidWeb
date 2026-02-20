@@ -45,17 +45,17 @@ type PricingOption = {
 })
 export class FormsComponent implements AfterViewInit, OnInit {
     apiPost(endpoint: string) {
-      // Use registerForm for this context
-      console.log('registerForm.value', this.registerForm.value);
+      const payload = this.registerForm.getRawValue();
+      console.log('registerForm.value', payload);
       if (this.selectedPrice === 'free') {
         // No payment method required
       } else {
-        if (!this.registerForm.value.paymentMethodId) {
+        if (!payload.paymentMethodId) {
           this.registerLoading.set(false);
           return;
         }
       }
-      this.apiService.post(endpoint + '?app=' + Config.app + '&source=website', this.registerForm.value, true, true)
+      this.apiService.post(endpoint + '?app=' + Config.app + '&source=website', payload, true, true)
         .subscribe({
           next: (data: any) => {
             if (data.error) {
@@ -68,16 +68,13 @@ export class FormsComponent implements AfterViewInit, OnInit {
             } else {
               // SET TOKEN
               console.log(data);
-              if (this.isReJoin) {
-                this.token.set(data?.data);
+              if (data?.data) {
+                this.token.set(data.data);
                 this.token.isValid(true);
                 this.favoritesService.loadFavorites();
-                // this.logIn.emit(); // Uncomment if you have logIn EventEmitter
               }
               // HIDE REGISTER MODAL
-              if (typeof $ !== 'undefined') {
-                $('#registerModal').modal('hide');
-              }
+              this.closeRegisterModal();
               // SHOW MESSAGES AND REDIRECT
               bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the QMT VIP</h4><br>' + data.msg);
               this.isReJoin = false;
@@ -191,6 +188,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       plan: ['', Validators.required],
+      selectedPrice: [''],
+      paymentMethodId: [''],
+      paymentMethodLast4: [''],
     }, { validators: this.passwordsMatchValidator });
 
     // Listen for plan changes to update selectedPrice and selectedFrequency
@@ -388,9 +388,14 @@ export class FormsComponent implements AfterViewInit, OnInit {
       this.registerLoading.set(true);
       let endpoint = 'NewMember';
       if (this.selectedPrice == 'free') {
-        this.registerForm.value.plan = 'free';
-        this.registerForm.value.selectedPrice = '';
+        this.registerForm.patchValue({
+          plan: 'free',
+          selectedPrice: ''
+        });
       } else {
+        this.registerForm.patchValue({
+          selectedPrice: this.selectedPrice
+        });
         if (this.isReJoin) {
           endpoint = 'UpdateSubscription';
         } else {
@@ -478,6 +483,17 @@ export class FormsComponent implements AfterViewInit, OnInit {
     }
   }
 
+  private closeRegisterModal() {
+    if (typeof bootstrap !== 'undefined') {
+      const el = document.getElementById('registerModal');
+      if (!el) { return; }
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+      modal.hide();
+    } else if (typeof $ !== 'undefined') {
+      $('#registerModal').modal('hide');
+    }
+  }
+
   private resetRegisterForm() {
     this.registerForm.reset({
       email: '',
@@ -487,6 +503,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
       password: '',
       confirmPassword: '',
       plan: '',
+      selectedPrice: '',
+      paymentMethodId: '',
+      paymentMethodLast4: '',
     });
     this.registerForm.markAsPristine();
     this.registerForm.markAsUntouched();
