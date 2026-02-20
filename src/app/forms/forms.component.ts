@@ -112,6 +112,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
       },
     };
     cardOptions = {
+      hidePostalCode: false,
       style: {
         base: {
           iconColor: '#111827',
