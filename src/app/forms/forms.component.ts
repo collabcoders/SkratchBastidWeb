@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -9,7 +9,7 @@ import { TokenService } from '@shared/services/token.service';
 import { FavoritesService } from '@shared/services/favorites.service';
 import { UploaderService } from '@shared/services/uploader.service';
 import { AppData } from '../app.data';
-import { NgxStripeModule } from 'ngx-stripe';
+import { NgxStripeModule, StripeService, StripeCardComponent } from 'ngx-stripe';
 import { environment } from '@env/environment';
 import { RecaptchaModule } from '../lib';
 import { RecaptchaErrorParameters } from '../lib';
@@ -92,8 +92,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
           }
         });
     }
-    // Add ViewChild for StripeCardComponent
-    // @ViewChild(StripeCardComponent) card!: StripeCardComponent; // Uncomment and import if using StripeCardComponent
+    @ViewChild(StripeCardComponent) card!: StripeCardComponent;
     processingSignup = false;
     // Add paymentMethodId and paymentMethodLast4 to registerForm if not present
     // Stripe/plan properties for registration
@@ -102,7 +101,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     isReJoin: boolean = false;
 
     // Stripe integration
-    stripe = (window as any).Stripe ? (window as any).Stripe('pk_test_123') : undefined; // Replace with your Stripe key or inject as needed
+    private stripeService = inject(StripeService);
     elementsOptions = {
       locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
       appearance: {
@@ -406,12 +405,10 @@ export class FormsComponent implements AfterViewInit, OnInit {
         this.apiPost(endpoint);
       } else {
         // Stripe payment method creation
-        // You must have a reference to the StripeCardComponent as 'card'
-        const payload: any = {
+        this.stripeService.createPaymentMethod({
           type: 'card',
-          card: (this as any).card?.element, // Replace with correct reference if needed
-        };
-        (this.stripe as any).createPaymentMethod(payload).subscribe((p: any) => {
+          card: this.card.element,
+        }).subscribe((p: any) => {
           console.log('Payment Method', p);
           if (p.error?.message) {
             this.registerLoading.set(false);

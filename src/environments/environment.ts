@@ -7,7 +7,7 @@ export const environment = {
   ismock: false,
   projectid: 'skratchbastid',
   api: 'https://www.mixapps.io',
-  //api: 'http://localhost:49280',
+  //api: 'http://10.211.55.5:62406',
   captcha: {
       key: '6LdO8tcqAAAAAPljZtMoYFcW_SlAyeG8mLSLDunI',
   },
