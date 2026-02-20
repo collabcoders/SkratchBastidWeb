@@ -164,6 +164,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
   loginLoading = signal(false);
   resetLoading = signal(false);
   registerLoading = signal(false);
+  cardComplete = false;
+  cardErrorMessage = '';
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
@@ -379,6 +381,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.alertService.clear();
     // Mark form as attempted
     (this.registerForm as any).formSubmitAttempt = true;
+    this.registerForm.markAllAsTouched();
 
     if (this.selectedPrice === 'free') {
       // No-op for now, handled below
@@ -410,6 +413,12 @@ export class FormsComponent implements AfterViewInit, OnInit {
         });
         this.apiPost(endpoint);
       } else {
+        if (!this.cardComplete) {
+          this.registerLoading.set(false);
+          const message = this.cardErrorMessage || 'Please complete your card details, including ZIP/postal code.';
+          this.alertService.error('Error', message, Config.alertOptions);
+          return;
+        }
         // Stripe payment method creation
         this.stripeService.createPaymentMethod({
           type: 'card',
@@ -418,8 +427,11 @@ export class FormsComponent implements AfterViewInit, OnInit {
           console.log('Payment Method', p);
           if (p.error?.message) {
             this.registerLoading.set(false);
+            this.cardErrorMessage = p.error.message;
+            this.alertService.error('Error', p.error.message, Config.alertOptions);
             return;
           }
+          this.cardErrorMessage = '';
           this.registerForm.patchValue({
             paymentMethodId: p.paymentMethod?.id,
             paymentMethodLast4: p.paymentMethod?.card?.last4 || '',
@@ -428,6 +440,22 @@ export class FormsComponent implements AfterViewInit, OnInit {
         });
       }
     }
+  }
+
+  onCardChange(event: any) {
+    this.cardComplete = !!event?.complete;
+    this.cardErrorMessage = event?.error?.message || '';
+  }
+
+  canSubmitRegister(): boolean {
+    if (this.registerLoading()) {
+      return false;
+    }
+    if (!this.registerForm.valid) {
+      return false;
+    }
+    const requiresCard = this.selectedPrice !== '' && this.selectedPrice !== 'free';
+    return !requiresCard || this.cardComplete;
   }
 
   ngAfterViewInit() {
@@ -512,6 +540,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.registerForm.markAsUntouched();
     this.selectedPrice = '';
     this.selectedFrequency = '';
+    this.cardComplete = false;
+    this.cardErrorMessage = '';
     this.isReJoin = false;
     (this.registerForm as any).formSubmitAttempt = false;
     this.cdr.markForCheck();

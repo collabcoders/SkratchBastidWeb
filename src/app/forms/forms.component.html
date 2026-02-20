@@ -292,9 +292,12 @@
             <div class="mb-3">
               <div class="stripe-card-shell">
                 <ngx-stripe-elements [elementsOptions]="elementsOptions">
-                  <ngx-stripe-card [options]="cardOptions"></ngx-stripe-card>
+                  <ngx-stripe-card [options]="cardOptions" (change)="onCardChange($event)"></ngx-stripe-card>
                 </ngx-stripe-elements>
               </div>
+              @if (cardErrorMessage) {
+                <div class="text-red-500 text-xs mt-1">{{ cardErrorMessage }}</div>
+              }
               <div id="card-errors"></div>
             </div>
           }
@@ -316,7 +319,7 @@
 
           <button type="submit"
             class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
-            [disabled]="registerLoading() || !registerForm.valid">
+            [disabled]="!canSubmitRegister()">
             @if (registerLoading()) {
               <span class="loader mr-2"></span>
             }Join
