@@ -266,6 +266,17 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   selectedVideo(videoData: any, isrel: boolean, time?: number) {
     this.video = videoData;
+    // Set the poster to use the video's screenshot while loading
+    this.videoPoster = videoData.screenshot || videoData.image || '/assets/images/video.png';
+    
+    // Also set poster directly on the video element if it exists
+    setTimeout(() => {
+      const videoElement = this.videoElementRef?.nativeElement;
+      if (videoElement) {
+        videoElement.poster = this.videoPoster;
+      }
+    }, 100);
+    
     console.log("selectedVideo", isrel);
     this.hoverId = 0;
     this.videohls = '';
@@ -371,6 +382,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         type: 'application/x-mpegURL'
       });
       player.ready(() => {
+        // Force set the poster to ensure screenshot shows
+        player.poster(this.videoPoster);
         player.play();
         if (!this.playerInitialized) {
           this.setupPlayerEvents(player);

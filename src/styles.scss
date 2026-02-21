@@ -31,6 +31,27 @@ html, body {
   font-family: 'Poppins', sans-serif !important;
 }
 
+h2 {
+  font-weight: 600 !important;
+}
+
+/* Increase modal close button size */
+.btn-close {
+  width: 2rem !important;
+  height: 2rem !important;
+  font-size: 1.5rem !important;
+}
+
+/* For custom close buttons using × */
+.modal button[data-bs-dismiss="modal"] {
+  font-size: 2rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
 a {
   color: inherit !important;
   -webkit-text-decoration: inherit !important;

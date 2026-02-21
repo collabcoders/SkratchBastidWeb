@@ -1,6 +1,14 @@
 <app-header></app-header>
 
-<div class="stream" id="stream">
+<!-- Page Title -->
+<div class="mt-[80px] mx-4 md:mx-10">
+  <div class="flex items-center gap-3">
+    <img src="/img/livestreamImg.png" alt="Livestream" class="w-8 h-8" />
+    <h2 class="text-[28px] md:text-[36px] font-bold text-gray-800">Top Grillin' Livestream</h2>
+  </div>
+</div>
+
+<div class="stream" id="stream" style="margin-top: -70px;">
     <div class="row">
         <div class="col-md-12 tite-col">
             <div class="ls-container">
@@ -13,7 +21,7 @@
                             [attr.poster]="offline_livestream_placehoder"
                             stream-type="live"
                             [attr.playback-id]="stream"
-                            metadata-video-title="Magnificent Livestream"
+                            metadata-video-title="Top Grillin' Livestream"
                             controls>
                         </mux-player>
                     </div>
