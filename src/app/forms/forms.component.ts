@@ -1,7 +1,7 @@
 import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
 import { Config } from '@shared/config';
@@ -255,7 +255,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
     // Listen for router navigation to policy routes and open modal only on NavigationEnd
     this.router.events.subscribe((event: any) => {
-      if (event?.constructor?.name === 'NavigationEnd' && event.url) {
+      if (event instanceof NavigationEnd && event.url) {
         const isAuthenticated = !!this.token.getToken() && !this.token.isExpired();
 
         if (event.url.includes('/login')) {
@@ -329,15 +329,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
           this.token.set(data.data);
           this.token.isValid(true);
           this.favoritesService.loadFavorites();
-          if (typeof bootstrap !== 'undefined') {
-            const modalEl = document.getElementById('loginModal');
-            const modalInstance = bootstrap.Modal.getInstance(modalEl);
-            if (modalInstance) {
-              modalInstance.hide();
-            }
-          } else if (typeof $ !== 'undefined') {
-            $('#loginModal').modal('hide');
-          }
+          this.hideModal('loginModal');
           if (['expired', 'inactive', 'canceled'].includes(data.data.status)) {
             if (!this.appData.loginFromBeats) {
               bootbox.dialog({
@@ -489,38 +481,41 @@ export class FormsComponent implements AfterViewInit, OnInit {
     return true;
   }
 
-  openLoginModal() {
+  private showModal(modalId: string, options?: any, retries = 5) {
+    const el = document.getElementById(modalId);
+    if (!el) { return; }
     if (typeof bootstrap !== 'undefined') {
-      const el = document.getElementById('loginModal');
-      if (!el) { return; }
-      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, { backdrop: 'static', keyboard: false });
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, options);
       modal.show();
     } else if (typeof $ !== 'undefined') {
-      $('#loginModal').modal('show');
+      $('#' + modalId).modal('show');
+    } else if (retries > 0) {
+      setTimeout(() => this.showModal(modalId, options, retries - 1), 200);
     }
+  }
+
+  private hideModal(modalId: string) {
+    const el = document.getElementById(modalId);
+    if (!el) { return; }
+    if (typeof bootstrap !== 'undefined') {
+      const modal = bootstrap.Modal.getInstance(el);
+      if (modal) { modal.hide(); }
+    } else if (typeof $ !== 'undefined') {
+      $('#' + modalId).modal('hide');
+    }
+  }
+
+  openLoginModal() {
+    this.showModal('loginModal', { backdrop: 'static', keyboard: false });
   }
 
   openRegisterModal() {
     this.resetRegisterForm();
-    if (typeof bootstrap !== 'undefined') {
-      const el = document.getElementById('registerModal');
-      if (!el) { return; }
-      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, { backdrop: 'static', keyboard: false });
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#registerModal').modal('show');
-    }
+    this.showModal('registerModal', { backdrop: 'static', keyboard: false });
   }
 
   private closeRegisterModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const el = document.getElementById('registerModal');
-      if (!el) { return; }
-      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
-      modal.hide();
-    } else if (typeof $ !== 'undefined') {
-      $('#registerModal').modal('hide');
-    }
+    this.hideModal('registerModal');
   }
 
   private resetRegisterForm() {
@@ -548,12 +543,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
   }
 
   openContactModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('contactModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#contactModal').modal('show');
-    }
+    this.showModal('contactModal');
   }
 
   openProfileModal() {
@@ -563,12 +553,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
   openChangePasswordModal() {
     this.passwordForm.reset();
     this.processingPassword = false;
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#changePasswordModal').modal('show');
-    }
+    this.showModal('changePasswordModal');
   }
 
   private loadProfileModal(openAfterLoad: boolean) {
@@ -618,12 +603,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
         this.cdr.markForCheck();
 
         if (openAfterLoad) {
-          if (typeof bootstrap !== 'undefined') {
-            const modal = new bootstrap.Modal(document.getElementById('profileModal'));
-            modal.show();
-          } else if (typeof $ !== 'undefined') {
-            $('#profileModal').modal('show');
-          }
+          this.showModal('profileModal');
         }
       },
       error: (error: any) => {
@@ -632,32 +612,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
     });
   }
 
-  openPrivacyModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('privacyModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#privacyModal').modal('show');
-    }
-  }
-
-  openCancelModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#cancelModal').modal('show');
-    }
-  }
-
-  openRefundModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('refundModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#refundModal').modal('show');
-    }
-  }
+  openPrivacyModal() { this.showModal('privacyModal'); }
+  openCancelModal() { this.showModal('cancelModal'); }
+  openRefundModal() { this.showModal('refundModal'); }
 
   isLoadingContact: WritableSignal<boolean> = signal(false);
   saveContact() {
@@ -688,13 +645,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
             // SET TOKEN
             console.log(data);
             bootbox.alert(data);
-            // HIDE LOGIN MODAL
-            if (typeof bootstrap !== 'undefined') {
-              const modal = new bootstrap.Modal(document.getElementById('contactModal'));
-              modal.show();
-            } else if (typeof $ !== 'undefined') {
-              $('#contactModal').modal('show');
-            }
+            // HIDE CONTACT MODAL
+            this.hideModal('contactModal');
             setTimeout(() => {
               this.processingContact = false;
               this.isLoadingContact.set(false);
@@ -752,15 +704,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
             this.alertService.error('Error', data.msg, Config.alertOptions);
           } else {
             this.alertService.success('Saved', data.msg, Config.alertOptions);
-            if (typeof bootstrap !== 'undefined') {
-              const modalEl = document.getElementById('profileModal');
-              const instance = bootstrap.Modal.getInstance(modalEl);
-              if (instance) {
-                instance.hide();
-              }
-            } else if (typeof $ !== 'undefined') {
-              $('#profileModal').modal('hide');
-            }
+            this.hideModal('profileModal');
           }
           this.processingProfile = false;
           this.cdr.markForCheck();
@@ -800,13 +744,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
             this.alertService.error('Error', data.msg, Config.alertOptions);
           } else {
             this.alertService.success('Password Updated', data.msg, Config.alertOptions);
-            if (typeof bootstrap !== 'undefined') {
-              const modalEl = document.getElementById('changePasswordModal');
-              const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-              instance.hide();
-            } else if (typeof $ !== 'undefined') {
-              $('#changePasswordModal').modal('hide');
-            }
+            this.hideModal('changePasswordModal');
             this.passwordForm.reset();
           }
           this.processingPassword = false;
@@ -964,15 +902,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
       this.loadUpcomingEvents();
     }
 
-    if (typeof bootstrap !== 'undefined') {
-      const modalEl = document.getElementById('upcomingEventsModal');
-      if (modalEl) {
-        const instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-        instance.show();
-      }
-    } else if (typeof $ !== 'undefined') {
-      $('#upcomingEventsModal').modal('show');
-    }
+    this.showModal('upcomingEventsModal');
   }
 
   invalidCss(control: AbstractControl | null) {

@@ -6,6 +6,7 @@ import { Config } from '@shared/config';
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
 import { NavigateService } from '@shared/services/navigate.service';
+import { TokenService } from '@shared/services/token.service';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -27,7 +28,7 @@ interface FooterLink {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
-  constructor(private apiService: ApiService, private alertService: AlertService, private nav: NavigateService) {
+  constructor(private apiService: ApiService, private alertService: AlertService, private nav: NavigateService, private token: TokenService) {
   }
 
   newsletterEmail = signal('');
@@ -63,6 +64,14 @@ export class FooterComponent {
       external: true,
     },
   ];
+
+  get filteredPageLinksColumn1(): FooterLink[] {
+    const member = this.token.getMember();
+    if (member?.status === 'current') {
+      return this.pageLinksColumn1.filter(link => link.href !== '/topgrillin');
+    }
+    return this.pageLinksColumn1;
+  }
 
   pageLinksColumn1: FooterLink[] = [
     {
@@ -225,59 +234,25 @@ export class FooterComponent {
     this.newsletterEmail.set(target.value);
   }
 
-  openLoginModal() {
+  private showModal(modalId: string, retries = 5) {
+    const el = document.getElementById(modalId);
+    if (!el) { return; }
     if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+      const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
       modal.show();
     } else if (typeof $ !== 'undefined') {
-      $('#loginModal').modal('show');
+      $('#' + modalId).modal('show');
+    } else if (retries > 0) {
+      setTimeout(() => this.showModal(modalId, retries - 1), 200);
     }
   }
 
-  openRegisterModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('registerModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#registerModal').modal('show');
-    }
-  }
-
-  openContactModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('contactModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#contactModal').modal('show');
-    }
-  }
-
-  openPrivacyModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('privacyModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#privacyModal').modal('show');
-    }
-  }
-
-  openCancelModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#cancelModal').modal('show');
-    }
-  }
-
-  openRefundModal() {
-    if (typeof bootstrap !== 'undefined') {
-      const modal = new bootstrap.Modal(document.getElementById('refundModal'));
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#refundModal').modal('show');
-    }
-  }
+  openLoginModal() { this.showModal('loginModal'); }
+  openRegisterModal() { this.showModal('registerModal'); }
+  openContactModal() { this.showModal('contactModal'); }
+  openPrivacyModal() { this.showModal('privacyModal'); }
+  openCancelModal() { this.showModal('cancelModal'); }
+  openRefundModal() { this.showModal('refundModal'); }
 
   isLoadingNewsletter = signal(false);
   subscribeNewsletter() {

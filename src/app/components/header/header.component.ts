@@ -154,6 +154,14 @@ export class HeaderComponent implements OnDestroy, OnInit {
     return hoverColor.replace('hover:', '');
   }
 
+  get filteredNavLinks(): NavLink[] {
+    const member = this.token.getMember();
+    if (member?.status === 'current') {
+      return this.navLinks.filter(link => link.href !== '/topgrillin');
+    }
+    return this.navLinks;
+  }
+
   navLinks: NavLink[] = [
     {
       label: 'Videos',

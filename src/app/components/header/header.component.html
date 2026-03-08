@@ -11,7 +11,7 @@
 
       <!-- Desktop Menu -->
       <div class="hidden lg:flex gap-6 font-semibold uppercase relative">
-        @for (link of navLinks; track $index) {
+        @for (link of filteredNavLinks; track $index) {
         <div [class]="'link-container ' + link.hoverColor">
           @if (!link.external) {
             @if (link.label === 'Events') {
@@ -107,7 +107,7 @@
     </div>
 
     <nav class="flex flex-col gap-4">
-      @for (link of navLinks; track $index) {
+      @for (link of filteredNavLinks; track $index) {
         @if (!link.external) {
           @if (link.label === 'Events') {
             <a href="javascript:;" (click)="openEventsModal()" class="text-lg font-semibold">{{ link.label }}</a>
