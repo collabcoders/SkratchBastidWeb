@@ -54,13 +54,12 @@
           </div>
         }
       </div>
+    } @else if (getCurrentPageMusic().length === 0) {
+      <div class="border border-dashed border-gray-300 rounded-xl p-10 text-center text-gray-600 bg-gray-50">
+        <div class="text-lg font-semibold mb-2">No audio found</div>
+        <div class="text-sm">Try a different search or pick another category.</div>
+      </div>
     } @else {
-      @if (getCurrentPageMusic().length === 0) {
-        <div class="border border-dashed border-gray-300 rounded-xl p-10 text-center text-gray-600 bg-gray-50">
-          <div class="text-lg font-semibold mb-2">No audio found</div>
-          <div class="text-sm">Try a different search or pick another category.</div>
-        </div>
-      } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           @for (mix of getCurrentPageMusic(); track mix.musicId || mix.href || mix.file || mix.title) {
             <div class="relative flex flex-col w-full group">
@@ -123,7 +122,6 @@
           }
         </div>
       }
-    }
 
     <!-- Pagination at the bottom -->
     <div class="mt-8 flex justify-center">

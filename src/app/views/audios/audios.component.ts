@@ -41,7 +41,7 @@ export class AudiosComponent implements OnInit {
 
   allMusic: Music[] = [];
 
-  isLoadingMusic: WritableSignal<boolean> = signal(false);
+  isLoadingMusic: WritableSignal<boolean> = signal(true);
   isLoadingCategory: WritableSignal<boolean> = signal(false);
 
   constructor(
