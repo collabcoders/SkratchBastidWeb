@@ -54,7 +54,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   videozoom: string = '';
   isFirstTime: boolean = true;
   largescreen: boolean = true;
-  videoPoster = '/assets/images/video.png';
+  videoPoster = '/assets/images/video-play.png';
   private player: any = null;
   isLoadVideo = false;
   isUserBeats = false;
@@ -267,7 +267,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   selectedVideo(videoData: any, isrel: boolean, time?: number) {
     this.video = videoData;
     // Set the poster to use the video's screenshot while loading
-    this.videoPoster = videoData.screenshot || videoData.image || '/assets/images/video.png';
+    this.videoPoster = videoData.screenshot || videoData.image || '/assets/images/video-play.png';
     
     // Also set poster directly on the video element if it exists
     setTimeout(() => {

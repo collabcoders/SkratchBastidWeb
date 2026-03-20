@@ -23,6 +23,7 @@ export class VideoDetailComponent implements OnInit {
   videoDate: string = '5 days ago';
   hasAudio: boolean = true;
   vimeoEmbedUrl: SafeResourceUrl = '';
+  imageLoadingState: Record<string, boolean> = {};
 
   // New in Top Grillin videos
   topGrillinVideos = [
@@ -102,5 +103,17 @@ export class VideoDetailComponent implements OnInit {
 
   goBack() {
     window.history.back();
+  }
+
+  onImageLoaded(src: string) {
+    this.imageLoadingState[src] = false;
+  }
+
+  isImageLoading(src?: string | null): boolean {
+    if (!src) {
+      return false;
+    }
+
+    return this.imageLoadingState[src] ?? true;
   }
 }

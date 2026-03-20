@@ -27,10 +27,17 @@
 
         <!-- Hero Section -->
         <div class="hero mb-5">
-          <img [src]="recapDetail.banner"
-               [alt]="recapDetail.city + ' BBQ Event'"
-               class="lg:rounded-lg lg:mt-6 w-full h-48 md:h-64 lg:h-80 object-cover"
-               loading="lazy">
+          <div class="image-shell lg:rounded-lg lg:mt-6 w-full h-48 md:h-64 lg:h-80">
+            @if (isImageLoading(recapDetail.banner)) {
+              <div class="image-shimmer w-full h-full lg:rounded-lg"></div>
+            }
+            <img [src]="recapDetail.banner"
+                 [alt]="recapDetail.city + ' BBQ Event'"
+                 class="lg:rounded-lg w-full h-48 md:h-64 lg:h-80 object-cover image-fade"
+                 [class.image-fade--loaded]="!isImageLoading(recapDetail.banner)"
+                 (load)="onImageLoaded(recapDetail.banner)"
+                 loading="lazy">
+          </div>
 
           <div class="flex flex-col w-full md:w-1/2 gap-1 justify-center py-3">
             <div class="text-xl font-bold uppercase">{{ recapDetail.city }}</div>
@@ -112,9 +119,16 @@
                   @for (video of recapDetail.videos; track video.id) {
                     <a [href]="'https://youtu.be/' + video.id" target="_blank"
                        class="flex flex-col group">
-                      <img [src]="getYoutubeThumbnail(video.id)"
-                           [alt]="video.title"
-                           class="aspect-video rounded group-hover:opacity-80 transition-opacity">
+                      <div class="image-shell aspect-video rounded">
+                        @if (isImageLoading(getYoutubeThumbnail(video.id))) {
+                          <div class="image-shimmer w-full h-full rounded"></div>
+                        }
+                        <img [src]="getYoutubeThumbnail(video.id)"
+                             [alt]="video.title"
+                             class="aspect-video rounded group-hover:opacity-80 transition-opacity image-fade"
+                             [class.image-fade--loaded]="!isImageLoading(getYoutubeThumbnail(video.id))"
+                             (load)="onImageLoaded(getYoutubeThumbnail(video.id))">
+                      </div>
                       <span class="mt-2 text-sm font-medium">{{ video.title }}</span>
                     </a>
                   }

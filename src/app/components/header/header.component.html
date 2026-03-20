@@ -2,7 +2,7 @@
 <div class="h-[58px] z-50 bg-white flex items-center fixed top-0 left-0 w-full border-b">
   <div class="w-[96%] mx-auto flex h-[58px] items-center justify-between">
     <!-- Logo and Desktop Nav -->
-    <div class="flex items-center gap-6">
+    <div class="flex items-center gap-4 xl:gap-6 min-w-0">
       <a [routerLink]="['/']" class="h-[70%]">
         <img
           src="https://cdn.shopify.com/s/files/1/0275/0188/7533/files/skratch_bastid_beard_logo_360x.png?v=1614314315"
@@ -10,7 +10,7 @@
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden lg:flex gap-6 font-semibold uppercase relative">
+      <div class="hidden xl:flex gap-4 2xl:gap-6 font-semibold uppercase relative items-center">
         @for (link of filteredNavLinks; track $index) {
         <div [class]="'link-container ' + link.hoverColor">
           @if (!link.external) {
@@ -34,9 +34,14 @@
     </div>
 
     <!-- Mobile Horizontal Scroll Menu -->
-    <!-- Mobile: hamburger-only (hidden on lg) -->
-    <div class="lg:hidden flex items-center">
-      <button aria-label="Open menu" (click)="toggleMobileMenu()" class="p-2 rounded-md focus:outline-none">
+    <!-- Mobile: hamburger-only (hidden on xl) -->
+    <div class="xl:hidden flex items-center">
+      <button
+        aria-label="Open menu"
+        [attr.aria-expanded]="mobileMenuOpen"
+        aria-controls="mobile-menu-drawer"
+        (click)="toggleMobileMenu()"
+        class="p-2 rounded-md focus:outline-none">
         @if (!mobileMenuOpen) {
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -53,18 +58,24 @@
 
     <!-- Desktop Auth Buttons -->
     @if (!(isLoggedIn$ | async)) {
-      <div class="hidden lg:flex">
-        <div class="lg:flex gap-4">
-          <a [routerLink]="['/join']"
-            class="!border !border-orange-500 text-black font-bold px-5 py-2 text-xs rounded-[8px] bg-white hover:bg-orange-100 text-decoration-none">SIGN
-            UP</a>
-          <a [routerLink]="['/login']"
-            class="bg-black text-white font-bold px-5 py-2 text-xs rounded-[8px] hover:bg-gray-800 text-decoration-none">LOG
-            IN</a>
+      <div class="hidden xl:flex">
+        <div class="xl:flex gap-4">
+          <button
+            type="button"
+            (click)="openRegister()"
+            class="!border !border-orange-500 text-black font-bold px-5 py-2 text-xs rounded-[8px] bg-white hover:bg-orange-100 text-decoration-none">
+            SIGN UP
+          </button>
+          <button
+            type="button"
+            (click)="openLogin()"
+            class="bg-black text-white font-bold px-5 py-2 text-xs rounded-[8px] hover:bg-gray-800 text-decoration-none">
+            LOG IN
+          </button>
         </div>
       </div>
     } @else {
-      <div class="hidden lg:flex items-center relative gap-6">
+      <div class="hidden xl:flex items-center relative gap-6">
         <button
           (click)="showFavorites()"
           class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none transition-colors duration-200"
@@ -90,10 +101,12 @@
 
 <!-- Mobile overlay + sliding side-nav -->
 @if (mobileMenuOpen) {
-<div class="lg:hidden fixed inset-0 z-50 sb-overlay open" (click)="onOverlayClick($event)">
-  <div class="sb-drawer bg-white w-4/5 max-w-sm h-full p-6 transform transition-transform duration-300 open"
+<div class="xl:hidden fixed inset-0 z-50 sb-overlay open" (click)="onOverlayClick($event)">
+  <div
+    id="mobile-menu-drawer"
+    class="sb-drawer bg-white w-[86%] max-w-sm h-full p-5 sm:p-6 transform transition-transform duration-300 open flex flex-col"
     (click)="$event.stopPropagation()" tabindex="0">
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between gap-4 pb-5 border-b border-gray-100">
       <a [routerLink]="['/']" (click)="closeMobileMenu()">
         <img
           src="https://cdn.shopify.com/s/files/1/0275/0188/7533/files/skratch_bastid_beard_logo_360x.png?v=1614314315"
@@ -106,34 +119,69 @@
       </button>
     </div>
 
-    <nav class="flex flex-col gap-4">
+    <nav class="flex flex-col gap-1 py-5 overflow-y-auto">
       @for (link of filteredNavLinks; track $index) {
         @if (!link.external) {
           @if (link.label === 'Events') {
-            <a href="javascript:;" (click)="openEventsModal()" class="text-lg font-semibold">{{ link.label }}</a>
+            <a
+              href="javascript:;"
+              (click)="openEventsModal()"
+              class="mobile-nav-link"
+              [style.color]="isActive(link.href) ? link.color : null">
+              {{ link.label }}
+            </a>
           } @else {
-            <a [routerLink]="[link.href]" (click)="closeMobileMenu()" class="text-lg font-semibold">{{ link.label }}</a>
+            <a
+              [routerLink]="[link.href]"
+              (click)="closeMobileMenu()"
+              class="mobile-nav-link"
+              [style.color]="isActive(link.href) ? link.color : null">
+              {{ link.label }}
+            </a>
           }
         } @else {
-          <a [href]="link.href" target="_blank" rel="noopener noreferrer" (click)="closeMobileMenu()" class="text-lg font-semibold">{{ link.label }}</a>
+          <a
+            [href]="link.href"
+            target="_blank"
+            rel="noopener noreferrer"
+            (click)="closeMobileMenu()"
+            class="mobile-nav-link">
+            {{ link.label }}
+          </a>
         }
       }
     </nav>
 
-    <div class="mt-6 border-t pt-4">
+    <div class="mt-auto border-t border-gray-100 pt-5">
     @if (!(isLoggedIn$ | async)) {
-      @for (link of mobileAuthLinks; track $index) {
-        @if (link.href && link.href.startsWith('/')) {
-          <a [routerLink]="[link.href]" (click)="closeMobileMenu()" class="block py-2 font-bold">{{ link.label }}</a>
-        } @else {
-          <a href="javascript:;" (click)="closeMobileMenu();" class="block py-2 font-bold">{{ link.label }}</a>
+      <div class="flex flex-col gap-3">
+        @for (link of mobileAuthLinks; track $index) {
+          @if (link.href === '/join') {
+            <button
+              type="button"
+              (click)="openRegister()"
+              class="mobile-action"
+              [ngClass]="{ 'mobile-action--secondary': $index === 0 }">
+              {{ link.label }}
+            </button>
+          } @else if (link.href === '/login') {
+            <button
+              type="button"
+              (click)="openLogin()"
+              class="mobile-action"
+              [ngClass]="{ 'mobile-action--secondary': $index === 0 }">
+              {{ link.label }}
+            </button>
+          } @else {
+            <a href="javascript:;" (click)="closeMobileMenu();" class="mobile-action">{{ link.label }}</a>
+          }
         }
-      }
+      </div>
     } @else {
-
-      <div class="flex flex-col gap-2 mt-2">
-        <button (click)="openProfileModal()" class="block w-full text-left py-2 font-bold">My Profile</button>
-        <button (click)="logout(); closeMobileMenu();" class="block w-full text-left py-2 font-bold">Logout</button>
+      <div class="flex flex-col gap-3 mt-2">
+        <button (click)="showFavorites(); closeMobileMenu();" class="mobile-nav-link text-left">Favorites</button>
+        <button (click)="openProfileModal()" class="mobile-nav-link text-left">My Profile</button>
+        <button (click)="logout(); closeMobileMenu();" class="mobile-action mobile-action--danger text-left justify-center">Logout</button>
       </div>
     }
     </div>

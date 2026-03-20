@@ -5,8 +5,28 @@
   <!-- Hero Section -->
   <div class="bg-[#142129] text-white md:px-12 px-6 py-28 flex flex-col items-center md:flex-row gap-24">
     <div class="flex-1 md:w-70 flex flex-col gap-4">
-      <img src="/img/services2.png" alt="Image 1" class="rounded-lg w-full h-[334px] object-cover" />
-      <img src="/img/services1.png" alt="Image 2" class="rounded-lg w-full h-[334px] object-cover" />
+      <div class="image-shell rounded-lg h-[334px]">
+        @if (isImageLoading('heroPrimary')) {
+          <div class="image-shimmer rounded-lg h-full w-full"></div>
+        }
+        <img
+          src="/img/services2.png"
+          alt="Image 1"
+          class="rounded-lg w-full h-[334px] object-cover image-fade"
+          [class.image-fade--loaded]="!isImageLoading('heroPrimary')"
+          (load)="onImageLoaded('heroPrimary')" />
+      </div>
+      <div class="image-shell rounded-lg h-[334px]">
+        @if (isImageLoading('heroSecondary')) {
+          <div class="image-shimmer rounded-lg h-full w-full"></div>
+        }
+        <img
+          src="/img/services1.png"
+          alt="Image 2"
+          class="rounded-lg w-full h-[334px] object-cover image-fade"
+          [class.image-fade--loaded]="!isImageLoading('heroSecondary')"
+          (load)="onImageLoaded('heroSecondary')" />
+      </div>
     </div>
     <div class="flex-1 md:w-30">
       <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">Welcome to</h1>
@@ -76,7 +96,17 @@
       </a>
     </div>
     <div class="flex-1 md:w-70 flex flex-col gap-4">
-      <img src="/img/platformimg.png" alt="Image 1" class="rounded-lg w-full h-100 object-cover" />
+      <div class="image-shell rounded-lg h-100">
+        @if (isImageLoading('platform')) {
+          <div class="image-shimmer rounded-lg h-full w-full"></div>
+        }
+        <img
+          src="/img/platformimg.png"
+          alt="Image 1"
+          class="rounded-lg w-full h-100 object-cover image-fade"
+          [class.image-fade--loaded]="!isImageLoading('platform')"
+          (load)="onImageLoaded('platform')" />
+      </div>
     </div>
   </div>
 
@@ -118,7 +148,7 @@
         <div class="text-[20px] font-bold mb-0 text-[#142129]">
           ${{ currentPrice }}<span class="text-[14px] font-light">{{ currentPeriod }}</span>
         </div>
-        <a (click)="openSignup()"
+        <a (click)="openSignup(selectedPlan)"
           class="text-center mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
           SELECT
         </a>
@@ -131,7 +161,17 @@
 
   <!-- Bottom Image Section -->
   <div class="bg-white relative">
-    <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+    <div class="image-shell">
+      @if (isImageLoading('footer')) {
+        <div class="image-shimmer h-[240px] md:h-[320px] w-full"></div>
+      }
+      <img
+        src="/img/bottom_image.png"
+        alt="Bottom Image"
+        class="bottom-0 left-0 w-full object-cover image-fade"
+        [class.image-fade--loaded]="!isImageLoading('footer')"
+        (load)="onImageLoaded('footer')" />
+    </div>
   </div>
 
   <!-- Footer -->

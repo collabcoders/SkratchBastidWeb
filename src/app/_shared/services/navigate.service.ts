@@ -7,7 +7,7 @@ import { ViewportScroller } from '@angular/common';
 export class NavigateService {
   @HostListener("window:scroll", [])
   track($event: any) {
-    console.debug("Scroll Event", $event);
+    // console.debug("Scroll Event", $event);
   }
   renderer!: Renderer2;
   constructor(private rendererFactory: RendererFactory2, 

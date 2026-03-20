@@ -75,3 +75,29 @@
 	opacity: 1;
 	transform: translate3d(0, 0, 0);
 }
+
+.image-shell {
+	position: relative;
+	overflow: hidden;
+}
+
+.image-fade {
+	opacity: 0;
+	transition: opacity 0.35s ease;
+}
+
+.image-fade--loaded {
+	opacity: 1;
+}
+
+.image-shimmer {
+	background: linear-gradient(110deg, #21343d 8%, #35525f 18%, #21343d 33%);
+	background-size: 200% 100%;
+	animation: image-shimmer 1.25s linear infinite;
+}
+
+@keyframes image-shimmer {
+	to {
+		background-position-x: -200%;
+	}
+}

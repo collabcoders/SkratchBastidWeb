@@ -1,7 +1,7 @@
 import { Component, inject, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { Observable, Subscription, filter } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
 import { AlertService } from '@shared/services/alert.service';
 import { FavoritesService } from '@shared/services/favorites.service';
@@ -26,7 +26,12 @@ declare const $: any;
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnDestroy, OnInit {
+  private static readonly desktopBreakpoint = 1280;
+  private static readonly modalRetryDelay = 200;
+  private static readonly modalRetryCount = 10;
   accountMenuOpen: boolean = false;
+  private readonly subscriptions = new Subscription();
+
   toggleAccountMenu() {
     this.accountMenuOpen = !this.accountMenuOpen;
   }
@@ -60,16 +65,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
 
   openEventsModal() {
     this.closeMobileMenu();
-    const modalId = 'upcomingEventsModal';
-    const modalEl = document.getElementById(modalId);
-    if (typeof bootstrap !== 'undefined' && modalEl) {
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
-      return;
-    }
-    if (typeof $ !== 'undefined') {
-      $('#'+modalId).modal('show');
-    }
+    this.showModal('upcomingEventsModal');
   }
 
   showFavorites() {
@@ -79,13 +75,19 @@ export class HeaderComponent implements OnDestroy, OnInit {
   openProfileModal() {
     this.accountMenuOpen = false;
     this.closeMobileMenu();
-    const modalEl = document.getElementById('profileModal');
-    if (typeof bootstrap !== 'undefined' && modalEl) {
-      const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-      modal.show();
-    } else if (typeof $ !== 'undefined') {
-      $('#profileModal').modal('show');
-    }
+    this.showModal('profileModal');
+  }
+
+  openLogin() {
+    this.accountMenuOpen = false;
+    this.closeMobileMenu();
+    this.openAuthRoute('/login', 'loginModal');
+  }
+
+  openRegister() {
+    this.accountMenuOpen = false;
+    this.closeMobileMenu();
+    this.openAuthRoute('/join', 'registerModal');
   }
 
   logout() {
@@ -97,13 +99,24 @@ export class HeaderComponent implements OnDestroy, OnInit {
   }
   ngOnInit() {
     this.isLoggedIn$ = this.token.isValid(undefined);
-    this.isLoggedIn$.subscribe((res: boolean) => {
+    this.subscriptions.add(this.isLoggedIn$.subscribe((res: boolean) => {
       if (res) {
         if (this.token.getMember().plan == 'free') {
           // this.isFree = true;
         }
       }
-    })
+    }));
+
+    this.subscriptions.add(
+      this.router.events
+        .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+        .subscribe(() => {
+          this.accountMenuOpen = false;
+          this.closeMobileMenu();
+        })
+    );
+
+    this.handleViewportChange();
   }
 
   closeMobileMenu() {
@@ -140,7 +153,58 @@ export class HeaderComponent implements OnDestroy, OnInit {
     this.handleKeydown(event);
   }
 
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.handleViewportChange();
+  }
+
+  private handleViewportChange() {
+    if (window.innerWidth >= HeaderComponent.desktopBreakpoint) {
+      this.closeMobileMenu();
+    } else {
+      this.accountMenuOpen = false;
+    }
+  }
+
+  private openAuthRoute(route: '/login' | '/join', modalId: 'loginModal' | 'registerModal') {
+    if (this.router.url === route) {
+      setTimeout(() => this.showModal(modalId), 0);
+      return;
+    }
+
+    this.router.navigate([route]);
+  }
+
+  private showModal(modalId: string, retries = HeaderComponent.modalRetryCount) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) {
+      if (retries > 0) {
+        setTimeout(() => this.showModal(modalId, retries - 1), HeaderComponent.modalRetryDelay);
+      }
+      return;
+    }
+
+    if (typeof bootstrap !== 'undefined' && bootstrap?.Modal) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+        backdrop: 'static',
+        keyboard: false,
+      });
+      modal.show();
+      return;
+    }
+
+    if (typeof $ !== 'undefined' && typeof $.fn?.modal === 'function') {
+      $('#' + modalId).modal('show');
+      return;
+    }
+
+    if (retries > 0) {
+      setTimeout(() => this.showModal(modalId, retries - 1), HeaderComponent.modalRetryDelay);
+    }
+  }
+
   ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
     // ensure body scroll unlocked
     document.body.style.overflow = '';
   }

@@ -15,8 +15,16 @@
             autoplay loop playsinline [src]="getPreviousVideo()!.image">
           </video>
         } @else {
-          <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top">
-            <img [src]="getPreviousVideo()!.image" [alt]="getPreviousVideo()!.title" class="inset-0 w-full h-full object-cover scale-110 origin-top" />
+          <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top hero-image-shell">
+            @if (isImageLoading(getPreviousVideo()!.image)) {
+              <div class="hero-image-shimmer absolute inset-0"></div>
+            }
+            <img
+              [src]="getPreviousVideo()!.image"
+              [alt]="getPreviousVideo()!.title"
+              class="inset-0 w-full h-full object-cover scale-110 origin-top hero-image"
+              [class.hero-image--loaded]="!isImageLoading(getPreviousVideo()!.image)"
+              (load)="onImageLoaded(getPreviousVideo()!.image)" />
           </div>
         }
       </div>
@@ -34,8 +42,16 @@
         Your browser does not support the video tag.
       </video>
       } @else {
-      <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top">
-        <img [src]="getCurrentVideo().image" [alt]="getCurrentVideo().title" class="inset-0 w-full h-full object-cover scale-110 origin-top" />
+      <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top hero-image-shell">
+        @if (isImageLoading(getCurrentVideo().image)) {
+          <div class="hero-image-shimmer absolute inset-0"></div>
+        }
+        <img
+          [src]="getCurrentVideo().image"
+          [alt]="getCurrentVideo().title"
+          class="inset-0 w-full h-full object-cover scale-110 origin-top hero-image"
+          [class.hero-image--loaded]="!isImageLoading(getCurrentVideo().image)"
+          (load)="onImageLoaded(getCurrentVideo().image)" />
       </div>
       }
     </div>

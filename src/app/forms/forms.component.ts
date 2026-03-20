@@ -1,4 +1,4 @@
-import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, AfterViewInit, WritableSignal, effect, OnInit, ChangeDetectorRef, ViewChild, Injector, runInInjectionContext } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
@@ -44,6 +44,9 @@ type PricingOption = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormsComponent implements AfterViewInit, OnInit {
+    private static readonly modalRetryDelay = 1000;
+    private static readonly modalRetryCount = 10;
+    private readonly injector = inject(Injector);
     apiPost(endpoint: string) {
       const payload = this.registerForm.getRawValue();
       console.log('registerForm.value', payload);
@@ -253,52 +256,6 @@ export class FormsComponent implements AfterViewInit, OnInit {
       this.cdr.markForCheck();
     });
 
-    // Listen for router navigation to policy routes and open modal only on NavigationEnd
-    this.router.events.subscribe((event: any) => {
-      if (event instanceof NavigationEnd && event.url) {
-        const isAuthenticated = !!this.token.getToken() && !this.token.isExpired();
-
-        if (event.url.includes('/login')) {
-          if (isAuthenticated) {
-            return;
-          }
-          setTimeout(() => this.openLoginModal(), 0);
-          return;
-        }
-
-        if (event.url.includes('/join')) {
-          if (isAuthenticated) {
-            return;
-          }
-          setTimeout(() => this.openRegisterModal(), 0);
-          return;
-        }
-
-        if (event.url.includes('/privacypolicy')) {
-          setTimeout(() => this.openPrivacyModal(), 0);
-        } else if (event.url.includes('/cancelpolicy')) {
-          setTimeout(() => this.openCancelModal(), 0);
-        } else if (event.url.includes('/refundpolicy')) {
-          setTimeout(() => this.openRefundModal(), 0);
-        } else if (event.url.includes('/contact')) {
-          setTimeout(() => this.openContactModal(), 0);
-        } else if (event.url.includes('/events')) {
-          setTimeout(() => this.openUpcomingEventsModal(), 0);
-        }
-      }
-    });
-
-    effect(() => {
-      if (this.appData.planOpen()) {
-        if (this.appData.planOpen() === 'free') {
-          this.registerForm.get('plan')?.setValue('free');
-        } else if (this.appData.planOpen() === 'monthly') {
-          this.registerForm.get('plan')?.setValue(this.monthlyOptionValue());
-        } else if (this.appData.planOpen() === 'yearly') {
-          this.registerForm.get('plan')?.setValue(this.yearlyOptionValue());
-        }
-      }
-    })
   }
 
   passwordsMatchValidator(form: FormGroup) {
@@ -458,6 +415,60 @@ export class FormsComponent implements AfterViewInit, OnInit {
         this.loadProfileModal(false);
       });
     }
+
+    this.router.events.subscribe((event: any) => {
+      if (!(event instanceof NavigationEnd) || !event.url) {
+        return;
+      }
+
+      const isAuthenticated = !!this.token.getToken() && !this.token.isExpired();
+      const selectedPlanId = this.getPlanIdFromUrl(event.url);
+
+      if (event.url.includes('/login')) {
+        if (isAuthenticated) {
+          return;
+        }
+        this.runWhenModalLibraryReady(() => this.openLoginModal());
+        return;
+      }
+
+      if (event.url.includes('/join')) {
+        if (isAuthenticated) {
+          return;
+        }
+        this.runWhenModalLibraryReady(() => this.openRegisterModal(selectedPlanId));
+        return;
+      }
+
+      if (event.url.includes('/privacypolicy')) {
+        this.runWhenModalLibraryReady(() => this.openPrivacyModal());
+      } else if (event.url.includes('/cancelpolicy')) {
+        this.runWhenModalLibraryReady(() => this.openCancelModal());
+      } else if (event.url.includes('/refundpolicy')) {
+        this.runWhenModalLibraryReady(() => this.openRefundModal());
+      } else if (event.url.includes('/contact')) {
+        this.runWhenModalLibraryReady(() => this.openContactModal());
+      } else if (event.url.includes('/events')) {
+        this.runWhenModalLibraryReady(() => this.openUpcomingEventsModal());
+      }
+    });
+
+    runInInjectionContext(this.injector, () => {
+      effect(() => {
+        const plan = this.appData.planOpen();
+        if (!plan) {
+          return;
+        }
+
+        if (plan === 'free') {
+          this.registerForm.get('plan')?.setValue('free');
+        } else if (plan === 'monthly') {
+          this.registerForm.get('plan')?.setValue(this.monthlyOptionValue());
+        } else if (plan === 'yearly') {
+          this.registerForm.get('plan')?.setValue(this.yearlyOptionValue());
+        }
+      });
+    });
   }
   // ...existing code...
 
@@ -481,17 +492,55 @@ export class FormsComponent implements AfterViewInit, OnInit {
     return true;
   }
 
-  private showModal(modalId: string, options?: any, retries = 5) {
+  private showModal(modalId: string, options?: any, retries = FormsComponent.modalRetryCount) {
     const el = document.getElementById(modalId);
-    if (!el) { return; }
-    if (typeof bootstrap !== 'undefined') {
+    if (!el) {
+      if (retries > 0) {
+        setTimeout(() => this.showModal(modalId, options, retries - 1), FormsComponent.modalRetryDelay);
+      }
+      return;
+    }
+
+    if (typeof bootstrap !== 'undefined' && bootstrap?.Modal) {
       const modal = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el, options);
       modal.show();
-    } else if (typeof $ !== 'undefined') {
+    } else if (typeof $ !== 'undefined' && typeof $.fn?.modal === 'function') {
       $('#' + modalId).modal('show');
     } else if (retries > 0) {
-      setTimeout(() => this.showModal(modalId, options, retries - 1), 200);
+      setTimeout(() => this.showModal(modalId, options, retries - 1), FormsComponent.modalRetryDelay);
     }
+  }
+
+  private runWhenModalLibraryReady(action: () => void, retries = FormsComponent.modalRetryCount) {
+    if (this.isModalLibraryReady()) {
+      setTimeout(action, 0);
+      return;
+    }
+
+    if (retries > 0) {
+      setTimeout(
+        () => this.runWhenModalLibraryReady(action, retries - 1),
+        FormsComponent.modalRetryDelay
+      );
+    }
+  }
+
+  private isModalLibraryReady(): boolean {
+    const globalWindow = window as typeof window & {
+      jQuery?: any;
+      $?: any;
+    };
+    const jqueryScriptPresent = !!document.querySelector('script[src*="jquery"]');
+    const jqueryLoaded =
+      typeof $ !== 'undefined' &&
+      typeof $.fn?.modal === 'function' &&
+      !!globalWindow.jQuery;
+
+    return !!(
+      (typeof bootstrap !== 'undefined' && bootstrap?.Modal) ||
+      (jqueryScriptPresent && jqueryLoaded) ||
+      (typeof globalWindow.$ !== 'undefined' && typeof globalWindow.$?.fn?.modal === 'function')
+    );
   }
 
   private hideModal(modalId: string) {
@@ -509,8 +558,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.showModal('loginModal', { backdrop: 'static', keyboard: false });
   }
 
-  openRegisterModal() {
+  openRegisterModal(selectedPlanId?: string | null) {
     this.resetRegisterForm();
+    this.applySelectedPlan(selectedPlanId);
     this.showModal('registerModal', { backdrop: 'static', keyboard: false });
   }
 
@@ -946,6 +996,35 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   yearlyOptionLabel(): string {
     return this.yearlyOption()?.text || 'Yearly';
+  }
+
+  private getPlanIdFromUrl(url: string): string | null {
+    try {
+      const queryParams = this.router.parseUrl(url).queryParams;
+      return typeof queryParams['id'] === 'string' ? queryParams['id'] : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private applySelectedPlan(selectedPlanId?: string | null) {
+    if (!selectedPlanId) {
+      return;
+    }
+
+    if (selectedPlanId === 'free') {
+      this.appData.planOpen.set('free');
+      this.registerForm.get('plan')?.setValue('free');
+      return;
+    }
+
+    if (selectedPlanId === this.monthlyOptionValue()) {
+      this.appData.planOpen.set('monthly');
+    } else if (selectedPlanId === this.yearlyOptionValue()) {
+      this.appData.planOpen.set('yearly');
+    }
+
+    this.registerForm.get('plan')?.setValue(selectedPlanId);
   }
 
   private extractPriceAndFrequency(text?: string): { price: string; frequency: string } {

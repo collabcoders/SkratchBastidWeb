@@ -61,6 +61,45 @@
   scrollbar-width: none;
 }
 
+.mobile-nav-link {
+  display: block;
+  padding: 0.875rem 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid #f3f4f6;
+  text-decoration: none;
+  color: #111827;
+}
+
+.mobile-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: #111827;
+  color: #fff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.mobile-action--secondary {
+  border: 1px solid #f97316;
+  background: #fff;
+  color: #111827;
+}
+
+.mobile-action--danger {
+  background: #dc2626;
+}
+
 /* Sliding side-nav overlay */
 .sb-overlay {
   background: rgba(0, 0, 0, 0.45);

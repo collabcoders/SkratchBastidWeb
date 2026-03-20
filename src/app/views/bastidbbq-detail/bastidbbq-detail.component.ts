@@ -39,6 +39,7 @@ export class BastidBBQDetailComponent implements OnInit {
   error: string | null = null;
   selectedTab = 'recap';
   showVideoPlayer = false;
+  imageLoadingState: Record<string, boolean> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -109,6 +110,18 @@ export class BastidBBQDetailComponent implements OnInit {
 
   getYoutubeThumbnail(videoId: string): string {
     return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+  }
+
+  onImageLoaded(src: string) {
+    this.imageLoadingState[src] = false;
+  }
+
+  isImageLoading(src?: string | null): boolean {
+    if (!src) {
+      return false;
+    }
+
+    return this.imageLoadingState[src] ?? true;
   }
 
   formatDate(dateString: string): string {

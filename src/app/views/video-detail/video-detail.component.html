@@ -57,9 +57,14 @@
         <div class="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8" style="scroll-snap-type: x mandatory">
         @for (video of topGrillinVideos; track $index) {
         <a [href]="video.href" class="shrink-0 w-[70vw] md:w-auto" style="scroll-snap-align: start">
-          <div class="relative overflow-hidden rounded-lg w-full aspect-video">
+          <div class="relative overflow-hidden rounded-lg w-full aspect-video image-shell">
+            @if (isImageLoading(video.thumbnail)) {
+              <div class="image-shimmer absolute inset-0"></div>
+            }
             <img [src]="video.thumbnail"
-              class="rounded-lg drop-shadow-lg w-full h-full object-cover transition-transform duration-300 transform hover:scale-110"
+              class="rounded-lg drop-shadow-lg w-full h-full object-cover transition-transform duration-300 transform hover:scale-110 image-fade"
+              [class.image-fade--loaded]="!isImageLoading(video.thumbnail)"
+              (load)="onImageLoaded(video.thumbnail)"
               loading="lazy" [alt]="video.title" />
           </div>
           <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
@@ -96,9 +101,14 @@
         <a [href]="video.href"
           class="relative flex flex-col w-[23rem] md:w-4/12 lg:w-1/4 mr-2 md:mr-4 group cursor-pointer"
           style="flex-shrink: 0; box-sizing: border-box; min-height: 1px; scroll-snap-align: start">
-          <div class="relative overflow-hidden rounded-lg w-full aspect-video">
+          <div class="relative overflow-hidden rounded-lg w-full aspect-video image-shell">
+            @if (isImageLoading(video.thumbnail)) {
+              <div class="image-shimmer absolute inset-0"></div>
+            }
             <img [src]="video.thumbnail"
-              class="rounded-lg drop-shadow-lg h-full object-cover transition-transform duration-300 transform hover:scale-110"
+              class="rounded-lg drop-shadow-lg h-full object-cover transition-transform duration-300 transform hover:scale-110 image-fade"
+              [class.image-fade--loaded]="!isImageLoading(video.thumbnail)"
+              (load)="onImageLoaded(video.thumbnail)"
               loading="lazy" [alt]="video.title" />
           </div>
           <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
@@ -113,7 +123,17 @@
   <app-free-trial-form [showTopMargin]="true"></app-free-trial-form>
 
   <div class="bg-white relative">
-    <img src="/img/bottom_image.png" alt="Bottom Image" class="bottom-0 left-0 w-full object-cover" />
+    <div class="image-shell">
+      @if (isImageLoading('/img/bottom_image.png')) {
+        <div class="image-shimmer h-[240px] md:h-[320px] w-full"></div>
+      }
+      <img
+        src="/img/bottom_image.png"
+        alt="Bottom Image"
+        class="bottom-0 left-0 w-full object-cover image-fade"
+        [class.image-fade--loaded]="!isImageLoading('/img/bottom_image.png')"
+        (load)="onImageLoaded('/img/bottom_image.png')" />
+    </div>
   </div>
 
   <!-- Footer -->

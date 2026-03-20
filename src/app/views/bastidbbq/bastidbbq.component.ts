@@ -37,6 +37,10 @@ export class BastidBBQComponent implements AfterViewInit {
     showSignupModal = false;
     upcomingEvents: Event[] = [];
     parallaxOffset = 0;
+    imageLoadingState = signal<Record<string, boolean>>({
+      signup: true,
+      platform: true,
+    });
     @ViewChildren('reveal') revealBlocks!: QueryList<ElementRef>;
 
     ngAfterViewInit(): void {
@@ -81,6 +85,17 @@ export class BastidBBQComponent implements AfterViewInit {
 
     goToTopGrillin() {
       this.router.navigate(['/topgrillin']);
+    }
+
+    onImageLoaded(key: string) {
+      this.imageLoadingState.update((state) => ({
+        ...state,
+        [key]: false,
+      }));
+    }
+
+    isImageLoading(key: string): boolean {
+      return this.imageLoadingState()[key] ?? true;
     }
 
     @HostListener('window:scroll')

@@ -47,6 +47,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   currentVideoIndex = signal(0);
   isTransitioning = signal(false);
   progress = signal(0);
+  imageLoadingState = signal<Record<string, boolean>>({});
 
   get videos(): Ads[] {
     return this.appData.banners();
@@ -261,6 +262,21 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   getPreviousVideo(): Ads | null {
     const prevIndex = this.previousVideoIndex();
     return prevIndex !== null ? this.videos[prevIndex] : null;
+  }
+
+  onImageLoaded(src: string) {
+    this.imageLoadingState.update((state) => ({
+      ...state,
+      [src]: false,
+    }));
+  }
+
+  isImageLoading(src?: string | null): boolean {
+    if (!src) {
+      return false;
+    }
+
+    return this.imageLoadingState()[src] ?? true;
   }
 
   // goToVideos() {

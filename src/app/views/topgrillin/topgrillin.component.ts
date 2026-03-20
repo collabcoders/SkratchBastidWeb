@@ -40,6 +40,12 @@ type PricingOption = {
 })
 export class TopGrillinComponent {
     isAnnual = false;
+    imageLoadingState = signal<Record<string, boolean>>({
+      heroPrimary: true,
+      heroSecondary: true,
+      platform: true,
+      footer: true,
+    });
 
     vipFeatures = [
       'Stream over 2,000 hours of exclusive DJ sets',
@@ -102,6 +108,10 @@ export class TopGrillinComponent {
         : 'https://wp.skratchbastid.com/register/top-grillin-monthly/';
     }
 
+    get selectedPlan(): 'monthly' | 'yearly' {
+      return this.isAnnual ? 'yearly' : 'monthly';
+    }
+
     videoSection: VideoSection = {
       title: 'New in Top Grillin',
       icon: '/img/newintopgrillin.png',
@@ -143,9 +153,31 @@ export class TopGrillinComponent {
       })
     }
 
-    openSignup() {
-      this.appData.planOpen.set(this.isAnnual ? 'yearly' : 'monthly');
-      this.router.navigate(['/join']);
+    openSignup(plan: 'free' | 'monthly' | 'yearly' = this.selectedPlan) {
+      this.appData.planOpen.set(plan);
+      const planId =
+        plan === 'monthly'
+          ? this.monthlyOption()?.value || this.appData.monthlyPlanId()
+          : plan === 'yearly'
+            ? this.yearlyOption()?.value || this.appData.yearlyPlanId()
+            : 'free';
+
+      this.router.navigate(['/join'], {
+        queryParams: {
+          id: planId || plan,
+        },
+      });
+    }
+
+    onImageLoaded(key: string) {
+      this.imageLoadingState.update((state) => ({
+        ...state,
+        [key]: false,
+      }));
+    }
+
+    isImageLoading(key: string): boolean {
+      return this.imageLoadingState()[key] ?? true;
     }
 
     private monthlyOption(): PricingOption | undefined {
