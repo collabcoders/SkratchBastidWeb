@@ -11,146 +11,70 @@
     </p>
   </div>
 
-  <!-- Angular Form -->
-  <!-- <form (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
-    <div>
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-          </svg>
-        </div>
-        <input
-          [(ngModel)]="email"
-          id="email"
-          name="email"
-          type="email"
-          placeholder="Email"
-          autocomplete="email"
-          required
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-        />
-      </div>
+  <form #hiveForm class="hive-signup-form" (ngSubmit)="onSubmit()" novalidate>
+    <input data-HIVE-FORM-FIELD="swid" type="hidden" [value]="hiveInitId" />
+
+    <label for="_HIVE-email-9308">Email</label>
+    <input
+      data-HIVE-FORM-FIELD="email"
+      id="_HIVE-email-9308"
+      name="email"
+      type="email"
+      [(ngModel)]="email"
+      placeholder="Enter an email..."
+      autocomplete="email"
+      required
+    />
+
+    <label for="_HIVE-firstName-9308">First Name</label>
+    <input
+      data-HIVE-FORM-FIELD="firstName"
+      id="_HIVE-firstName-9308"
+      name="fname"
+      type="text"
+      [(ngModel)]="firstName"
+      placeholder="Enter a first name..."
+      autocomplete="given-name"
+    />
+
+    <label for="_HIVE-lastName-9308">Last Name</label>
+    <input
+      data-HIVE-FORM-FIELD="lastName"
+      id="_HIVE-lastName-9308"
+      name="lname"
+      type="text"
+      [(ngModel)]="lastName"
+      placeholder="Enter a last name..."
+      autocomplete="family-name"
+    />
+
+    <label for="_HIVE-phoneNumber-9308">Phone Number</label>
+    <input
+      data-HIVE-FORM-FIELD="phoneNumber"
+      data-HIVE-INTL-PHONE-NUMBER="true"
+      id="_HIVE-phoneNumber-9308"
+      name="phone"
+      type="tel"
+      [(ngModel)]="phoneNumber"
+      placeholder="Enter a phone number..."
+      autocomplete="tel"
+    />
+
+    <input data-HIVE-FORM-FIELD="addToSegment" type="hidden" value="Signup Form - Homepage" />
+    <input data-HIVE-FORM-FIELD="addToSegment" type="hidden" value="VIP Free Trial" />
+
+    <div style="position: absolute; left: -5000px;" aria-hidden="true">
+      <input type="text" data-HIVE-FORM-FIELD="areUReal" tabindex="-1" value="" />
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-          <input
-            [(ngModel)]="firstName"
-            id="firstName"
-            name="firstName"
-            type="text"
-            placeholder="First Name"
-            autocomplete="given-name"
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-          />
-        </div>
-      </div>
-
-      <div>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fill-rule="evenodd"
-                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-          </div>
-          <input
-            [(ngModel)]="lastName"
-            id="lastName"
-            name="lastName"
-            type="text"
-            placeholder="Last Name"
-            autocomplete="family-name"
-            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-          />
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
-            />
-          </svg>
-        </div>
-        <input
-          [(ngModel)]="phoneNumber"
-          id="phoneNumber"
-          name="phoneNumber"
-          type="tel"
-          placeholder="Mobile Phone"
-          autocomplete="tel"
-          class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-        />
-      </div>
-    </div>
-
-    <div class="relative">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <input
-        [(ngModel)]="password"
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Password"
-        autocomplete="new-password"
-        required
-        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-      />
-    </div>
-
-    <div class="relative">
-      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fill-rule="evenodd"
-            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      </div>
-      <input
-        [(ngModel)]="confirmPassword"
-        id="confirmPassword"
-        name="confirmPassword"
-        type="password"
-        placeholder="Confirm Password"
-        autocomplete="new-password"
-        required
-        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF5941]"
-      />
-    </div> -->
-
-  <button type="submit" (click)="openSignup()"
-    class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition">
-    Start your free trial
-  </button>
-  <!-- </form> -->
+    <button
+      type="submit"
+      data-HIVE-FORM-FIELD="submitButton"
+      class="mt-4"
+      [disabled]="isSubmitting"
+    >
+      {{ isSubmitting ? 'Submitting...' : 'Start your free trial' }}
+    </button>
+  </form>
 </div>
 }

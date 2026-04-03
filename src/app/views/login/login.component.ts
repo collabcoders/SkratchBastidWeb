@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
+import { HiveService } from '@shared/services/hive.service';
 import { BehaviorSubject } from 'rxjs';
 declare var $: any;
 declare var bootbox: any;
@@ -24,7 +25,12 @@ export class LoginComponent {
   appData = { loginFromBeats: false };
   showReJoin(id: any) { bootbox.alert('Upgrade logic for id: ' + id); }
 
-  constructor(private fb: FormBuilder, private api: ApiService, private alertService: AlertService,) {
+  constructor(
+    private fb: FormBuilder,
+    private api: ApiService,
+    private alertService: AlertService,
+    private hiveService: HiveService,
+  ) {
     this.loginForm = {
       form: this.fb.group({
         username: ['', [Validators.required, Validators.email]],
@@ -55,6 +61,12 @@ export class LoginComponent {
           } else {
             this.token.set(data.data);
             this.logIn.emit();
+            void this.hiveService.sendMemberDataToHive({
+              ...(data?.data || {}),
+              email: data?.data?.email || this.loginForm.form.value.username,
+            }).catch((error) => {
+              console.warn('Unable to send login event to Hive.', error);
+            });
             $('#loginModal').modal('hide');
             try {
               (document.querySelector('#tidio-chat iframe') as HTMLElement).style.visibility = 'visible';

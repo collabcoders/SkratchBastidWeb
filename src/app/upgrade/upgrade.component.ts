@@ -4,6 +4,7 @@ import { environment } from '@env/environment';
 import { FormValidator } from '@shared/models/form-validator';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
+import { HiveService } from '@shared/services/hive.service';
 import { TokenService } from '@shared/services/token.service';
 import { ValidationService } from '@shared/services/validation.service';
 import * as countriesJson from '@data/countries.json';
@@ -40,7 +41,8 @@ export class UpgradeComponent implements OnInit {
     public validation: ValidationService,
     private api: ApiService,
     protected alertService: AlertService,
-    private token: TokenService) {
+    private token: TokenService,
+    private hiveService: HiveService) {
       this.signupForm.form = this.fb.group({
         memberId: [0],
         firstName: [''],
@@ -178,6 +180,13 @@ export class UpgradeComponent implements OnInit {
             // SET TOKEN
             console.log(data);
             this.token.set(data.data);
+            void this.hiveService.sendMemberDataToHive(data?.data || {
+              email: this.signupForm.form.value.email,
+              firstName: this.signupForm.form.value.firstName,
+              lastName: this.signupForm.form.value.lastName,
+            }).catch((error) => {
+              console.warn('Unable to send upgrade signup event to Hive.', error);
+            });
             //this.logIn.emit();
             // SHOW MESSAGES AND REDIRECT
             this.confirmation = data.msg;

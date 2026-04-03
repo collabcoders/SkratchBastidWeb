@@ -71,6 +71,28 @@
     </div>
   </div>
 
+  @if (showSignupModal) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8"
+      (click)="closeSignupModal()"
+    >
+      <div
+        class="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+        (click)="$event.stopPropagation()"
+      >
+        <button
+          type="button"
+          class="absolute right-4 top-4 z-10 rounded-full bg-white/90 px-3 py-1 text-xl font-bold text-[#142129] shadow-md hover:bg-white"
+          (click)="closeSignupModal()"
+          aria-label="Close signup modal"
+        >
+          ×
+        </button>
+        <app-bbq-signup-form></app-bbq-signup-form>
+      </div>
+    </div>
+  }
+
   <!-- Upcoming Events -->
   <div class="bg-white text-gray-900 px-2 md:px-4 py-12">
     <div class="max-w-[1440px] mx-auto px-10 md:px-16">

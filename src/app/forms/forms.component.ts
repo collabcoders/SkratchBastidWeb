@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, A
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
+import { HiveService } from '@shared/services/hive.service';
 import { Config } from '@shared/config';
 import { TokenService } from '@shared/services/token.service';
 import { FavoritesService } from '@shared/services/favorites.service';
@@ -76,6 +77,13 @@ export class FormsComponent implements AfterViewInit, OnInit {
                 this.token.isValid(true);
                 this.favoritesService.loadFavorites();
               }
+              void this.hiveService.sendMemberDataToHive(data?.data || {
+                email: this.registerForm.value.email,
+                firstName: this.registerForm.value.firstName,
+                lastName: this.registerForm.value.lastName,
+              }).catch((error) => {
+                console.warn('Unable to send registration event to Hive.', error);
+              });
               // HIDE REGISTER MODAL
               this.closeRegisterModal();
               // SHOW MESSAGES AND REDIRECT
@@ -174,7 +182,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.loadUpcomingEvents();
   }
 
-  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService, private uploader: UploaderService, private cdr: ChangeDetectorRef,) {
+  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService, private uploader: UploaderService, private cdr: ChangeDetectorRef, private hiveService: HiveService,) {
     this.router = inject(Router);
 
     this.loginForm = this.fb.group({

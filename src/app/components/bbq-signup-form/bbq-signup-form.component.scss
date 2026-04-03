@@ -1,1 +1,20 @@
-/* BBQ Signup Form Component Styles */
+.bbq-signup-form {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bbq-signup-form input,
+.bbq-signup-form select {
+  color: #142129;
+}
+
+.bbq-signup-form button {
+  margin-top: 0.25rem;
+}
+
+.bbq-signup-form p {
+  margin-top: 0.25rem;
+}

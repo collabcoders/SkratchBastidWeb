@@ -29,6 +29,5 @@ export class JoinComponent {
 
   onSignupSubmit(formData: FreeTrialFormData) {
     console.log('Signup submitted:', formData);
-    // Add your signup logic here
   }
 }
