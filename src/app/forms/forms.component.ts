@@ -87,7 +87,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
               // HIDE REGISTER MODAL
               this.closeRegisterModal();
               // SHOW MESSAGES AND REDIRECT
-              bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the QMT VIP</h4><br>' + data.msg);
+              bootbox.alert('<h4>Welcome ' + (this.isReJoin ? 'back ' : '') + 'to the Top Grillin\'</h4><br>' + data.msg);
               this.isReJoin = false;
               setTimeout(() => {
                 this.registerLoading.set(false);
@@ -160,7 +160,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   // Profile modal state
   countries: any = (countriesJson as any) || [];
-  cropImgPreview = 'https://magmob.djjazzyjeff.com/content/user.png';
+  cropImgPreview = '/assets/images/user.png';
   imgChangeEvt: any = null;
   imageChanged = false;
   imageType = 'image/jpeg';
