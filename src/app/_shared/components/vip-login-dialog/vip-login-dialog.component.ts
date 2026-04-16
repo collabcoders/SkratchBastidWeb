@@ -24,7 +24,11 @@ export class VipLoginDialogComponent {
   }
 
   onSignIn() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/login'], {
+      queryParams: {
+        returnUrl: this.router.url,
+      },
+    });
     this.closeDialog.emit();
   }
 

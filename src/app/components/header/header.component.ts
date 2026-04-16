@@ -172,6 +172,15 @@ export class HeaderComponent implements OnDestroy, OnInit {
       return;
     }
 
+    if (route === '/login') {
+      this.router.navigate([route], {
+        queryParams: {
+          returnUrl: this.router.url,
+        },
+      });
+      return;
+    }
+
     this.router.navigate([route]);
   }
 

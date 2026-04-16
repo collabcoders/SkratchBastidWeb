@@ -56,7 +56,7 @@
           </li>
         </ul>
       </div>
-      <a href="/join"
+      <a href="#" (click)="scrollToPricingSection($event)"
         class="mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
         JOIN NOW
       </a>
@@ -90,9 +90,9 @@
         </ul>
       </div>
       <p class="mt-2 text-gray-300">Become a Top Griller today!</p>
-      <a href="/newsletter"
+      <a href="#" (click)="openSignupModal($event)"
         class="mt-6 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
-        START NOW
+        JOIN NOW
       </a>
     </div>
     <div class="flex-1 md:w-70 flex flex-col gap-4">
@@ -111,7 +111,7 @@
   </div>
 
   <!-- Pricing Section -->
-  <div class="bg-[#fff] text-white md:px-12 px-6 py-12 items-center md:flex-row gap-24">
+  <div id="topgrillin-pricing-section" class="bg-[#fff] text-white md:px-12 px-6 py-12 items-center md:flex-row gap-24">
     <h2 class="text-3xl !text-[#142129] font-bold text-center">Become a VIP Top Griller now</h2>
     <p class="text-[#142129] text-center">Our membership offerings</p>
     <div
@@ -157,7 +157,9 @@
   </div>
 
   <!-- Free Trial Form -->
-  <app-free-trial-form></app-free-trial-form>
+  <div id="topgrillin-free-trial-form">
+    <app-free-trial-form></app-free-trial-form>
+  </div>
 
   <!-- Bottom Image Section -->
   <div class="bg-white relative">

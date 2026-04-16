@@ -13,7 +13,6 @@ import { Config } from '@shared/config';
 import { PaymentSuccessComponent } from './payment-success/payment-success.component';
 import { Observable } from 'rxjs';
 import { TokenService } from '@shared/services/token.service';
-import { Router } from '@angular/router';
 import { AppData } from 'src/app/app.data';
 import { environment } from '@env/environment';
 import { Video } from '@shared/models/video';
@@ -115,14 +114,15 @@ export class TopGrillinComponent {
     videoSection: VideoSection = {
       title: 'New in Top Grillin',
       icon: '/img/newintopgrillin.png',
-      signUpText: 'Sign up',
+      signUpText: 'Join Now',
       signUpLink: '/join',
+      signUpTargetId: 'topgrillin-pricing-section',
       data: []
     };
 
   isLoggedIn$!: Observable<boolean>;
   isLoadingVideo: WritableSignal<boolean> = signal(true);
-    constructor(private apiService: ApiService, private appData: AppData, private favoritesService: FavoritesService, private alertService: AlertService, private token: TokenService, private router: Router) {
+  constructor(private apiService: ApiService, private appData: AppData, private favoritesService: FavoritesService, private alertService: AlertService, private token: TokenService) {
       this.isLoadingVideo.set(true);
       if (environment.ismock) {
       this.apiService.getSectionData("video").subscribe((data) => {
@@ -155,17 +155,25 @@ export class TopGrillinComponent {
 
     openSignup(plan: 'free' | 'monthly' | 'yearly' = this.selectedPlan) {
       this.appData.planOpen.set(plan);
-      const planId =
-        plan === 'monthly'
-          ? this.monthlyOption()?.value || this.appData.monthlyPlanId()
-          : plan === 'yearly'
-            ? this.yearlyOption()?.value || this.appData.yearlyPlanId()
-            : 'free';
+      this.scrollToPricingSection();
+    }
 
-      this.router.navigate(['/join'], {
-        queryParams: {
-          id: planId || plan,
-        },
+    openSignupModal(event?: Event) {
+      event?.preventDefault();
+      this.openSignup(this.selectedPlan);
+    }
+
+    scrollToPricingSection(event?: Event) {
+      event?.preventDefault();
+      const target = document.getElementById('topgrillin-pricing-section');
+      if (!target) {
+        return;
+      }
+
+      target.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
       });
     }
 

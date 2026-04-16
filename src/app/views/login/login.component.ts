@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
 import { HiveService } from '@shared/services/hive.service';
@@ -23,6 +24,7 @@ export class LoginComponent {
     set: (data: any) => {}
   };
   appData = { loginFromBeats: false };
+  returnUrl = '/';
   showReJoin(id: any) { bootbox.alert('Upgrade logic for id: ' + id); }
 
   constructor(
@@ -30,6 +32,8 @@ export class LoginComponent {
     private api: ApiService,
     private alertService: AlertService,
     private hiveService: HiveService,
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
     this.loginForm = {
       form: this.fb.group({
@@ -38,6 +42,7 @@ export class LoginComponent {
       }),
       formSubmitAttempt: false
     };
+    this.returnUrl = this.resolveReturnUrl();
   }
 
   login(e: any) {
@@ -90,7 +95,7 @@ export class LoginComponent {
                 bootbox.alert(data.msg);
               } else {
                 this.alertService.success('Sign-In Successful', data.msg);
-                setTimeout(() => window.location.reload(), 1000);
+                setTimeout(() => this.router.navigateByUrl(this.returnUrl), 1000);
               }
             }
             this.processingSignin = false;
@@ -100,5 +105,17 @@ export class LoginComponent {
       this.alertService.error('Error', 'Invalid Email/Password');
       this.processingSignin = false;
     }
+  }
+
+  private resolveReturnUrl(): string {
+    const queryReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '';
+    const fallback = this.router.url || '/';
+    const candidate = queryReturnUrl || fallback;
+
+    if (!candidate || candidate === '/login' || candidate.startsWith('/login?')) {
+      return '/';
+    }
+
+    return candidate.startsWith('/') ? candidate : '/';
   }
 }

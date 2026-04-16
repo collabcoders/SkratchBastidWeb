@@ -29,6 +29,33 @@
 html, body {
   // font-family: 'Poppins', sans-serif;
   font-family: 'Poppins', sans-serif !important;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+}
+
+app-header + div[class*="mt-[58px]"] {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 58px);
+}
+
+app-header + div[class*="mt-[80px]"] {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+}
+
+app-header + div[class*="mt-[58px]"] > app-footer,
+app-header + div[class*="mt-[80px]"] > app-footer {
+  margin-top: auto;
 }
 
 h2 {

@@ -23,7 +23,6 @@
 
             @if (music != null) {
                 <div class="player-img">
-                    HEre?
                     <img [src]="music.image | imageUrl:180:180:true" [alt]="music.title" (error)="errorImage($event)" />
                 </div>
             } @else {
@@ -58,6 +57,12 @@
                         @if (music) {
                             <div (click)="openShare(music)" class="share-audio-desktop player-control cursor-pointer">
                                 <i class="fa fa-share fa-2x cursor-pointer"></i>
+                            </div>
+                        }
+
+                        @if (music) {
+                            <div (click)="downloadAudio($event, music)" class="download-audio-desktop player-control cursor-pointer" tooltip="DOWNLOAD" placement="top">
+                                <i class="fa fa-download fa-2x cursor-pointer"></i>
                             </div>
                         }
 
@@ -115,7 +120,6 @@
             <div class="modal2-body">
                 @if (music != null) {
                     <div class="player-audio-img">
-                        here?
                         <img [src]="music.image | imageUrl:1000:1000:true" [alt]="music.title" (error)="errorImage($event)" />
                     </div>
                 } @else {
@@ -141,8 +145,11 @@
                                         class="fas fa-heart fa-2x fa-stack-1x"></i>
                                     <i class="far fa-heart fa-2x fa-stack-1x"></i>
                                 </span>
-                                <div (click)="openShare(music)">
+                                <div (click)="openShare(music)" class="player-control cursor-pointer">
                                     <i class="fa fa-share fa-2x cursor-pointer"></i>
+                                </div>
+                                <div (click)="downloadAudio($event, music)" class="player-control cursor-pointer" tooltip="DOWNLOAD" placement="top">
+                                    <i class="fa fa-download fa-2x cursor-pointer"></i>
                                 </div>
                             </div>
                         }

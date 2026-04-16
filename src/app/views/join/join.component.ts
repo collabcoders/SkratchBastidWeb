@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FreeTrialFormComponent, FreeTrialFormData } from '../../components/free-trial-form/free-trial-form.component';
@@ -17,6 +18,8 @@ interface VIPFeature {
 })
 export class JoinComponent {
   newsletterEmail = '';
+  currentUrl = '';
+  loginUrl = '/login';
 
   vipFeatures: VIPFeature[] = [
     { text: 'Free features.' },
@@ -26,6 +29,11 @@ export class JoinComponent {
     { text: 'Pre-sale and first access to new merch drops.' },
     { text: '10% off entire online store.' },
   ];
+
+  constructor(private router: Router) {
+    this.currentUrl = this.router.url || '/';
+    this.loginUrl = `/login?returnUrl=${encodeURIComponent(this.currentUrl)}`;
+  }
 
   onSignupSubmit(formData: FreeTrialFormData) {
     console.log('Signup submitted:', formData);

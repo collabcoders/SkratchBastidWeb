@@ -175,6 +175,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
   loginLoading = signal(false);
   resetLoading = signal(false);
   registerLoading = signal(false);
+  loginReturnUrl = '/';
   cardComplete = false;
   cardErrorMessage = '';
 
@@ -315,7 +316,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
               bootbox.alert(data.msg);
             } else {
               this.alertService.success('Sign-In Successful', data.msg);
-              // setTimeout(() => window.location.reload(), 1000);
+              setTimeout(() => this.router.navigateByUrl(this.loginReturnUrl), 1000);
             }
           }
         }
@@ -433,6 +434,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
       const selectedPlanId = this.getPlanIdFromUrl(event.url);
 
       if (event.url.includes('/login')) {
+        this.loginReturnUrl = this.getReturnUrlFromUrl(event.url);
         if (isAuthenticated) {
           return;
         }
@@ -1012,6 +1014,19 @@ export class FormsComponent implements AfterViewInit, OnInit {
       return typeof queryParams['id'] === 'string' ? queryParams['id'] : null;
     } catch {
       return null;
+    }
+  }
+
+  private getReturnUrlFromUrl(url: string): string {
+    try {
+      const queryParams = this.router.parseUrl(url).queryParams;
+      const returnUrl = typeof queryParams['returnUrl'] === 'string' ? queryParams['returnUrl'] : '';
+      if (!returnUrl || returnUrl === '/login' || returnUrl.startsWith('/login?')) {
+        return '/';
+      }
+      return returnUrl.startsWith('/') ? returnUrl : '/';
+    } catch {
+      return '/';
     }
   }
 

@@ -51,7 +51,21 @@
         </div>
 
         <!-- Controls -->
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-4">
+          <!-- Download Button -->
+          <button
+            (click)="downloadCurrentTrack($event)"
+            class="text-black hover:text-black transition-colors duration-200 p-2 mr-4"
+            aria-label="Download audio"
+            title="Download"
+          >
+            <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M5 20h14v-2H5v2zm7-18v10.17l3.59-3.58L17 10l-5 5-5-5 1.41-1.41L11 12.17V2h1z"
+              />
+            </svg>
+          </button>
+
           <!-- Play/Pause Button -->
           <button
             (click)="audioService.togglePlayPause()"
@@ -147,7 +161,21 @@
       </div>
 
       <!-- Right Section: Volume & Close -->
-      <div class="flex items-center space-x-3 flex-1 justify-end">
+      <div class="flex items-center space-x-5 flex-1 justify-end">
+        <!-- Download Button -->
+        <button
+          (click)="downloadCurrentTrack($event)"
+          class="text-black hover:text-black transition-colors duration-200 p-1 mr-6"
+          aria-label="Download audio"
+          title="Download"
+        >
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M5 20h14v-2H5v2zm7-18v10.17l3.59-3.58L17 10l-5 5-5-5 1.41-1.41L11 12.17V2h1z"
+            />
+          </svg>
+        </button>
+
         <!-- Volume Control -->
         <div class="flex items-center space-x-2">
           <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24">

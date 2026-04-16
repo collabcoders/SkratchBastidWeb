@@ -40,6 +40,7 @@ export interface VideoSection {
   type?: string;
   signUpText?: string;
   signUpLink?: string;
+  signUpTargetId?: string;
 }
 
 @Component({
@@ -231,6 +232,25 @@ export class VideoCarouselComponent implements OnInit, OnDestroy {
     if (target && 'classList' in target) {
       target.classList.remove('blur-preview', 'shimmer');
     }
+  }
+
+  scrollToSignup(event: MouseEvent) {
+    event.preventDefault();
+    const section = this.section();
+    const targetId = section?.signUpTargetId;
+
+    if (!targetId) {
+      return;
+    }
+
+    const target = document.getElementById(targetId);
+    if (!target) {
+      return;
+    }
+
+    const headerOffset = 90;
+    const top = window.scrollY + target.getBoundingClientRect().top - headerOffset;
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   fav(event: any, video: Video, itemId: number) {
