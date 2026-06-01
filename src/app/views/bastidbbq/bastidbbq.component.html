@@ -2,208 +2,100 @@
   <app-header />
 
   <!-- Hero Section -->
-  <div class="relative h-screen flex items-center justify-center text-white bg-cover bg-center hero-parallax"
-    [ngStyle]="{ 'background-image': 'url(/img/bbq1.png)', 'background-position-y.px': parallaxOffset }">
+  <div class="relative h-[calc(100vh-50px)] flex items-end justify-start text-white overflow-hidden pb-12 md:pb-16">
+    <video
+      #heroVideo
+      class="absolute inset-0 w-full h-full object-cover z-0"
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="/img/bbq1.png">
+      <source src="/assets/bbq-hero.mp4" type="video/mp4" />
+    </video>
     <div class="absolute inset-0 bg-black opacity-60 z-0"></div>
-    <div class="relative z-10 w-full max-w-[1440px] mx-auto md:flex md:items-center md:gap-8 px-10 md:px-16">
-      <div #reveal class="text-left md:w-1/2 reveal reveal-left" style="
-          font-family: 'Blur Bold', 'Impact', 'Franklin Gothic Bold', 'Arial Black', sans-serif;
-          font-weight: 900;
+    <div class="absolute bottom-0 left-0 z-10 w-full max-w-[1440px] px-10 md:px-16 pb-12 md:pb-16">
+      <div #reveal class="text-left reveal reveal-left" style="
+          font-family: 'WT Volkolak Grotesque', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-weight: 700;
         ">
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem]">GOOD MUSIC,</h1>
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem]">GOOD FOOD,</h1>
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem]">AND GOOD PEOPLE.</h1>
-        <div class="h-[64px]"></div>
-        <p class="mt-6 text-md md:text-lg leading-7 max-w-3xl font-normal" style="font-family: 'CircularStdBook', 'Helvetica Neue', Arial, sans-serif;">
-          Bastid’s BBQ, founded in 2011 by DJ Skratch Bastid, began as a celebration of his love for music, food, and community. Over a decade later, it has grown into a globally celebrated event series, bringing together fans and artists in cities across the world. Featuring an unparalleled lineup of legendary DJs and producers, Bastid’s BBQ has become a must-attend event for those who crave the perfect blend of beats, bites, and vibes.
-          <br /><br />
-          Because life is always better with good music, good food, and good people.
-        </p>
+        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">GOOD MUSIC,</h1>
+        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">GOOD FOOD,</h1>
+        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">AND GOOD PEOPLE.</h1>
       </div>
       <div #reveal class="md:w-1/2 flex md:justify-end justify-end mt-12 md:mt-0 reveal reveal-right">
-        <button class="cursor-pointer" (click)="openYouTubeOverlay()">
+        <button class="cursor-pointer hidden" (click)="openYouTubeOverlay()">
           <img src="/img/play.png" alt="Play" class="w-32" />
         </button>
       </div>
     </div>
-
-    <div class="hero-marquee text-white">
-      <div class="hero-marquee__track w-full">
-        <span>WE GOT THE SAUCE! GET SAUCE & OTHER MERCH AT SKRATCH BASTID STORE</span>
-        <span>WE GOT THE SAUCE! GET SAUCE & OTHER MERCH AT SKRATCH BASTID STORE</span>
-      </div>
-    </div>
   </div>
 
-  <!-- Signup Section -->
-  <div class="bg-[#142129] text-white px-2 md:px-4 py-12" id="signup">
-    <div class="max-w-[1440px] mx-auto grid md:grid-cols-2 gap-8 items-center px-10 md:px-16">
-      <div #reveal class="w-full h-full flex justify-center reveal reveal-left">
-        <div class="image-shell w-full h-full">
-          @if (isImageLoading('signup')) {
-            <div class="image-shimmer h-[320px] md:h-full w-full rounded-2xl"></div>
-          }
-          <img
-            src="/img/bbq1.svg"
-            class="w-full h-full object-cover image-fade"
-            [class.image-fade--loaded]="!isImageLoading('signup')"
-            (load)="onImageLoaded('signup')"
-            alt="Bastid BBQ" />
-        </div>
-      </div>
-
-      <div #reveal class="space-y-6 reveal reveal-right">
-        <div>
-          <h3 class="text-sm uppercase tracking-[0.2em] !text-orange-300 mb-2">Sign Up</h3>
-          <p class="text-md md:text-xl text-gray-200 mt-2">
-            Access to Skratch Bastid's DJ Streams – Get up close and personal with epic sets you won’t hear anywhere else.
-          </p>
-        </div>
-
-        <div>
-          <button type="button"
-            class="w-full sm:w-auto min-w-[140px] bg-gradient-to-r from-[#FF5941] to-[#FF8F6B] hover:opacity-90 transition text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-orange-500/30"
-            (click)="openSignupModal()">
-            Sign Up
-          </button>
-        </div>
-      </div>
+  <!-- Accent bar / intro blurb directly under the hero video -->
+  <div class="bg-[#142129] border-b-[3px] border-[#FF5941] min-h-[100px] flex items-center px-2 md:px-4 py-8">
+    <div class="max-w-[1Bastid’s BBQ, founded in 2011 by DJ Skratch Bastid, began as440px] mx-auto px-10 md:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-10">
+      <p class="text-white text-base md:text-lg leading-relaxed text-center md:text-left">
+        Founded in 2011 by DJ Skratch Bastid as a platform to channel his passions of music, food, and building community. Today a globally recognized event series, spanning multiple cities and bringing some of the most talented DJs and producers to its stage. Life is always better with good music, good food, and good people.
+      </p>
     </div>
   </div>
-
-  @if (showSignupModal) {
-    <div
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8"
-      (click)="closeSignupModal()"
-    >
-      <div
-        class="relative w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl"
-        (click)="$event.stopPropagation()"
-      >
-        <button
-          type="button"
-          class="absolute right-4 top-4 z-10 rounded-full bg-white/90 px-3 py-1 text-xl font-bold text-[#142129] shadow-md hover:bg-white"
-          (click)="closeSignupModal()"
-          aria-label="Close signup modal"
-        >
-          ×
-        </button>
-        <app-bbq-signup-form></app-bbq-signup-form>
-      </div>
-    </div>
-  }
 
   <!-- Upcoming Events -->
   <div class="bg-white text-gray-900 px-2 md:px-4 py-12">
     <div class="max-w-[1440px] mx-auto px-10 md:px-16">
-      <h2 class="text-2xl md:text-3xl font-bold">Upcoming Events</h2>
-      <div class="mt-6">
-        @if (isLoadingEvent()) {
-          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @for (skeleton of [0,1,2]; track skeleton) {
-              <div class="animate-pulse rounded-2xl border border-gray-200 bg-white overflow-hidden">
-                <div class="h-44 w-full bg-gray-200"></div>
-                <div class="p-4 space-y-3">
-                  <div class="h-4 w-3/4 bg-gray-200 rounded"></div>
-                  <div class="h-4 w-1/2 bg-gray-200 rounded"></div>
-                  <div class="h-3 w-full bg-gray-100 rounded"></div>
-                </div>
+      <h2 class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-[#1b2130]">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-[#1F85FF]">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+        </svg>
+        BBQ Dates
+      </h2>
+      <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        @for (date of tourDates; track date.city) {
+          <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col">
+            <a [href]="date.ticketUrl" target="_blank" rel="noopener noreferrer" class="bbq-card-media relative block">
+              <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto" />
+              <div class="bbq-card-overlay absolute inset-0 flex items-center justify-center cursor-pointer">
+                <span class="inline-flex items-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-8 py-4 rounded-2xl">
+                  Get Tickets →
+                </span>
               </div>
-            }
-          </div>
-        } @else {
-          @if (upcomingEvents.length === 0) {
-            <div class="flex flex-col items-center justify-center py-10 bg-gray-50 rounded-lg shadow-inner">
-              <div class="text-lg font-semibold text-gray-700 mb-1">No Upcoming Events</div>
-              <div class="text-sm text-gray-500">Check back soon for new show announcements.</div>
-            </div>
-          } @else {
-            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              @for (event of upcomingEvents.slice(0,3); track event.eventId) {
-                <app-event-card [event]="event"></app-event-card>
+            </a>
+            <div class="p-5 flex flex-col flex-1">
+              <div class="text-xl font-extrabold tracking-tight text-[#1F85FF]">{{ date.city }}</div>
+              <div class="text-sm font-semibold text-[#FF5941] mt-1">{{ date.date }}</div>
+              <div class="mt-3 text-sm font-semibold text-gray-800">{{ date.venue }}</div>
+              @if (date.address) {
+                <div class="text-sm text-gray-500">{{ date.address }}</div>
               }
+              <div class="text-sm text-gray-500">{{ date.time }}</div>
+              <a
+                [href]="date.ticketUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-4 mb-1 inline-flex items-center justify-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-7 py-3.5 rounded-2xl shadow-[6px_6px_0_0_#F4623A] hover:bg-[#F4623A] hover:shadow-[6px_6px_0_0_#1b2130] transition-all">
+                🎟 Get Tickets
+              </a>
             </div>
-            @if (upcomingEvents.length > 3) {
-              <div class="mt-6 flex justify-center">
-                <button class="px-6 py-3 rounded-full bg-black text-white font-semibold hover:bg-gray-800 transition" data-bs-toggle="modal" data-bs-target="#upcomingEventsModal">
-                  Show More
-                </button>
-              </div>
-            }
-          }
+          </div>
         }
       </div>
     </div>
   </div>
 
 
-  <!-- Platform Section -->
-  <div class="bg-[#142129] text-white px-2 md:px-4 py-12" id="signup">
-    <div class="max-w-[1440px] mx-auto grid md:grid-cols-2 gap-8 items-center px-10 md:px-16">
-      <div #reveal class="space-y-6 reveal reveal-left">
-        <div>
-          <h3 class="text-sm uppercase tracking-[0.2em] !text-orange-300 mb-4">Platform</h3>
-          <p class="text-md md:text-xl text-gray-200 mt-2">
-            Join our private server and community for exclusive access to Skratch Bastid’s world.
-          </p>
-        </div>
+  <!-- Dotted divider under the cards section (full-width) -->
+  <div class="border-t-2 border-dotted border-[#FFA503]"></div>
 
-        <div class="grid gap-4 pl-4 border-l-2 border-[#FF5941]">
-          <div class="flex gap-4 items-start">
-            <span class="flex-shrink-0 w-10 h-10 rounded-full border border-white/20 bg-white/10 text-white font-semibold text-lg flex items-center justify-center">
-              1
-            </span>
-            <div>
-              <h4 class="text-lg md:text-xl font-semibold">Videos</h4>
-              <p class="text-sm md:text-base text-gray-200">Stream private performances and 500+ hours of archived content.</p>
-            </div>
-          </div>
-          <div class="flex gap-4 items-start">
-            <span class="flex-shrink-0 w-10 h-10 rounded-full border border-white/20 bg-white/10 text-white font-semibold text-lg flex items-center justify-center">
-              2
-            </span>
-            <div>
-              <h4 class="text-lg md:text-xl font-semibold">Audios</h4>
-              <p class="text-sm md:text-base text-gray-200">Enjoy exclusive mixes and curated playlists.</p>
-            </div>
-          </div>
-          <div class="flex gap-4 items-start">
-            <span class="flex-shrink-0 w-10 h-10 rounded-full border border-white/20 bg-white/10 text-white font-semibold text-lg flex items-center justify-center">
-              3
-            </span>
-            <div>
-              <h4 class="text-lg md:text-xl font-semibold">Bastid’s</h4>
-              <p class="text-sm md:text-base text-gray-200">Score discounts and early access to events.</p>
-            </div>
-          </div>
-        </div>
-
-
-        <p>Become  Top Griller today!</p>
-
-        <div>
-          <button type="button"
-            class="w-full sm:w-auto min-w-[140px] bg-gradient-to-r from-[#FF5941] to-[#FF8F6B] hover:opacity-90 transition text-white font-semibold px-8 py-3 rounded-full shadow-lg shadow-orange-500/30"
-            (click)="goToTopGrillin()">
-            Start Now
-          </button>
-        </div>
-      </div>
-      <div #reveal class="w-full h-full flex justify-center reveal reveal-right">
-        <div class="image-shell w-full h-full">
-          @if (isImageLoading('platform')) {
-            <div class="image-shimmer h-[320px] md:h-full w-full rounded-2xl"></div>
-          }
-          <img
-            src="/img/platformimg.png"
-            class="w-full h-full object-cover image-fade"
-            [class.image-fade--loaded]="!isImageLoading('platform')"
-            (load)="onImageLoaded('platform')"
-            alt="Bastid BBQ" />
-        </div>
-      </div>
+  <!-- Sign Up for Bastid's BBQ (inline form) -->
+  <div class="bg-[#F9FAFB] px-2 md:px-4 py-12" id="signup-inline">
+    <div class="max-w-[1440px] mx-auto px-10 md:px-16">
+      <app-bbq-signup-form></app-bbq-signup-form>
     </div>
   </div>
+
+  <!-- Dotted divider below the signup section (full-width) -->
+  <div class="border-t-2 border-dotted border-[#EFDA0F]"></div>
 
   <!-- Top Grillin Section (hero-adjacent) -->
   <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop"></app-video-carousel>

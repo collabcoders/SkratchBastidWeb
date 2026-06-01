@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 import { Video } from '@shared/models/video';
@@ -41,7 +42,8 @@ export class RotwDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private legendsVideos: LegendsVideosService
   ) {}
 
   ngOnInit() {
@@ -57,7 +59,7 @@ export class RotwDetailComponent implements OnInit {
 
     console.log("loadRotwDetail", id);
     // Use the existing API service pattern to fetch ROTW details
-    this.apiService.getItem("videos", id).subscribe((data) => {
+    this.legendsVideos.getVideo(id).subscribe((data) => {
       // const rotwRecords = data?.data?.filter((d: any) => d.category === 'rotw') || [];
 
       // Convert all records to our format

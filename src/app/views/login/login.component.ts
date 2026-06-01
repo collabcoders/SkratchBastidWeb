@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertService } from '@shared/services/alert.service';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsMemberService } from '@shared/services/legends/member.service';
 import { HiveService } from '@shared/services/hive.service';
 import { BehaviorSubject } from 'rxjs';
 declare var $: any;
@@ -30,6 +31,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
+    private legendsMember: LegendsMemberService,
     private alertService: AlertService,
     private hiveService: HiveService,
     private router: Router,
@@ -54,7 +56,7 @@ export class LoginComponent {
       this.formProcessing$.next(true);
       this.processingSignin = true;
       console.log("POST");
-      this.api.post('MemberLogin?app=skratchbastid', this.loginForm.form.value, true, true)
+      this.legendsMember.login(this.loginForm.form.value)
         .subscribe((data: any) => {
           console.log(data);
           if (data.error) {

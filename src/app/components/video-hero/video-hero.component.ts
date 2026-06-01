@@ -8,6 +8,8 @@ import { UtilitiesService } from '@shared/services/utilities.service';
 import { VideoService } from '@shared/services/video.service';
 import { AudioService } from '@shared/services/audio.service';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
+import { LegendsMusicService } from '@shared/services/legends/music.service';
 import { Video } from '@shared/models/video';
 import { Music } from '@shared/models/music';
 import { NavigateService } from '@shared/services/navigate.service';
@@ -55,7 +57,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   isLoggedIn$!: Observable<boolean>;
 
-  constructor(private token: TokenService, private appData: AppData, private nav: NavigateService, private util: UtilitiesService, private videoService: VideoService, private audioService: AudioService, private api: ApiService, private videoAccessService: VideoAccessService) {
+  constructor(private token: TokenService, private appData: AppData, private nav: NavigateService, private util: UtilitiesService, private videoService: VideoService, private audioService: AudioService, private api: ApiService, private videoAccessService: VideoAccessService, private legendsVideos: LegendsVideosService, private legendsMusic: LegendsMusicService) {
 
   }
 
@@ -285,7 +287,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
 
   showMedia(id: number, category: string) {
     if (category == 'video') {
-      this.api.getItem('videos', Number(id), '', true).subscribe((data: any) => {
+      this.legendsVideos.getVideo(Number(id)).subscribe((data: any) => {
         const video = {
           videoId: id,
           title: data.data.title,
@@ -303,7 +305,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
         this.videoService.showPlayer(video);
       });
     } else {
-      this.api.getItem('music', id, '', true).subscribe((data: any) => {
+      this.legendsMusic.getMusicItem(id).subscribe((data: any) => {
         const music = {
           musicId: id,
           artist: data.data.artist,

@@ -8,6 +8,7 @@ import {
   VideoSection,
 } from '../../components/video-carousel/video-carousel.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 import { PaymentSuccessComponent } from './payment-success/payment-success.component';
@@ -122,7 +123,7 @@ export class TopGrillinComponent {
 
   isLoggedIn$!: Observable<boolean>;
   isLoadingVideo: WritableSignal<boolean> = signal(true);
-  constructor(private apiService: ApiService, private appData: AppData, private favoritesService: FavoritesService, private alertService: AlertService, private token: TokenService) {
+  constructor(private apiService: ApiService, private appData: AppData, private favoritesService: FavoritesService, private alertService: AlertService, private token: TokenService, private legendsVideos: LegendsVideosService) {
       this.isLoadingVideo.set(true);
       if (environment.ismock) {
       this.apiService.getSectionData("video").subscribe((data) => {
@@ -133,7 +134,7 @@ export class TopGrillinComponent {
           this.isLoadingVideo.set(false);
       });
       } else {
-        this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.legendsVideos.getVideos({ category: 'all' }).subscribe((data: any) => {
           data.data = mappingFavorites(data?.data?.slice(0, 10) || [], this.favoritesService.favorites);
           this.appData.videosLive.set(data.data as Video[]);
           this.videoSection.data = this.appData.videosLive();

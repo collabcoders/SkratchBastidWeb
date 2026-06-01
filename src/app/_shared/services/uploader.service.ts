@@ -13,13 +13,17 @@ export class UploaderService {
 
   constructor(private http: HttpClient) { }
 
-  uploadPlaylist(file: File) {
+  uploadPlaylist(file: File, id: number = 0, section: string = 'playlist') {
     let formData = new FormData();
-    formData.append("avatar", file);
+    // LegendsOnly /api/UploadImage expects: image (file), id, section, app
+    formData.append("image", file);
+    formData.append("id", String(id));
+    formData.append("section", section);
+    formData.append("app", Config.app);
 
     const req = new HttpRequest(
       "POST",
-      environment.api + "/api/App/UploadImage?app=" + 'playlist',
+      environment.legendsApi + "/api/UploadImage",
       formData,
       {
         reportProgress: true
@@ -33,13 +37,17 @@ export class UploaderService {
     );
   }
 
-  upload(file: File) {
+  upload(file: File, id: number = 0, section: string = 'members') {
     let formData = new FormData();
-    formData.append("avatar", file);
+    // LegendsOnly /api/UploadImage expects: image (file), id, section, app
+    formData.append("image", file);
+    formData.append("id", String(id));
+    formData.append("section", section);
+    formData.append("app", Config.app);
 
     const req = new HttpRequest(
       "POST",
-      environment.api + "/api/App/UploadImage?app=" + Config.app,
+      environment.legendsApi + "/api/",
       formData,
       {
         reportProgress: true
@@ -67,12 +75,14 @@ export class UploaderService {
         //return `Uploading file "${file.name}" of size ${file.size}.`;
       case HttpEventType.UploadProgress:
         return Math.round((100 * event.loaded) / event.total!);
-      case HttpEventType.Response:
-        if (event.body.error) {
-          return `Server Error: ` + event.body.msg;
-        } else {
-          return event.body.data;
+      case HttpEventType.Response: {
+        const body = event.body || {};
+        // MixApps returned { error, msg, data }; LegendsOnly returns { success, message, data }
+        if (body.error || body.success === false) {
+          return `Server Error: ` + (body.msg || body.message || 'upload failed');
         }
+        return body.data;
+      }
       default:
         return ``;
         //return `File "${file.name}" surprising upload event: ${event.type}.`;

@@ -10,24 +10,21 @@ export class ImagePipe implements PipeTransform {
   constructor(private domSanitizer: DomSanitizer) { }
 
   transform(value: any, width: number = 0, height: number = 0, crop: boolean = false): string {
+    // LegendsOnly resize endpoint: GET /api/Image?img=<file>&path=<app>&max=<dimension>
+    // (single proportional max dimension; the legacy crop/default flags are not supported).
+    const base = environment.legendsApi + '/api/Image';
+    const app = Config.app;
     let image: any;
     if (value == null || value === undefined) {
-      image = environment.api + '/Helpers/ImageHandler.ashx?app=' + Config.app + '&default=icon-' + Config.app + '.png';
+      // Fallback icon, served from the app's upload folder.
+      image = `${base}?img=icon-${app}.png&path=${app}`;
+    } else if (value.toLowerCase().indexOf('http') !== -1) {
+      image = value;
     } else {
-      if (value.toLowerCase().indexOf('http') !== -1) {
-        image = value;
-      } else {
-        image = environment.api + '/Helpers/ImageHandler.ashx?app=' + Config.app;
-        if (width > 0) {
-          image += '&width=' + width;
-        }
-        if (height > 0) {
-          image += '&height=' + height;
-        }
-        if (crop) {
-          image += '&crop=true';
-        }
-        image += '&default=icon-' + Config.app + '.png&img=' + value;
+      const max = Math.max(width, height);
+      image = `${base}?img=${value}&path=${app}`;
+      if (max > 0) {
+        image += '&max=' + max;
       }
     }
     return this.domSanitizer.bypassSecurityTrustUrl(image) as any;

@@ -6,6 +6,7 @@ import { TokenService } from './token.service';
 import { AppData } from 'src/app/app.data';
 import { Config } from '@shared/config';
 import { VideoAccessService } from './video-access.service';
+import { LegendsEngagementService } from './legends/engagement.service';
 
 // export interface AudioTrack {
 //   id: string;
@@ -92,6 +93,10 @@ export class AudioService {
           this.audio!.play().then(() => {
             this.isPlaying.set(true);
             this.isLoading.set(false);
+            // Log an audio play (once per track load; best-effort).
+            if (music?.musicId) {
+              this.legendsEngagement.logAccess(music.musicId, 'music', 'play').subscribe({ error: () => {} });
+            }
           }).catch(err => {
             console.log("Autoplay blocked:", err);
           });
@@ -199,6 +204,7 @@ export class AudioService {
     private token: TokenService,
     private appData: AppData,
     private videoAccessService: VideoAccessService,
+    private legendsEngagement: LegendsEngagementService,
     ) {
       this.onLoad();
       this.startEqualizerAnimation();

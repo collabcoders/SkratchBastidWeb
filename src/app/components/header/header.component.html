@@ -10,7 +10,7 @@
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden xl:flex gap-4 2xl:gap-6 font-semibold uppercase relative items-center">
+      <div class="hidden lg:flex gap-4 2xl:gap-6 font-semibold uppercase relative items-center">
         @for (link of filteredNavLinks; track $index) {
         <div [class]="'link-container ' + link.hoverColor">
           @if (!link.external) {
@@ -35,7 +35,7 @@
 
     <!-- Mobile Horizontal Scroll Menu -->
     <!-- Mobile: hamburger-only (hidden on xl) -->
-    <div class="xl:hidden flex items-center">
+    <div class="lg:hidden flex items-center">
       <button
         aria-label="Open menu"
         [attr.aria-expanded]="mobileMenuOpen"
@@ -58,8 +58,8 @@
 
     <!-- Desktop Auth Buttons -->
     @if (!(isLoggedIn$ | async)) {
-      <div class="hidden xl:flex">
-        <div class="xl:flex gap-4">
+      <div class="hidden lg:flex">
+        <div class="lg:flex gap-4">
           <button
             type="button"
             (click)="openRegister()"
@@ -75,7 +75,7 @@
         </div>
       </div>
     } @else {
-      <div class="hidden xl:flex items-center relative gap-6">
+      <div class="hidden lg:flex items-center relative gap-6">
         <button
           (click)="showFavorites()"
           class="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none transition-colors duration-200"
@@ -101,7 +101,7 @@
 
 <!-- Mobile overlay + sliding side-nav -->
 @if (mobileMenuOpen) {
-<div class="xl:hidden fixed inset-0 z-50 sb-overlay open" (click)="onOverlayClick($event)">
+<div class="lg:hidden fixed inset-0 z-50 sb-overlay open" (click)="onOverlayClick($event)">
   <div
     id="mobile-menu-drawer"
     class="sb-drawer bg-white w-[86%] max-w-sm h-full p-5 sm:p-6 transform transition-transform duration-300 open flex flex-col"

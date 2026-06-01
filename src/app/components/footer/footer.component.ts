@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Config } from '@shared/config';
-import { ApiService } from '@shared/services/api.service';
+import { HiveService } from '@shared/services/hive.service';
 import { AlertService } from '@shared/services/alert.service';
 import { NavigateService } from '@shared/services/navigate.service';
 import { TokenService } from '@shared/services/token.service';
@@ -28,7 +28,7 @@ interface FooterLink {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
-  constructor(private apiService: ApiService, private alertService: AlertService, private nav: NavigateService, private token: TokenService) {
+  constructor(private hiveService: HiveService, private alertService: AlertService, private nav: NavigateService, private token: TokenService) {
   }
 
   newsletterEmail = signal('');
@@ -255,7 +255,7 @@ export class FooterComponent {
   openRefundModal() { this.showModal('refundModal'); }
 
   isLoadingNewsletter = signal(false);
-  subscribeNewsletter() {
+  async subscribeNewsletter() {
     const email = this.newsletterEmail();
     // Simple email regex validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -264,17 +264,16 @@ export class FooterComponent {
       return;
     }
     this.isLoadingNewsletter.set(true);
-    this.apiService.post('SubscribeNewsletter?app=' + Config.app, email, true, true)
-      .subscribe(data => {
-        if (data.error) {
-          // Optionally handle error from API
-        }
-        this.alertService.success('Thank you for subscribing!', data.msg);
-        this.newsletterEmail.set('');
-        this.isLoadingNewsletter.set(false);
-      }, (error) => {
-        this.newsletterEmail.set('');
-        this.isLoadingNewsletter.set(false);
-      });
+    try {
+      // skratchbastid newsletter goes to Hive (djjazzyjeff uses MailChimp).
+      await this.hiveService.ensureInitialized(Config.hiveSwid);
+      await this.hiveService.sendEmailSignup(email);
+      this.alertService.success('Thank you for subscribing!', '');
+    } catch (error) {
+      this.alertService.error('', 'Something went wrong. Please try again.', Config.alertOptions);
+    } finally {
+      this.newsletterEmail.set('');
+      this.isLoadingNewsletter.set(false);
+    }
   }
 }

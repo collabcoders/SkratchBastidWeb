@@ -1,41 +1,16 @@
-// Marquee strip on hero
-.hero-marquee {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	width: 100%;
+/* Card image hover overlay (Get Tickets) */
+.bbq-card-media {
 	overflow: hidden;
-	background: rgba(0, 0, 0, 0.75);
-	padding: 0.75rem 0;
-	z-index: 20;
 }
 
-.hero-marquee__track {
-	display: flex;
-	align-items: center;
-	width: 200%;
-	animation: hero-marquee 10s linear infinite;
-	white-space: nowrap;
-	text-transform: uppercase;
-	font-weight: 700;
-	font-style: italic;
-	letter-spacing: 0.08em;
-	font-size: 0.95rem;
+.bbq-card-media .bbq-card-overlay {
+	background: rgba(0, 0, 0, 0.35);
+	opacity: 0;
+	transition: opacity 0.2s ease;
 }
 
-.hero-marquee__track span {
-	display: inline-block;
-	min-width: 50%;
-	padding-right: 3rem;
-}
-
-@keyframes hero-marquee {
-	0% {
-		transform: translateX(0);
-	}
-	100% {
-		transform: translateX(-50%);
-	}
+.bbq-card-media:hover .bbq-card-overlay {
+	opacity: 1;
 }
 
 .hero-parallax {

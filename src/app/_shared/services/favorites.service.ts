@@ -7,6 +7,7 @@ import { Config } from '@shared/config';
 import { FavoriteId } from '@shared/models/favorite-id';
 import { AlertService } from './alert.service';
 import { TokenService } from './token.service';
+import { LegendsEngagementService } from './legends/engagement.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class FavoritesService {
   private favoritesSubject = new BehaviorSubject<Favorite[]>([]);
   public favorites$ = this.favoritesSubject.asObservable();
 
-  constructor(private apiService: ApiService, private alertService: AlertService, private token: TokenService,) {
+  constructor(private apiService: ApiService, private alertService: AlertService, private token: TokenService, private legendsEngagement: LegendsEngagementService,) {
     this.loadFavorites();
   }
 
@@ -72,7 +73,7 @@ export class FavoritesService {
         }
       });
     } else {
-      this.apiService.get('Favorites?app=' + Config.app, false, false).subscribe({
+      this.legendsEngagement.getFavorites().subscribe({
         next: (data) => {
           if (data.error) {
           this.alertService.error('Error', data.msg, Config.alertOptions)
@@ -99,7 +100,7 @@ export class FavoritesService {
     } as FavoriteId;
 
     console.log(_fav);
-    this.apiService.post('UpdateFavorites?app=' + Config.app, _fav, false, false)
+    this.legendsEngagement.toggleFavorite(_fav.itemId, _fav.section)
       .subscribe(data => {
         if (data.error) {
           this.alertService.error('Error', data.msg, Config.alertOptions);
@@ -131,7 +132,7 @@ export class FavoritesService {
     } as FavoriteId;
 
     console.log(_fav);
-    this.apiService.post('UpdateFavorites?app=' + Config.app, _fav, false, false)
+    this.legendsEngagement.toggleFavorite(_fav.itemId, _fav.section)
       .subscribe(data => {
         if (data.error) {
           this.alertService.error('Error', data.msg, Config.alertOptions);
@@ -149,7 +150,7 @@ export class FavoritesService {
             } catch (err) {
             }
           }
-          this.apiService.get('Favorites?app=' + Config.app, false, false)
+          this.legendsEngagement.getFavorites()
             .subscribe(data => {
               if (data.error) {
                 this.alertService.error('Error', data.msg, Config.alertOptions)
@@ -185,7 +186,7 @@ export class FavoritesService {
     } as FavoriteId;
 
     console.log(_fav);
-    this.apiService.post('UpdateFavorites?app=' + Config.app, _fav, false, false)
+    this.legendsEngagement.toggleFavorite(_fav.itemId, _fav.section)
       .subscribe(data => {
         if (data.error) {
           this.alertService.error('Error', data.msg, Config.alertOptions);

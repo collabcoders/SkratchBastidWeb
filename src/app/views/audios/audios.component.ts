@@ -5,6 +5,8 @@ import { FreeTrialFormComponent } from '../../components/free-trial-form/free-tr
 import { SearchComponent } from '../../components/search/search.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsCategoriesService } from '@shared/services/legends/categories.service';
+import { LegendsMusicService } from '@shared/services/legends/music.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/audio-player-bar.component';
@@ -48,6 +50,8 @@ export class AudiosComponent implements OnInit {
     private apiService: ApiService,
     private alertService: AlertService,
     public audioService: AudioService,
+    private legendsCategories: LegendsCategoriesService,
+    private legendsMusic: LegendsMusicService,
   ) {}
 
   ngOnInit(): void {
@@ -60,7 +64,7 @@ export class AudiosComponent implements OnInit {
 
   private loadCategories(): void {
     this.isLoadingCategory.set(true);
-    this.apiService.getData('categories', 'music', '', `${environment.projectid}`).subscribe({
+    this.legendsCategories.getCategories('music').subscribe({
       next: (data: any) => {
         const categories = (data?.data as Category[]) || [];
         this.categories = ['All', ...categories.map((c) => c.name)];
@@ -108,11 +112,8 @@ export class AudiosComponent implements OnInit {
 
     this.isLoadingMusic.set(true);
     const catValue = (this.categoryValues[this.categories.indexOf(category)] || 'all').toLowerCase();
-    const query = catValue === 'all'
-      ? ''
-      : `${catValue}&client=hls&sort=date&dir=desc`;
-    this.apiService
-      .getData('music', query, '')
+    this.legendsMusic
+      .getMusic(catValue === 'all' ? {} : { category: catValue })
       .subscribe({
         next: (data: any) => {
           this.allMusic = data?.data || [];

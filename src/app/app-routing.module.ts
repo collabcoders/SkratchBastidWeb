@@ -15,6 +15,7 @@ import { NewsletterComponent } from './views/newsletter/newsletter.component';
 import { RotwDetailComponent } from './views/rotw-detail/rotw-detail.component';
 import { BastidBBQDetailComponent } from './views/bastidbbq-detail/bastidbbq-detail.component';
 import { StreamComponent } from './views/livestream/stream.component';
+import { UpgradeComponent } from './upgrade/upgrade.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -35,6 +36,7 @@ const routes: Routes = [
   { path: 'livestream', component: StreamComponent },
   { path: 'newsletter', component: NewsletterComponent },
   { path: 'profile', component: ProfileComponent },
+  { path: 'upgrade', component: UpgradeComponent },
   { path: 'topgrillin/payment-success', component: PaymentSuccessComponent },
   { path: 'bbq-recaps/:id', component: BastidBBQDetailComponent},
   { path: 'rotw/:id', component: RotwDetailComponent},

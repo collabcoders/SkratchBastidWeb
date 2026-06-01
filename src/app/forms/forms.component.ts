@@ -9,6 +9,9 @@ import { Config } from '@shared/config';
 import { TokenService } from '@shared/services/token.service';
 import { FavoritesService } from '@shared/services/favorites.service';
 import { UploaderService } from '@shared/services/uploader.service';
+import { LegendsEventsService } from '@shared/services/legends/events.service';
+import { LegendsMemberService } from '@shared/services/legends/member.service';
+import { LegendsContactService } from '@shared/services/legends/contact.service';
 import { AppData } from '../app.data';
 import { NgxStripeModule, StripeService, StripeCardComponent } from 'ngx-stripe';
 import { environment } from '@env/environment';
@@ -59,7 +62,10 @@ export class FormsComponent implements AfterViewInit, OnInit {
           return;
         }
       }
-      this.apiService.post(endpoint + '?app=' + Config.app + '&source=website', payload, true, true)
+      const register$ = endpoint === 'NewSubscription' ? this.legendsMember.subscribe(payload)
+        : endpoint === 'UpdateSubscription' ? this.legendsMember.resubscribe(payload)
+        : this.legendsMember.register(payload);
+      register$
         .subscribe({
           next: (data: any) => {
             if (data.error) {
@@ -183,7 +189,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.loadUpcomingEvents();
   }
 
-  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService, private uploader: UploaderService, private cdr: ChangeDetectorRef, private hiveService: HiveService,) {
+  constructor(private fb: FormBuilder, private appData: AppData, private alertService: AlertService, private apiService: ApiService, private token: TokenService, private favoritesService: FavoritesService, private uploader: UploaderService, private cdr: ChangeDetectorRef, private hiveService: HiveService, private legendsEvents: LegendsEventsService, private legendsMember: LegendsMemberService, private legendsContact: LegendsContactService,) {
     this.router = inject(Router);
 
     this.loginForm = this.fb.group({
@@ -275,7 +281,10 @@ export class FormsComponent implements AfterViewInit, OnInit {
     return passwordVal === confirmVal ? null : { passwordsMismatch: true };
   }
 
-  showReJoin(id: any) { bootbox.alert('Upgrade logic for id: ' + id); }
+  showReJoin(id: any) {
+    // Send the signed-in (free/expired/canceled) member to the upgrade page.
+    this.router.navigate(['/upgrade']);
+  }
 
   onLoginSubmit() {
     this.alertService.clear();
@@ -285,7 +294,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
       return;
     }
     this.loginLoading.set(true);
-    this.apiService.post(`MemberLogin?app=${environment.projectid}`,{username: this.loginForm.value.email,...this.loginForm.value}, true, true)
+    this.legendsMember.login({ username: this.loginForm.value.email, ...this.loginForm.value })
       .subscribe((data: any) => {
         this.loginLoading.set(false);
         console.log("MemberLogin", data);
@@ -636,14 +645,14 @@ export class FormsComponent implements AfterViewInit, OnInit {
     this.subscrSum = 'Loading Subscription Info...';
     this.cancelOption = false;
 
-    this.apiService.getItem('member', memberId, '', false).subscribe({
+    this.legendsMember.getMember().subscribe({
       next: (data: any) => {
         this.memberProfile = data?.data;
         const imagePath = this.memberProfile?.image || '';
         const resolvedImage = imagePath?.startsWith('http') ? imagePath : (imagePath ? `${Config.content}${imagePath}` : this.cropImgPreview);
         this.cropImgPreview = resolvedImage;
 
-        this.subscrSum = '';
+        this.loadSubscription();
         this.profileForm.patchValue({
           memberId: this.memberProfile?.memberId || '',
           alias: this.memberProfile?.alias || '',
@@ -687,26 +696,33 @@ export class FormsComponent implements AfterViewInit, OnInit {
     if (this.contactForm.valid) {
       this.processingContact = true;
       this.isLoadingContact.set(true);
-      let endpoint = 'Contact';
       const payload = this.contactForm.value;
-      this.apiService.post(endpoint + '?app=' + Config.app, payload, true, true)
-        .subscribe(data => {
-          if (data.error) {
-            // SHOW ERROR MESSAGE
-            console.log(data);
-            this.alertService.error('Error', data.msg, Config.alertOptions)
-            setTimeout(() => {
-              this.processingContact = false;
-              this.isLoadingContact.set(false);
-            }, 400);
-          } else {
-            this.contactForm.reset();
-            this.okcaptcha = false;
-            // SET TOKEN
-            console.log(data);
-            bootbox.alert(data);
-            // HIDE CONTACT MODAL
-            this.hideModal('contactModal');
+      this.legendsContact.send(payload)
+        .subscribe({
+          next: (data) => {
+            if (data?.error) {
+              // SHOW ERROR MESSAGE
+              console.log(data);
+              this.alertService.error('Error', data.msg, Config.alertOptions)
+              setTimeout(() => {
+                this.processingContact = false;
+                this.isLoadingContact.set(false);
+              }, 400);
+            } else {
+              this.contactForm.reset();
+              this.okcaptcha = false;
+              console.log(data);
+              bootbox.alert(data?.msg || data?.data || 'Thank you for contacting us.');
+              // HIDE CONTACT MODAL
+              this.hideModal('contactModal');
+              setTimeout(() => {
+                this.processingContact = false;
+                this.isLoadingContact.set(false);
+              }, 400);
+            }
+          },
+          error: (err) => {
+            this.alertService.error('Error', err?.error?.msg || err?.message || 'Something went wrong!', Config.alertOptions);
             setTimeout(() => {
               this.processingContact = false;
               this.isLoadingContact.set(false);
@@ -757,7 +773,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     payload.sms = this.profileForm.get('sms')?.value ? 1 : 0;
     payload.image = imageValue || '';
 
-    this.apiService.post('UpdateMember?app=' + Config.app, payload, true, true)
+    this.legendsMember.updateMember(payload)
       .subscribe({
         next: (data: any) => {
           if (data.error) {
@@ -797,7 +813,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     };
 
     this.processingPassword = true;
-    this.apiService.post('UpdateMember?app=' + Config.app, payload, true, true)
+    this.legendsMember.updateMember(payload)
       .subscribe({
         next: (data: any) => {
           if (data.error) {
@@ -900,7 +916,58 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
   showCancel(e: Event) {
     e?.preventDefault();
-    this.openCancelModal();
+    bootbox.confirm({
+      message: 'Are you sure you want to cancel your subscription? You will keep access until the end of your current billing period.',
+      buttons: {
+        confirm: { label: 'Yes, Cancel' },
+        cancel: { label: 'Keep Subscription' }
+      },
+      callback: (result: boolean) => {
+        if (result) {
+          this.cancelSubscription();
+        }
+      }
+    });
+  }
+
+  private loadSubscription() {
+    this.legendsMember.getSubscription().subscribe({
+      next: (data: any) => {
+        if (!data?.error && data?.data?.summary) {
+          this.subscrSum = data.data.summary;
+          this.cancelOption = !!data.data.canCancel;
+        } else {
+          this.subscrSum = '';
+          this.cancelOption = false;
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.subscrSum = '';
+        this.cancelOption = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  private cancelSubscription() {
+    this.legendsMember.cancelSubscription().subscribe({
+      next: (data: any) => {
+        if (!data?.error) {
+          if (data?.data?.summary) {
+            this.subscrSum = data.data.summary;
+          }
+          this.cancelOption = !!data?.data?.canCancel;
+          this.alertService.success('Subscription Canceled', 'Your subscription has been canceled and will end at your next renewal date.', Config.alertOptions);
+        } else {
+          this.alertService.error('Error', data?.msg || 'Could not cancel your subscription.', Config.alertOptions);
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.alertService.error('Error', err?.error?.message || err?.message || 'Could not cancel your subscription.', Config.alertOptions);
+      }
+    });
   }
 
   resolved(captchaResponse: string | null) {
@@ -944,7 +1011,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
         },
       });
     } else {
-      this.apiService.getData('events', '', '').subscribe({
+      this.legendsEvents.getEvents().subscribe({
         next: (data: any) => {
           // this.upcomingEvents = filteredByDate(data?.data || []);
           this.upcomingEvents = (data?.data || []);

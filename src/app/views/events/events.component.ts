@@ -1,5 +1,6 @@
 import { Component, OnInit, signal, WritableSignal } from '@angular/core';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsEventsService } from '@shared/services/legends/events.service';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -23,7 +24,7 @@ import { Router } from '@angular/router';
 export class EventsComponent implements OnInit {
   upcomingEvents: Event[] = [];
 
-  constructor(private apiService: ApiService, private alertService: AlertService, private appData: AppData, private router: Router) {}
+  constructor(private apiService: ApiService, private alertService: AlertService, private appData: AppData, private router: Router, private legendsEvents: LegendsEventsService) {}
 
   isLoadingEvent: WritableSignal<boolean> = signal(false);
   ngOnInit(): void {
@@ -37,7 +38,7 @@ export class EventsComponent implements OnInit {
         this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
       });
     } else {
-        this.apiService.getData('events', '', '').subscribe((data: any) => {
+        this.legendsEvents.getEvents().subscribe((data: any) => {
           this.upcomingEvents = data?.data;
           this.isLoadingEvent.set(false);
         }, (error) => {

@@ -7,5 +7,6 @@ export const environment = {
   },
   stripeKey: 'pk_live_m9Ix69thAe1KiclzNNwc1QZE00waWBLKvH',
   prodId: 'prod_RvMADg6RCwpL34',
-  api: 'https://www.mixapps.io'
+  // LegendsOnly API — endpoints are migrated off MixApps one at a time.
+  legendsApi: 'https://api.legendsonly.tv'
 };

@@ -12,6 +12,8 @@ import { Bookmark } from '@shared/models/bookmark';
 import { VideoService } from '@shared/services/video.service';
 import { Comment } from '@shared/models/comment';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
 import { AlertService } from '@shared/services/alert.service';
 import { TokenService } from '@shared/services/token.service';
 import { Config } from '@shared/config';
@@ -92,6 +94,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     public videoService: VideoService,
     private token: TokenService,
     private videoAccessService: VideoAccessService,
+    private legendsEngagement: LegendsEngagementService,
+    private legendsVideos: LegendsVideosService,
     private cdr: ChangeDetectorRef) {
       this.distroyVideo = this.distroyVideo.bind(this);
   }
@@ -480,6 +484,10 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       if (player.bigPlayButton && player.paused()) {
         player.bigPlayButton.show();
       }
+      // Log a video view (once per load; best-effort).
+      if (this.videoId) {
+        this.legendsEngagement.logAccess(this.videoId, 'videos', 'view').subscribe({ error: () => {} });
+      }
     });
     
     player.on('pause', () => {
@@ -611,7 +619,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   getrealtedvideos(data: any) {
     console.log("getrealtedvideos", this.beats);
     if (!this.beats) {
-      this.apiService.get(`Videos?app=${environment.projectid}&sort=related&category=`+ data.category + '&client=hls' + data.featuring).subscribe(data => {
+      this.legendsVideos.getVideos({ category: data.category, sort: 'related', featuring: data.featuring }).subscribe(data => {
         try {
           if (data) {
             if (data._http != 200) {
@@ -624,7 +632,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         }
       });
     } else {
-      this.apiService.get(`Videos?app=${environment.projectid}&sort=related&category=` + data.category + '&client=hls' + data.featuring).subscribe(data => {
+      this.legendsVideos.getVideos({ category: data.category, sort: 'related', featuring: data.featuring }).subscribe(data => {
         try {
           if (data) {
             if (data._http != 200) {
@@ -678,7 +686,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   getcomment(videoId: number) {
     this.isLoadingComments.set(true);
-    this.apiService.get('Comments/' + videoId + `?app=${environment.projectid}&category=videos&sort=date&dir=desc`).subscribe(data => {
+    this.legendsEngagement.getComments(videoId, 'videos', 'desc').subscribe(data => {
       try {
         if (data) {
           this.commentobj.comment = '';
@@ -722,7 +730,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       return;
     }
     this.isLoadingBookmark.set(true);
-    this.apiService.get('Bookmarks/' + videoId + `?app=${environment.projectid}`, false, false).subscribe({
+    this.legendsEngagement.getBookmarks(videoId).subscribe({
       next: data => {
         try {
           if (data) {
@@ -755,8 +763,8 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           this.bookmarkobj.userId = member?.memberId;
           this.bookmarkobj.videoId = this.videoId;
 
-          this.apiService
-            .post(`AddBookmark?app=${environment.projectid}`, this.bookmarkobj, false, false)
+          this.legendsEngagement
+            .addBookmark({ videoId: this.videoId, time: this.bookmarkobj.time, title: this.bookmarkobj.title })
             .pipe(finalize(() => this.bookmarkSaving.set(false)))
             .subscribe(data => {
               try {
@@ -788,7 +796,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   deletebookmark() {
-    this.apiService.delete('DeleteBookmark/' + this.delbookmarkId + `?app=${environment.projectid}`).subscribe(data => {
+    this.legendsEngagement.deleteBookmark(this.delbookmarkId).subscribe(data => {
       try {
         if (data) {
           this.bookmarkobj = new Bookmark();
@@ -839,7 +847,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           date: new Date().toISOString(),
         };
 
-        this.apiService.post(`UpdateComment?app=${environment.projectid}`, payload, false, false)
+        this.legendsEngagement.addComment(payload)
           .pipe(finalize(() => this.commentSaving.set(false)))
           .subscribe({
             next: () => {
@@ -919,7 +927,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
           date: new Date().toISOString(),
         };
 
-        this.apiService.post(`UpdateComment?app=${environment.projectid}`, payload, false, false)
+        this.legendsEngagement.addComment(payload)
           .pipe(finalize(() => this.commentSaving.set(false)))
           .subscribe({
             next: () => {
@@ -1016,7 +1024,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
             itemId: itemId,
             section: 'video'
           } as FavoriteId;
-          this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+          this.legendsEngagement.toggleFavorite(fav.itemId, fav.section)
             .subscribe(data => {
               console.log("FAV1", data);
               if (data.error) {

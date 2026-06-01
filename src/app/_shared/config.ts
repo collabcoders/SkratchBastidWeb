@@ -2,11 +2,14 @@ export const Config = {
     app: 'skratchbastid',
     name: 'skratchbastid',
     website: 'https://skratchbastid.com',
-    content: 'https://www.mixapps.io/content/skratchbastid/',
+    content: 'https://api.legendsonly.tv/content/',
     content_playlist: 'https://skratchbastid.com/playlist-images/',
     store: 'https://shop.skratchbastid.com',
     email: 'lynette@skratchbastid.com',
     playlistPassword: '',
+
+    // Hive (hive.co) SWID for skratchbastid — used by the signup form + newsletter.
+    hiveSwid: 133267,
 
     facebook: 'https://www.facebook.com/skratchbastid',
     instagram: 'https://www.instagram.com/skratchbastid',

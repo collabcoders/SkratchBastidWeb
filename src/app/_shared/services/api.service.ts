@@ -26,7 +26,7 @@ export class ApiService {
       if (!path.startsWith("/")) {
         path = "App/" + path;
       }
-      apiBaseUrl = environment.api + '/api/' + path;
+      apiBaseUrl = '/api/' + path;
       if (path.toLowerCase().indexOf('http') != -1) {
         apiBaseUrl = path;
       }

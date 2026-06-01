@@ -4,6 +4,7 @@ import { SafePipe } from '@shared/pipes/safe.pipe';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsUserService } from '@shared/services/legends/user.service';
 import { User } from '@shared/models/user';
 import '@mux/mux-player';
 import { environment } from '@env/environment';
@@ -22,11 +23,11 @@ export class StreamComponent implements OnInit {
   chat?: string;
 
   offline_livestream_placehoder = Config.offline_livestream_placehoder;
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private legendsUser: LegendsUserService) {}
 
   ngOnInit(): void {
     console.log("getItem");
-    this.api.getItem('user', 0).subscribe((data: any) => {
+    this.legendsUser.getUser().subscribe((data: any) => {
       const user = data?.data as User | undefined;
       console.log("getItem", user);
       if (!user) {

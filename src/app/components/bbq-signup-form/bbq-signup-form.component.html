@@ -1,10 +1,30 @@
-<div class="bg-[#fff] text-white md:px-12 px-6 py-12 flex flex-col-reverse md:flex-row items-center gap-24">
-  <div class="flex-1 md:w-70 flex flex-col gap-4">
-    <img src="/img/bbqimg2.jpg" alt="Image 1" class="rounded-lg w-full h-[50vh] object-cover" />
+<div class="bg-[#F9FAFB] text-white py-12 flex flex-col-reverse md:flex-row items-center gap-24">
+  <div class="flex-1 md:w-70 flex flex-col gap-4 text-[#142129] md:self-start">
+    <div class="flex items-start gap-3">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 text-[#FF5941]">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46" />
+      </svg>
+      <h2 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+        Never Miss an Announce.<br />
+        Get Early Access to Everything.
+      </h2>
+    </div>
+    <video
+      #bbqVideo
+      class="rounded-lg w-full h-[70vh] object-cover"
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="/img/bbqimg2.jpg">
+      <source src="/assets/bastid-bbq.mp4" type="video/mp4" />
+    </video>
   </div>
   <div class="flex-1 md:w-30 text-[#142129]">
-    <h2 class="text-3xl font-bold">Sign Up for Bastid's BBQ</h2>
-    <p class="mt-2 text-gray-300 mb-4 font-light"></p>
+    <span class="text-lg text-[#142129]">🔥 <b>Limited tickets.  First come, first served.</b><br></span>
+    <span class="mt-4 mb-6 text-lg text-gray-500">
+      On-sale alerts before the public. First shot at tickets, merch drops, and exclusive updates. The BBQ sells out every time. Don't find out after.
+    </span><br><br>
     <div class="flex flex-col">
       <div>
         <form class="bbq-signup-form space-y-4" (ngSubmit)="onSubmit()" #signupForm="ngForm" novalidate>
@@ -21,7 +41,7 @@
             type="email"
             placeholder="Email"
             required
-            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941]"
+            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941] bg-white"
           />
 
           <input
@@ -31,7 +51,7 @@
             type="text"
             placeholder="Full Name"
             required
-            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941]"
+            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941] bg-white"
           />
 
           <input
@@ -42,7 +62,7 @@
             type="tel"
             placeholder="Phone Number"
             required
-            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941]"
+            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941] bg-white"
           />
 
           <select
@@ -50,7 +70,7 @@
             [(ngModel)]="formData.city"
             name="city"
             required
-            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941]"
+            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941] bg-white"
           >
             <option value="" disabled>Select Your City</option>
             @for (city of cities; track city) {
@@ -65,7 +85,7 @@
             type="text"
             placeholder="Postal/Zip Code"
             required
-            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941]"
+            class="w-full px-4 py-3 border rounded-lg focus:ring text-[#142129] focus:ring-[#FF5941] bg-white"
           />
 
           <input data-HIVE-FORM-FIELD="addToSegment" type="hidden" value="Signup Form - Homepage" />
@@ -75,13 +95,26 @@
             <input type="text" data-HIVE-FORM-FIELD="areUReal" tabindex="-1" value="" />
           </div>
 
+          <label class="flex items-start gap-3 rounded-lg border border-gray-200 bg-[#eaeaea] p-4 text-sm leading-relaxed text-[#142129] cursor-pointer">
+            <input
+              type="checkbox"
+              name="consent"
+              [(ngModel)]="formData.consent"
+              class="mt-1 h-5 w-5 flex-shrink-0 rounded border-gray-300 accent-[#FF5941] focus:ring-[#FF5941]"
+            />
+            <span>
+              I agree to receive marketing emails from Skratch Bastid about Bastid's BBQ ticket on-sale alerts, tour dates, and related updates. I can unsubscribe at any time. See our
+              <a href="/privacypolicy" target="_blank" rel="noopener noreferrer" class="text-[#FF5941] underline hover:opacity-80">Privacy Policy</a>.
+            </span>
+          </label>
+
           <button
             type="submit"
             data-HIVE-FORM-FIELD="submitButton"
-            [disabled]="isSubmitting || signupForm.invalid"
-            class="w-full bg-[#FF5941] text-white py-3 !rounded-lg font-bold hover:bg-orange-600 transition border border-orange-500 disabled:opacity-70 disabled:cursor-not-allowed"
+            [disabled]="isSubmitting"
+            class="w-full bg-[#FF5941] text-white py-3 !rounded-lg font-bold hover:bg-orange-600 transition border border-orange-500"
           >
-            {{ isSubmitting ? 'Submitting...' : 'Sign Up' }}
+            {{ isSubmitting ? 'Submitting...' : 'Get Early Access →' }}
           </button>
 
           @if (errorMessage) {

@@ -1,5 +1,6 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsPricingService } from '@shared/services/legends/pricing.service';
 import { Ads } from '@shared/models/ads';
 import { Member } from '@shared/models/member';
 import { Video } from '@shared/models/video';
@@ -40,7 +41,7 @@ export class AppData {
     videos: WritableSignal<Video[]> = signal([]);
     videosLive: WritableSignal<Video[]> = signal([]);
     products: WritableSignal<any[]> = signal([]);
-    constructor(private token: TokenService, private apiService: ApiService) {
+    constructor(private token: TokenService, private apiService: ApiService, private legendsPricing: LegendsPricingService) {
         this.onFavoritesChanges = new BehaviorSubject(false);
         this.onBeatsChanges = new BehaviorSubject(false);
         this.isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth <= 768;
@@ -62,7 +63,7 @@ export class AppData {
     }
 
     private loadProductPricing(): void {
-        this.apiService.getData('ProductPricing', '', `&prodId=${environment.prodId}`, '').subscribe({
+        this.legendsPricing.getProductPricing(environment.prodId).subscribe({
             next: (res) => {
                 if (!res?.error && Array.isArray(res.data)) {
                     this.pricingOptions.set(res.data);

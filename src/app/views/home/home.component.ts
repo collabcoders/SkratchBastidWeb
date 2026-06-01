@@ -24,6 +24,9 @@ import { Video } from '@shared/models/video';
 import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/audio-player-bar.component';
 import { mappingFavorites } from '@shared/services/video-access.service';
 import { FavoritesService } from '@shared/services/favorites.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
+import { LegendsMusicService } from '@shared/services/legends/music.service';
+import { LegendsAdsService } from '@shared/services/legends/ads.service';
 
 @Component({
   selector: 'app-home',
@@ -73,7 +76,7 @@ export class HomeComponent {
   isLoadingVideo: WritableSignal<boolean> = signal(false);
   isLoadingVideoTop: WritableSignal<boolean> = signal(false);
   isLoadingBanner: WritableSignal<boolean> = signal(false);
-  constructor(private apiService: ApiService, private alertService: AlertService, private appData: AppData, private favoritesService: FavoritesService) {
+  constructor(private apiService: ApiService, private alertService: AlertService, private appData: AppData, private favoritesService: FavoritesService, private legendsVideos: LegendsVideosService, private legendsMusic: LegendsMusicService, private legendsAds: LegendsAdsService) {
     this.isLoadingMusic.set(true);
     this.isLoadingVideo.set(true);
     this.isLoadingVideoTop.set(true);
@@ -97,7 +100,7 @@ export class HomeComponent {
     } else {
         let filteredItems!: Array<any>;
         filteredItems = [];
-        this.apiService.getData('ads', '', '').subscribe((data: any) => {
+        this.legendsAds.getAds().subscribe((data: any) => {
           let allBanners = data.data as Array<any>;
           allBanners = _.sortBy(allBanners, ['order', 'adId'], ['asc', 'desc']);
           let i = 0;
@@ -114,7 +117,7 @@ export class HomeComponent {
           this.isLoadingBanner.set(false);
         });
         
-        this.apiService.getData('videos', 'pop-up&client=hls&sort=date&dir=desc', '').subscribe((data: any) => {
+        this.legendsVideos.getVideos({ category: 'pop-up' }).subscribe((data: any) => {
           this.appData.videosLive.set(data.data as Video[]);
           this.featuredVideosSection.data = this.appData.videosLive();
           this.featuredVideosSection.data = mappingFavorites(this.featuredVideosSection.data, this.favoritesService.favorites);
@@ -123,7 +126,7 @@ export class HomeComponent {
           this.isLoadingVideo.set(false);
         });
         
-        this.apiService.getData('videos', 'all&client=hls&sort=date&dir=desc&limit=10', '').subscribe((data: any) => {
+        this.legendsVideos.getVideos({ category: 'all', limit: 10 }).subscribe((data: any) => {
           this.topGrillinSection.data = data?.data?.slice(0, 10);
           this.topGrillinSection.data = mappingFavorites(this.topGrillinSection?.data || [], this.favoritesService.favorites);
           this.isLoadingVideoTop.set(false);
@@ -131,7 +134,7 @@ export class HomeComponent {
           this.isLoadingVideoTop.set(false);
         });
 
-        this.apiService.getData('music', '', '', '').subscribe((data: any) => {
+        this.legendsMusic.getMusic().subscribe((data: any) => {
           this.mixesSection.data = data?.data?.slice(0, 10);
           this.isLoadingMusic.set(false);
         },(error) => {

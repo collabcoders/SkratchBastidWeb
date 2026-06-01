@@ -2,6 +2,7 @@ import { Component, signal, ChangeDetectionStrategy, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsMemberService } from '@shared/services/legends/member.service';
 import { Router } from '@angular/router';
 import { TokenService } from '@shared/services/token.service';
 
@@ -21,7 +22,7 @@ export class ProfileComponent implements OnInit {
   });
   memberProfile: any = { memberId: null };
 
-  constructor(private apiService: ApiService, private router: Router, private token: TokenService) {}
+  constructor(private apiService: ApiService, private router: Router, private token: TokenService, private legendsMember: LegendsMemberService) {}
 
   loading = signal(false);
   ngOnInit() {
@@ -29,7 +30,7 @@ export class ProfileComponent implements OnInit {
     this.memberProfile.memberId = member?.memberId;
     if (this.memberProfile?.memberId) {
       this.loading.set(true);
-      this.apiService.getItem('member', this.memberProfile.memberId, '', false).subscribe((data: any) => {
+      this.legendsMember.getMember().subscribe((data: any) => {
         console.log('get member', data);
         this.loading.set(false);
         this.memberProfile = data.data;

@@ -1,7 +1,8 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HiveService } from '@shared/services/hive.service';
+import { Config } from '@shared/config';
 
 @Component({
   selector: 'app-bbq-signup-form',
@@ -10,7 +11,7 @@ import { HiveService } from '@shared/services/hive.service';
   styleUrl: './bbq-signup-form.component.scss',
 })
 export class BBQSignupFormComponent implements AfterViewInit {
-  private readonly hiveInitId = 133267;
+  readonly hiveInitId = Config.hiveSwid;
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
@@ -21,7 +22,10 @@ export class BBQSignupFormComponent implements AfterViewInit {
     phone: '',
     city: '',
     zip: '',
+    consent: false,
   };
+
+  @ViewChild('bbqVideo') bbqVideoRef?: ElementRef<HTMLVideoElement>;
 
   constructor(private hiveService: HiveService) {}
 
@@ -40,6 +44,16 @@ export class BBQSignupFormComponent implements AfterViewInit {
   ];
 
   async ngAfterViewInit() {
+    // Force muted autoplay — Angular only sets the `muted` attribute, not the
+    // property, so Chrome's autoplay policy can block playback on a fresh load.
+    const video = this.bbqVideoRef?.nativeElement;
+    if (video) {
+      video.muted = true;
+      const tryPlay = () => video.play().catch(() => {});
+      tryPlay();
+      video.addEventListener('canplay', tryPlay, { once: true });
+    }
+
     try {
       await this.hiveService.ensureInitialized(this.hiveInitId);
     } catch (error) {

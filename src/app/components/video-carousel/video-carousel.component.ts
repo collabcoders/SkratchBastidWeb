@@ -1,4 +1,5 @@
 import { ApiService } from '@shared/services/api.service';
+import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
 import { Component, input, ElementRef, ViewChild, inject, Signal, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
@@ -67,7 +68,8 @@ export class VideoCarouselComponent implements OnInit, OnDestroy {
   constructor(private videoAccessService: VideoAccessService, 
     private token: TokenService,
     private apiService: ApiService,
-    private alertService: AlertService,) {
+    private alertService: AlertService,
+    private legendsEngagement: LegendsEngagementService,) {
 
   }
 
@@ -269,7 +271,7 @@ export class VideoCarouselComponent implements OnInit, OnDestroy {
           } as FavoriteId;
           if (!this.processingFav) {
             this.processingFav = true;
-            this.apiService.post('UpdateFavorites?app=' + Config.app, fav, false, false)
+            this.legendsEngagement.toggleFavorite(fav.itemId, fav.section)
               .pipe(finalize(() => {
                 this.processingFav = false;
               }))

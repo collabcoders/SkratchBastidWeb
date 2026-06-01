@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { take, tap, throttleTime } from 'rxjs/operators';
 import { Config } from '@shared/config';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
 import { UtilitiesService } from '@shared/services/utilities.service';
 import { AudioService } from '@shared/services/audio.service';
 import { FavoriteId } from '@shared/models/favorite-id';
@@ -65,6 +66,7 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
     private location: Location,
     public alertService: AlertService,
     private videoAccessService: VideoAccessService,
+    private legendsEngagement: LegendsEngagementService,
   ) { }
     
   ngOnInit(): void {
@@ -183,6 +185,10 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
       this.wave.on('ready', () => {
         this.wave.setMute(true);
         this.wave['drawBuffer']();
+        // Log an audio play (once per load; best-effort).
+        if (this.music?.musicId) {
+          this.legendsEngagement.logAccess(this.music.musicId, 'music', 'play').subscribe({ error: () => {} });
+        }
           if (this.appData.checkFromMusic) {
             this.appData.checkFromMusic = false;
             this.wave?.setMute(true);
@@ -333,7 +339,7 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
           } as FavoriteId;
           if (!this.processingFav) {
             this.processingFav = true;
-            this.api.post('UpdateFavorites?app=' + Config.app, _fav, false, false)
+            this.legendsEngagement.toggleFavorite(_fav.itemId, _fav.section)
               .subscribe(data => {
                 if (data.error) {
                   this.audioService.setFavId(0);

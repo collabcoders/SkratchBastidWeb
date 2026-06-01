@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 
@@ -45,7 +46,8 @@ export class BastidBBQDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private legendsVideos: LegendsVideosService
   ) {}
 
   ngOnInit() {
@@ -60,7 +62,7 @@ export class BastidBBQDetailComponent implements OnInit {
     this.error = null;
 
     // Use the existing API service pattern to fetch BBQ recap details
-    this.apiService.getItem("videos", id).subscribe((data) => {
+    this.legendsVideos.getVideo(id).subscribe((data) => {
       // const recaps = data?.data?.filter((d: any) => d.category === 'bbq') || [];
       const recap = data?.data;
 

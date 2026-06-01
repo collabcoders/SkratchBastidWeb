@@ -6,8 +6,9 @@ export const environment = {
   production: false,
   ismock: false,
   projectid: 'skratchbastid',
-  api: 'https://www.mixapps.io',
   // api: 'http://10.211.55.5:62406',
+  // LegendsOnly API — endpoints are migrated off MixApps one at a time.
+  legendsApi: 'https://localhost:7039',
   captcha: {
       key: '6LdO8tcqAAAAAPljZtMoYFcW_SlAyeG8mLSLDunI',
   },

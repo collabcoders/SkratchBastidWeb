@@ -22,6 +22,9 @@ import {
 import { SearchComponent } from '../../components/search/search.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ApiService } from '@shared/services/api.service';
+import { LegendsVideosService } from '@shared/services/legends/videos.service';
+import { LegendsCategoriesService } from '@shared/services/legends/categories.service';
+import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
 import { environment } from '@env/environment';
 import { Video } from '@shared/models/video';
 import { AppData } from 'src/app/app.data';
@@ -103,12 +106,15 @@ export class VideosComponent implements OnInit, OnDestroy {
     public appData: AppData,
     private videoService: VideoService,
     private token: TokenService,
-    private alertService: AlertService) {}
+    private alertService: AlertService,
+    private legendsVideos: LegendsVideosService,
+    private legendsCategories: LegendsCategoriesService,
+    private legendsEngagement: LegendsEngagementService) {}
 
   ngOnInit(): void {
       this.isLoggedIn$ = this.token.isValid(undefined);
       if (environment.ismock) {
-        this.apiService.getData('videos', this.selectedCategory, '&sort=date&dir=desc').subscribe((data: any) => {
+        this.legendsVideos.getVideos({ category: this.selectedCategory }).subscribe((data: any) => {
           console.log("DATA", data);
         });
         
@@ -151,7 +157,7 @@ export class VideosComponent implements OnInit, OnDestroy {
         // });
       } else {
         this.isLoadingCategory.set(true);
-        this.apiService.getData('categories', 'videos', '', `${environment.projectid}`).subscribe((data: any) => {
+        this.legendsCategories.getCategories('videos').subscribe((data: any) => {
           const categories = data.data as Category[];
           this.categories = ['All', ...categories.map(cat => cat.name)];
           this.categorieValues = ['All', ...categories.map(cat => cat.value)];
@@ -191,7 +197,7 @@ export class VideosComponent implements OnInit, OnDestroy {
     
     this.isLoadingVideo.set(true);
     const cat = this.categorieValues[this.categories.indexOf(category)] || 'all';
-    this.apiService.getData('videos', `${cat?.toLowerCase()}&client=hls&sort=date&dir=desc`, '').subscribe((data: any) => {
+    this.legendsVideos.getVideos({ category: cat?.toLowerCase() }).subscribe((data: any) => {
       data.data = mappingFavorites(data?.data || [], this.favoritesService.favorites);
       this.videoGroups.all.section.data = data?.data || [];
       this.videoGroups.all.videos = data?.data || [];
@@ -373,7 +379,7 @@ export class VideosComponent implements OnInit, OnDestroy {
               section: 'video'
             };
 
-            this.apiService.post(`UpdateFavorites?app=${Config.app}`, fav, false, false)
+            this.legendsEngagement.toggleFavorite(fav.itemId, fav.section)
               .pipe(finalize(() => {
                 setTimeout(() => {
                   this.processingFav = false;

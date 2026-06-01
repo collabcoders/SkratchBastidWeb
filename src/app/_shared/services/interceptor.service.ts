@@ -4,7 +4,6 @@ import { map, retry, catchError } from 'rxjs/operators';
 import { UtilitiesService } from './utilities.service';
 import { Config } from '@shared/config';
 import { Observable, throwError } from 'rxjs';
-import { environment } from '@env/environment';
 import { TokenService } from './token.service';
 
 @Injectable({
@@ -27,14 +26,13 @@ export class InterceptorService implements HttpInterceptor {
       if (req.headers.has(Config.noAuthHeader)) {
         console.log('skip authorization');
         updatedRequest = req.clone({
-          url: `${environment.api}${req.url}`
+          url: `${req.url}`
         });
       } else {
         console.log('intercepted');
         updatedRequest = req.clone({
           setHeaders: { Authorization: `Bearer ${this.token.getToken()}` },
           url: `${req.url}`
-          //url: `${environment.api}${req.url}`
         });
       }
     }

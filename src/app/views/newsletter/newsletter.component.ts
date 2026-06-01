@@ -2,7 +2,7 @@ import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../components/header/header.component';
-import { ApiService } from '@shared/services/api.service';
+import { HiveService } from '@shared/services/hive.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 
@@ -16,7 +16,7 @@ import { Config } from '@shared/config';
 export class NewsletterComponent {
   email = signal('');
 
-  constructor(private apiService: ApiService, private alertService: AlertService) {}
+  constructor(private hiveService: HiveService, private alertService: AlertService) {}
 
   onSubscribe() {
     const emailValue = this.email();
@@ -33,7 +33,7 @@ export class NewsletterComponent {
 
   newsletterEmail = signal('');
   isLoadingNewsletter = signal(false);
-  subscribeNewsletter() {
+  async subscribeNewsletter() {
     const email = this.newsletterEmail();
     // Simple email regex validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,17 +42,16 @@ export class NewsletterComponent {
       return;
     }
     this.isLoadingNewsletter.set(true);
-    this.apiService.post('SubscribeNewsletter?app=' + Config.app, email, true, true)
-      .subscribe(data => {
-        if (data.error) {
-          // Optionally handle error from API
-        }
-        this.alertService.success('Thank you for subscribing!', data.msg);
-        this.newsletterEmail.set('');
-        this.isLoadingNewsletter.set(false);
-      }, (error) => {
-        this.newsletterEmail.set('');
-        this.isLoadingNewsletter.set(false);
-      });
+    try {
+      // skratchbastid newsletter goes to Hive (djjazzyjeff uses MailChimp).
+      await this.hiveService.ensureInitialized(Config.hiveSwid);
+      await this.hiveService.sendEmailSignup(email);
+      this.alertService.success('Thank you for subscribing!', '');
+    } catch (error) {
+      this.alertService.error('', 'Something went wrong. Please try again.');
+    } finally {
+      this.newsletterEmail.set('');
+      this.isLoadingNewsletter.set(false);
+    }
   }
 }
