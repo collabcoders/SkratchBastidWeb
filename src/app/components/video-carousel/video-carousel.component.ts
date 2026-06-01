@@ -1,6 +1,6 @@
 import { ApiService } from '@shared/services/api.service';
 import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
-import { Component, input, ElementRef, ViewChild, inject, Signal, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, ViewChildren, QueryList, inject, Signal, Input, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
 import { Video } from '@shared/models/video';
@@ -51,12 +51,17 @@ export interface VideoSection {
   templateUrl: './video-carousel.component.html',
   styleUrl: './video-carousel.component.scss',
 })
-export class VideoCarouselComponent implements OnInit, OnDestroy {
+export class VideoCarouselComponent implements OnInit, AfterViewInit, OnDestroy {
   section = input.required<VideoSection>();
   private videoService = inject(VideoService);
   @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
+  /** Opt-in: stagger-reveal each slide as the carousel scrolls into view. */
+  @Input() reveal = false;
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
+  @ViewChildren('revealCard') revealCards!: QueryList<ElementRef>;
+  private revealObserver?: IntersectionObserver;
+  private revealCardsSub?: Subscription;
 
   processingFav = false;
   alertOptions = {
@@ -82,8 +87,37 @@ export class VideoCarouselComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    if (!this.reveal) return;
+    this.revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            this.revealObserver?.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    // Slides may render after the API data arrives, so (re)observe on changes.
+    const observeNew = () => {
+      this.revealCards?.forEach((el) => {
+        const node = el.nativeElement as HTMLElement;
+        if (!node.dataset['revealObserved']) {
+          node.dataset['revealObserved'] = '1';
+          this.revealObserver?.observe(node);
+        }
+      });
+    };
+    observeNew();
+    this.revealCardsSub = this.revealCards.changes.subscribe(observeNew);
+  }
+
   ngOnDestroy(): void {
     this.favSub?.unsubscribe();
+    this.revealCardsSub?.unsubscribe();
+    this.revealObserver?.disconnect();
   }
   
   scrollLeft() {

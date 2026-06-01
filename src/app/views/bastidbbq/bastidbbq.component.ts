@@ -48,8 +48,11 @@ export class BastidBBQComponent implements AfterViewInit {
       { city: 'New York',  date: 'August 8',  venue: 'The Seaport',                address: '19 Fulton St',       time: '3PM–10PM', ticketUrl: 'https://dice.fm/partner/tickets/event/yoek7r-bastids-bbq-new-york-26-8th-aug-the-seaport-new-york-city-tickets?dice_id=9064959&dice_channel=web&dice_tags=organic&dice_campaign=First+Things+First+Entertainment+Inc.+&dice_feature=mio_marketing&utm_campaign=NEW+YORK+-+WEBSITE&utm_medium=organic&utm_source=bastidsbbq-website&_branch_match_id=1542931506660977838&_branch_referrer=H4sIAAAAAAAAAx2KywrCMBAAv8be%2BrBoESEIlR5EUVCheCp5bNpFk9RNQm9%2Bu9XDMDDMEMLot3n%2BQvvMFErItMlPel2sSg2balntYjCd5Gbk2Ft2btpFWTwu1%2BOsdKZt6tvh3iS%2Fy4DCaJijnluU%2F%2BRdJAlMcB9QeSHe6QTCY4DkQ6CBCG3fCXKTB2L7gZyBL0Q8tTuSAAAA', image: '/assets/images/bbq/bbq_ny.jpg' },
     ];
     parallaxOffset = 0;
+    heroOpacity = 1;
+    private scrollTicking = false;
     imageLoadingState = signal<Record<string, boolean>>({});
     @ViewChildren('reveal') revealBlocks!: QueryList<ElementRef>;
+    @ViewChildren('heroReveal') heroReveals!: QueryList<ElementRef>;
     @ViewChild('heroVideo') heroVideoRef?: ElementRef<HTMLVideoElement>;
 
     ngAfterViewInit(): void {
@@ -63,6 +66,15 @@ export class BastidBBQComponent implements AfterViewInit {
         video.addEventListener('canplay', tryPlay, { once: true });
       }
 
+      // Hero titles reveal on load — their per-line transition-delay (1000ms+)
+      // staggers them, so the first appears ~1s in.
+      requestAnimationFrame(() => {
+        this.heroReveals?.forEach((el) => el.nativeElement.classList.add('is-visible'));
+      });
+
+      // Sections reveal only once they're well into the viewport (bottom 30%
+      // excluded), so on this short page they fire progressively as you scroll
+      // instead of all at once.
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -72,7 +84,7 @@ export class BastidBBQComponent implements AfterViewInit {
             }
           });
         },
-        { threshold: 0.15 }
+        { threshold: 0, rootMargin: '0px 0px -30% 0px' }
       );
 
       this.revealBlocks.forEach((el) => observer.observe(el.nativeElement));
@@ -111,7 +123,16 @@ export class BastidBBQComponent implements AfterViewInit {
 
     @HostListener('window:scroll')
     onWindowScroll() {
-      this.parallaxOffset = window.scrollY * 0.2;
+      // Throttle to one update per animation frame for smooth parallax.
+      if (this.scrollTicking) return;
+      this.scrollTicking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        this.parallaxOffset = y * 0.2;
+        // Fade the hero content as it scrolls away.
+        this.heroOpacity = Math.max(0, Math.min(1, 1 - y / 700));
+        this.scrollTicking = false;
+      });
     }
 
     appleMusicSection: AudioSection = {

@@ -18,3 +18,24 @@
 .bbq-signup-form p {
   margin-top: 0.25rem;
 }
+
+/* Scroll-reveal for the title/video + form items (staggered via inline delay). */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-up {
+  transform: translateY(28px);
+}
+
+.reveal-left {
+  transform: translateX(-28px);
+}
+
+.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}

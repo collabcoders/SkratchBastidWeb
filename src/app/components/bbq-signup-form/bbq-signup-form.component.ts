@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HiveService } from '@shared/services/hive.service';
@@ -26,6 +26,7 @@ export class BBQSignupFormComponent implements AfterViewInit {
   };
 
   @ViewChild('bbqVideo') bbqVideoRef?: ElementRef<HTMLVideoElement>;
+  @ViewChildren('reveal') revealItems!: QueryList<ElementRef>;
 
   constructor(private hiveService: HiveService) {}
 
@@ -53,6 +54,21 @@ export class BBQSignupFormComponent implements AfterViewInit {
       tryPlay();
       video.addEventListener('canplay', tryPlay, { once: true });
     }
+
+    // Reveal the title/video and each form item as the form scrolls into view,
+    // staggered via each element's CSS transition-delay.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    this.revealItems?.forEach((el) => observer.observe(el.nativeElement));
 
     try {
       await this.hiveService.ensureInitialized(this.hiveInitId);

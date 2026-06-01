@@ -5,7 +5,8 @@
   <div class="relative h-[calc(100vh-50px)] flex items-end justify-start text-white overflow-hidden pb-12 md:pb-16">
     <video
       #heroVideo
-      class="absolute inset-0 w-full h-full object-cover z-0"
+      class="absolute inset-0 w-full h-full object-cover z-0 will-change-transform"
+      [style.transform]="'translate3d(0,' + (parallaxOffset * 0.5) + 'px,0) scale(1.2)'"
       autoplay
       muted
       loop
@@ -14,14 +15,16 @@
       <source src="/assets/bbq-hero.mp4" type="video/mp4" />
     </video>
     <div class="absolute inset-0 bg-black opacity-60 z-0"></div>
-    <div class="absolute bottom-0 left-0 z-10 w-full max-w-[1440px] px-10 md:px-16 pb-12 md:pb-16">
-      <div #reveal class="text-left reveal reveal-left" style="
+    <div class="absolute bottom-0 left-0 z-10 w-full max-w-[1440px] px-10 md:px-16 pb-12 md:pb-16 will-change-transform"
+      [style.transform]="'translate3d(0,' + (parallaxOffset * -0.3) + 'px,0)'"
+      [style.opacity]="heroOpacity">
+      <div class="text-left" style="
           font-family: 'WT Volkolak Grotesque', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
           font-weight: 700;
         ">
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">GOOD MUSIC,</h1>
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">GOOD FOOD,</h1>
-        <h1 class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal">AND GOOD PEOPLE.</h1>
+        <h1 #heroReveal class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal reveal reveal-left" style="transition-delay: 500ms;">GOOD MUSIC,</h1>
+        <h1 #heroReveal class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal reveal reveal-left" style="transition-delay: 950ms;">GOOD FOOD,</h1>
+        <h1 #heroReveal class="!text-[48px] md:!text-[64px] font-bold leading-[2rem] whitespace-nowrap max-md:whitespace-normal reveal reveal-left" style="transition-delay: 1400ms;">AND GOOD PEOPLE.</h1>
       </div>
       <div #reveal class="md:w-1/2 flex md:justify-end justify-end mt-12 md:mt-0 reveal reveal-right">
         <button class="cursor-pointer hidden" (click)="openYouTubeOverlay()">
@@ -33,7 +36,7 @@
 
   <!-- Accent bar / intro blurb directly under the hero video -->
   <div class="bg-[#142129] border-b-[3px] border-[#FF5941] min-h-[100px] flex items-center px-2 md:px-4 py-8">
-    <div class="max-w-[1Bastid’s BBQ, founded in 2011 by DJ Skratch Bastid, began as440px] mx-auto px-10 md:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-10">
+    <div #reveal class="max-w-[1440px] mx-auto px-10 md:px-16 flex flex-col md:flex-row items-center gap-6 md:gap-10 reveal reveal-up">
       <p class="text-white text-base md:text-lg leading-relaxed text-center md:text-left">
         Founded in 2011 by DJ Skratch Bastid as a platform to channel his passions of music, food, and building community. Today a globally recognized event series, spanning multiple cities and bringing some of the most talented DJs and producers to its stage. Life is always better with good music, good food, and good people.
       </p>
@@ -43,7 +46,7 @@
   <!-- Upcoming Events -->
   <div class="bg-white text-gray-900 px-2 md:px-4 py-12">
     <div class="max-w-[1440px] mx-auto px-10 md:px-16">
-      <h2 class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-[#1b2130]">
+      <h2 #reveal class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-[#1b2130] reveal reveal-up">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-[#1F85FF]">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
@@ -52,7 +55,8 @@
       </h2>
       <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         @for (date of tourDates; track date.city) {
-          <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col">
+          <div #reveal class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col reveal reveal-up"
+            [style.transitionDelay]="($index * 200) + 'ms'">
             <a [href]="date.ticketUrl" target="_blank" rel="noopener noreferrer" class="bbq-card-media relative block">
               <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto" />
               <div class="bbq-card-overlay absolute inset-0 flex items-center justify-center cursor-pointer">
@@ -98,7 +102,7 @@
   <div class="border-t-2 border-dotted border-[#EFDA0F]"></div>
 
   <!-- Top Grillin Section (hero-adjacent) -->
-  <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop"></app-video-carousel>
+  <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop" [reveal]="true"></app-video-carousel>
   <!-- BBQ Recaps Section -->
   <!-- <app-bbq-recap-carousel [section]="bbqRecapsSection" [isLoadingVideo]="isLoadingVideo" /> -->
 
