@@ -9,6 +9,7 @@ import { LegendsMemberService } from '@shared/services/legends/member.service';
 import { HiveService } from '@shared/services/hive.service';
 import { TokenService } from '@shared/services/token.service';
 import { ValidationService } from '@shared/services/validation.service';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-upgrade',
@@ -99,7 +100,7 @@ export class UpgradeComponent implements OnInit {
   }
 
   loadPricing() {
-    this.legendsPricing.getProductPricing('prod_KJzROZ43ZF7aYS').subscribe((data: any) => {
+    this.legendsPricing.getProductPricing(environment.prodId).subscribe((data: any) => {
       this.plans = data.data;
     });
   }
