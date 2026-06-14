@@ -128,7 +128,8 @@
                 @else {
                   @for (item of commentlst; track $index) {
                     <div class="comment-box mb-3 bg-black rounded-2 p-3">
-                      <img [src]="item.image" alt="Image"
+                      <img [src]="item.image ? (item.image | imageUrl:80:80:true) : 'assets/images/user.png'"
+                        (error)="avatarError($event)" alt="Profile image"
                         class="float-start me-3 rounded-circle border" />
                       <div class="overflow-hidden">
                         <h5 class="h5 fw-bold float-start text-capitalize">{{item.name}}</h5>

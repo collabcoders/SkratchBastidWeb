@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ImagePipe } from '@shared/pipes/image.pipe';
 import { Subscription, Observable, take } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import videojs from 'video.js';
@@ -26,7 +27,7 @@ declare var bootbox: any;
 
 @Component({
   selector: 'app-video-player',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ImagePipe],
   standalone: true,
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss'],
@@ -582,6 +583,16 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     imgElement.src = target.src;
     target.src = target.src = this.videoPoster;
     imgElement.onload = null;
+  }
+
+  // Comment author avatar: fall back to the default user image when the member
+  // has no profile photo or the thumbnail fails to load.
+  avatarError(event: any) {
+    const target = event.target || event.srcElement || event.currentTarget;
+    const fallback = 'assets/images/user.png';
+    if (!target.src.endsWith(fallback)) {
+      target.src = fallback;
+    }
   }
 
   ChangeVideoSize() {
