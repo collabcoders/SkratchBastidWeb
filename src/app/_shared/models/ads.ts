@@ -8,6 +8,9 @@ export class Ads {
     seconds: number;
     order: number;
     image: string;
+    // Optional video-creative URL (mp4). When set, the hero renders a muted
+    // autoplaying video with `image` as its poster; otherwise `image` is shown.
+    video?: string;
     button: string;
     category: string;
 

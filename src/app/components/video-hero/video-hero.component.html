@@ -10,9 +10,9 @@
       <div class="hero-media outgoing"
         [class.slide-next]="lastDirection() === 'next'"
         [class.slide-prev]="lastDirection() === 'prev'">
-        @if (getPreviousVideo()!.image.indexOf('.mp4') != -1) {
+        @if (heroVideoSrc(getPreviousVideo()!)) {
           <video class="absolute inset-0 w-full h-full object-cover scale-110 origin-top" muted
-            autoplay loop playsinline [src]="getPreviousVideo()!.image">
+            autoplay loop playsinline [poster]="heroPoster(getPreviousVideo()!)" [src]="heroVideoSrc(getPreviousVideo()!)">
           </video>
         } @else {
           <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top hero-image-shell">
@@ -36,9 +36,9 @@
       [class.slide-next]="lastDirection() === 'next'"
       [class.slide-prev]="lastDirection() === 'prev'">
       <!-- Background Video -->
-      @if (getCurrentVideo().image.indexOf('.mp4') != -1) {
+      @if (heroVideoSrc(getCurrentVideo())) {
       <video #videoElement class="absolute inset-0 w-full h-full object-cover scale-110 origin-top" [muted]="isMuted()"
-        autoplay loop playsinline [src]="getCurrentVideo().image">
+        autoplay loop playsinline [poster]="heroPoster(getCurrentVideo())" [src]="heroVideoSrc(getCurrentVideo())">
         Your browser does not support the video tag.
       </video>
       } @else {
@@ -74,7 +74,7 @@
 
       <div class="flex items-center gap-4">
         <!-- Audio Control (video/mp4 only) -->
-        @if ((getCurrentVideo().category.toLowerCase() == 'video') || (getCurrentVideo().image.toLowerCase().indexOf('.mp4') != -1)) {
+        @if (heroVideoSrc(getCurrentVideo())) {
           <button (click)="toggleMute()"
             class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
             [title]="isMuted() ? 'Unmute' : 'Mute'">

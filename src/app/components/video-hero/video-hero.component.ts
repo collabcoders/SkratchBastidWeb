@@ -92,6 +92,19 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     video.muted = newMutedState;
   }
 
+  // Resolve the hero media for a banner: prefer an explicit video URL, fall back
+  // to a legacy image-as-mp4, otherwise null (render the image as before).
+  heroVideoSrc(b: Ads): string | null {
+    if (b?.video) { return b.video; }
+    if (b?.image && b.image.toLowerCase().indexOf('.mp4') !== -1) { return b.image; }
+    return null;
+  }
+
+  // Poster image applies only when a separate video URL is set.
+  heroPoster(b: Ads): string | null {
+    return (b?.video && b?.image) ? b.image : null;
+  }
+
   previousVideo() {
     const currentIndex = this.currentVideoIndex();
     const newIndex = currentIndex === 0 ? this.videos.length - 1 : currentIndex - 1;
@@ -109,7 +122,8 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     if (!video) {
       return;
     }
-    video.src = this.videos[this.currentVideoIndex()].image;
+    const banner = this.videos[this.currentVideoIndex()];
+    video.src = this.heroVideoSrc(banner) || banner.image;
     video.load();
   }
 
