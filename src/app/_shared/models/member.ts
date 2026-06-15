@@ -1,6 +1,7 @@
 export class Member {
     // Property (public by default)
     memberId: number;
+    role?: string;
     email: string;
     firstName: string;
     lastName: string;

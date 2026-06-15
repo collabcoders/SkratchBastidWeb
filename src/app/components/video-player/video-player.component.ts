@@ -52,6 +52,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   videotitle = '';
   videoSubscription!: Subscription;
   memId = -1;
+  isAdmin = false;
   hoverId = 0;
   classone: string = '';
   videozoom: string = '';
@@ -107,6 +108,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       if (valid) {
         const member = this.token.getMember();
         this.memId = member?.memberId ?? -1;
+        this.isAdmin = member?.role === 'admin';
         if (member?.beats) {
           this.isUserBeats = true;
         }
