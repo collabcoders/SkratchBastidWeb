@@ -106,6 +106,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.isLoggedIn$.subscribe(valid => {
       if (valid) {
         const member = this.token.getMember();
+        this.memId = member?.memberId ?? -1;
         if (member?.beats) {
           this.isUserBeats = true;
         }
