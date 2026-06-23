@@ -54,12 +54,13 @@
     "zone.js": "~0.16.2"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^22.0.3",
+    "@angular/build": "^22.0.3",
     "@angular/cli": "^22.0.3",
     "@angular/compiler-cli": "22.0.2",
     "@types/grecaptcha": "^3.0.9",
     "@types/node": "^12.11.1",
     "@types/video.js": "^7.3.50",
+    "postcss": "^8.5.3",
     "typescript": "~6.0.3"
   }
 }

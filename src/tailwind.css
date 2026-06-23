@@ -1,0 +1,3 @@
+/* Tailwind entry point. Kept as plain CSS (not .scss) so it is handled by the
+   @tailwindcss/postcss plugin rather than Dart Sass, whose @import is deprecated. */
+@import "tailwindcss";
