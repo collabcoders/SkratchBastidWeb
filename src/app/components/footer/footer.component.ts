@@ -7,6 +7,7 @@ import { HiveService } from '@shared/services/hive.service';
 import { AlertService } from '@shared/services/alert.service';
 import { NavigateService } from '@shared/services/navigate.service';
 import { TokenService } from '@shared/services/token.service';
+import { TooltipDirective } from '@shared/directives/tooltip.directive';
 
 declare var $: any;
 declare var bootstrap: any;
@@ -22,7 +23,7 @@ interface FooterLink {
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [FormsModule, RouterModule],
+  imports: [FormsModule, RouterModule, TooltipDirective],
   templateUrl: './footer.component.html',
   styleUrls: ['./footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

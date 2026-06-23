@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -14,6 +14,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
     FooterComponent
 ],
   templateUrl: './video-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './video-detail.component.scss',
 })
 export class VideoDetailComponent implements OnInit {

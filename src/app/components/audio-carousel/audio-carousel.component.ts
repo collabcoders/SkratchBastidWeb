@@ -1,4 +1,4 @@
-import { Component, input, ElementRef, ViewChild, Input, inject, Signal } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Input, inject, Signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { AudioService } from '@shared/services/audio.service';
 import { Music } from '@shared/models/music';
@@ -23,6 +23,7 @@ export interface AudioSection {
   selector: 'app-audio-carousel',
   imports: [ImagePipe],
   templateUrl: './audio-carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './audio-carousel.component.scss',
 })
 export class AudioCarouselComponent {

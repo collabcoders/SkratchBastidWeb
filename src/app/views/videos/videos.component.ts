@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -52,6 +52,7 @@ import { finalize, take } from 'rxjs/operators';
     PaginationComponent,
   ],
   templateUrl: './videos.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./videos.component.scss'],
 })
 export class VideosComponent implements OnInit, OnDestroy {

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FavoritesService } from '@shared/services/favorites.service';
 import { VipDialogService } from '@shared/services/vip-dialog.service';
 @Component({
   selector: 'app-root',
   standalone: false,
   templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./app.component.scss']
 })
 

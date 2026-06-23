@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { ApiService } from '@shared/services/api.service';
 import { LegendsEventsService } from '@shared/services/legends/events.service';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
   selector: 'app-events',
   imports: [HeaderComponent, FooterComponent, EventCardComponent, FreeTrialFormComponent],
   templateUrl: './events.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './events.component.scss',
 })
 export class EventsComponent implements OnInit {

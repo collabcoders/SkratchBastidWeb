@@ -1,4 +1,4 @@
-import { Component, input, ElementRef, ViewChild, Signal, Input } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Signal, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { ImagePipe } from '@shared/pipes/image.pipe';
 import { Music } from '@shared/models/music';
@@ -28,6 +28,7 @@ export interface MixesSection {
   selector: 'app-mixes-slider',
   imports: [ImagePipe],
   templateUrl: './mixes-slider.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './mixes-slider.component.scss'
 })
 export class MixesSliderComponent {

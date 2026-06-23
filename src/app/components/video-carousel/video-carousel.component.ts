@@ -1,6 +1,6 @@
 import { ApiService } from '@shared/services/api.service';
 import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
-import { Component, input, ElementRef, ViewChild, ViewChildren, QueryList, inject, Signal, Input, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, ViewChildren, QueryList, inject, Signal, Input, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { VideoService } from '@shared/services/video.service';
 import { Video } from '@shared/models/video';
@@ -49,6 +49,7 @@ export interface VideoSection {
   imports: [CommonModule],
   standalone: true,
   templateUrl: './video-carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './video-carousel.component.scss',
 })
 export class VideoCarouselComponent implements OnInit, AfterViewInit, OnDestroy {

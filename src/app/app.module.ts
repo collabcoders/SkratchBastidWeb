@@ -14,7 +14,7 @@ import { VideoPipe } from './_shared/pipes/video.pipe';
 import { InterceptorService } from '@shared/services/interceptor.service';
 import { NgxMarqueeModule } from 'ngx-marquee';
 import { AudioPlayerComponent } from './_shared/components/audio-player/audio-player.component';
-import { TooltipModule, TooltipOptions } from 'ng2-tooltip-directive';
+import { TooltipDirective } from '@shared/directives/tooltip.directive';
 // import { MusicComponent } from './views/music/music.component';
 // import { StreamComponent } from './views/stream/stream.component';
 // import { VideosComponent } from './views/videos/videos.component';
@@ -53,11 +53,6 @@ import { ConfigService } from './lib/config.service';
 // import { VideosComponent as v } from './views/videos/videos.component';
 // import { HomeComponent as h } from './views/home/home.component';
 
-export const MyDefaultTooltipOptions: TooltipOptions = {
-  'tooltipClass': 'ng-tooltip',
-  'showDelay': 0
-}
-
 function appLoadFactory(config: ConfigService) {
   return () => config.loadConfig();
 }
@@ -81,7 +76,7 @@ function appLoadFactory(config: ConfigService) {
     RouterModule,
     AngularWavesurferServiceModule,
     NgxMarqueeModule,
-    TooltipModule.forRoot(MyDefaultTooltipOptions as TooltipOptions),
+    TooltipDirective,
     CommonModule,
     HeaderComponent,
     // ImageCropperComponent,

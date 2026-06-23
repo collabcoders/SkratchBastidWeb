@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { AudioService } from '@shared/services/audio.service';
 import { ImagePipe } from '@shared/pipes/image.pipe';
@@ -9,6 +9,7 @@ import { Music } from '@shared/models/music';
   selector: 'app-audio-player-bar',
   imports: [ImagePipe],
   templateUrl: './audio-player-bar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './audio-player-bar.component.scss',
 })
 export class AudioPlayerBarComponent {

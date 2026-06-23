@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal, ViewChild, ElementRef } from '@angular/core';
+import { Component, signal, WritableSignal, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
@@ -18,6 +18,7 @@ interface Product {
   selector: 'app-store-products',
   imports: [],
   templateUrl: './store-products.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './store-products.component.scss'
 })
 export class StoreProductsComponent {

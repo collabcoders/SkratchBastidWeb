@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Alert, AlertType } from '@shared/models/alert';
 import { AlertService } from '@shared/services/alert.service';
@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AlertComponent implements OnInit {

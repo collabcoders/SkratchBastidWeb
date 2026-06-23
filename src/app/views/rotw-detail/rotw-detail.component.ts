@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -28,6 +28,7 @@ export interface RotwDetail {
     FooterComponent
 ],
   templateUrl: './rotw-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './rotw-detail.component.scss',
 })
 export class RotwDetailComponent implements OnInit {

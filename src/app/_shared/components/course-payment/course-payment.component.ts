@@ -11,12 +11,13 @@ import { Config } from '@shared/config';
 import { AudioService } from '@shared/services/audio.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as countriesJson from '@data/countries.json';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-course-payment',
   templateUrl: './course-payment.component.html',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./course-payment.component.scss']
 })
 export class CoursePaymentComponent implements OnInit {

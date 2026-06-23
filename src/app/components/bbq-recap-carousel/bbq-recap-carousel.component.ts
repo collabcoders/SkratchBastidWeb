@@ -1,4 +1,4 @@
-import { Component, input, ElementRef, ViewChild, Input, Signal } from '@angular/core';
+import { Component, input, ElementRef, ViewChild, Input, Signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { Video } from '@shared/models/video';
 
@@ -20,6 +20,7 @@ export interface BBQRecapSection {
   selector: 'app-bbq-recap-carousel',
   imports: [],
   templateUrl: './bbq-recap-carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bbq-recap-carousel.component.scss',
 })
 export class BBQRecapCarouselComponent {

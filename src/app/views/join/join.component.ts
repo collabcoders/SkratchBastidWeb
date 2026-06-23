@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,6 +14,7 @@ interface VIPFeature {
   selector: 'app-join',
   imports: [FormsModule, HeaderComponent, FooterComponent, FreeTrialFormComponent],
   templateUrl: './join.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './join.component.scss',
 })
 export class JoinComponent {

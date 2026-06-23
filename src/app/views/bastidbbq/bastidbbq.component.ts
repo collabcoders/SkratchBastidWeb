@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren, signal, WritableSignal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 
 import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -31,6 +31,7 @@ import { Event } from '@shared/models/event';
     EventCardComponent
 ],
   templateUrl: './bastidbbq.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bastidbbq.component.scss',
 })
 export class BastidBBQComponent implements AfterViewInit {

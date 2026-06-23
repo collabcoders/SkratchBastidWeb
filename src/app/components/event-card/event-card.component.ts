@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Event } from '@shared/models/event';
 
@@ -15,6 +15,7 @@ export interface EventDetails {
   selector: 'app-event-card',
   imports: [CommonModule],
   templateUrl: './event-card.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './event-card.component.scss',
 })
 export class EventCardComponent {

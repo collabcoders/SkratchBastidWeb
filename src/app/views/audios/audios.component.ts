@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -30,6 +30,7 @@ import { CommonModule } from '@angular/common';
     CommonModule,
   ],
   templateUrl: './audios.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './audios.component.scss',
 })
 export class AudiosComponent implements OnInit {

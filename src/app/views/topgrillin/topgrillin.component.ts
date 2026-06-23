@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -36,6 +36,7 @@ type PricingOption = {
     PaymentSuccessComponent,
   ],
   templateUrl: './topgrillin.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './topgrillin.component.scss',
 })
 export class TopGrillinComponent {

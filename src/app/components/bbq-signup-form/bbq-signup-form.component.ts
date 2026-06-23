@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, QueryList, ViewChild, ViewChildren, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { HiveService } from '@shared/services/hive.service';
@@ -8,6 +8,7 @@ import { Config } from '@shared/config';
   selector: 'app-bbq-signup-form',
   imports: [FormsModule],
   templateUrl: './bbq-signup-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bbq-signup-form.component.scss',
 })
 export class BBQSignupFormComponent implements AfterViewInit {

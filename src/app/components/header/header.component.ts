@@ -1,4 +1,4 @@
-import { Component, inject, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, HostListener, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, filter } from 'rxjs';
@@ -23,6 +23,7 @@ declare const $: any;
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './header.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnDestroy, OnInit {

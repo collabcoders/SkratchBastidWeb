@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ImagePipe } from '@shared/pipes/image.pipe';
@@ -21,16 +21,18 @@ import { Config } from '@shared/config';
 import { environment } from '@env/environment';
 import { VideoAccessService } from '@shared/services/video-access.service';
 import { FavoriteId } from '@shared/models/favorite-id';
+import { TooltipDirective } from '@shared/directives/tooltip.directive';
 
 declare var $: any;
 declare var bootbox: any;
 
 @Component({
   selector: 'app-video-player',
-  imports: [CommonModule, FormsModule, ImagePipe],
+  imports: [CommonModule, FormsModule, ImagePipe, TooltipDirective],
   standalone: true,
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   encapsulation: ViewEncapsulation.None,
 })
 export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges, AfterViewChecked {

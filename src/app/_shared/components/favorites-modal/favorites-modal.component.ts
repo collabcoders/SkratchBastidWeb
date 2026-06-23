@@ -1,4 +1,4 @@
-import { Component, OnInit, input, output } from '@angular/core';
+import { Component, OnInit, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 import { Favorite } from '@shared/models/favorite';
 import { VideoService } from '@shared/services/video.service';
@@ -10,6 +10,7 @@ import { FavoritesService } from '@shared/services/favorites.service';
   imports: [],
   templateUrl: './favorites-modal.component.html',
   styleUrl: './favorites-modal.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class FavoritesModalComponent implements OnInit {

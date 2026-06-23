@@ -1,4 +1,4 @@
-import { Component, Input, ElementRef, ViewChild, input, Signal } from '@angular/core';
+import { Component, Input, ElementRef, ViewChild, input, Signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { Video } from '@shared/models/video';
 import { RouterLink } from '@angular/router';
@@ -20,6 +20,7 @@ export interface RecordSection {
   selector: 'app-record-carousel',
   imports: [RouterLink],
   templateUrl: './record-carousel.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './record-carousel.component.scss',
 })
 export class RecordCarouselComponent {

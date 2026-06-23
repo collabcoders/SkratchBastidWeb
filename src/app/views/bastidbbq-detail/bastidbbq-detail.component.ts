@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -31,6 +31,7 @@ export interface BBQRecapDetail {
     FooterComponent
 ],
   templateUrl: './bastidbbq-detail.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './bastidbbq-detail.component.scss',
 })
 export class BastidBBQDetailComponent implements OnInit {

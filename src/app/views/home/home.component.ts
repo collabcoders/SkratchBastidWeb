@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { VideoHeroComponent } from '../../components/video-hero/video-hero.component';
 import {
@@ -42,6 +42,7 @@ import { LegendsAdsService } from '@shared/services/legends/ads.service';
     FreeTrialFormComponent,
   ],
   templateUrl: './home.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.component.scss',
 })
 export class HomeComponent {

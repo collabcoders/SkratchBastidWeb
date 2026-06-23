@@ -10,6 +10,7 @@ import {
   OnDestroy,
   Optional,
   Output,
+  ChangeDetectionStrategy
 } from "@angular/core";
 import { Subscription } from "rxjs";
 
@@ -27,6 +28,7 @@ export type RecaptchaErrorParameters = Parameters<NeverUndefined<ReCaptchaV2.Par
   exportAs: "reCaptcha",
   selector: "re-captcha",
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `ZZ`,
 })
 export class RecaptchaComponent implements AfterViewInit, OnDestroy {

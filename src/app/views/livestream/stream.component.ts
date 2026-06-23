@@ -1,5 +1,5 @@
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SafePipe } from '@shared/pipes/safe.pipe';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -16,6 +16,7 @@ import { Config } from '@shared/config';
   imports: [HeaderComponent, FooterComponent, SafePipe],
   templateUrl: './stream.component.html',
   styleUrl: './stream.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class StreamComponent implements OnInit {

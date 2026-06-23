@@ -396,9 +396,18 @@ ul {
 //   font-style: italic;
 //   color: #666 !important;
 // }
-// .ng-tooltip {
-//   z-index: 2147483647 !important;
-// }
+.ng-tooltip {
+  z-index: 2147483647 !important;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  max-width: 240px;
+}
 // .btn-special {
 //   padding: 0 28px;
 //   border-style: solid;

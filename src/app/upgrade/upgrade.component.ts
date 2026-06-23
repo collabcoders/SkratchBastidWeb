@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StripeService, StripeCardComponent } from 'ngx-stripe';
@@ -15,6 +15,7 @@ import { environment } from '@env/environment';
   selector: 'app-upgrade',
   standalone: false,
   templateUrl: './upgrade.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./upgrade.component.scss']
 })
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Music } from '@shared/models/music';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { take, tap, throttleTime } from 'rxjs/operators';
@@ -21,6 +21,7 @@ import { VideoAccessService } from '@shared/services/video-access.service';
   selector: 'app-audio-player',
   templateUrl: './audio-player.component.html',
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./audio-player.component.scss']
 })
 export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {

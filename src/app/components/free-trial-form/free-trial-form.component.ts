@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, ViewChild, input, output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,6 +20,7 @@ export interface FreeTrialFormData {
   selector: 'app-free-trial-form',
   imports: [FormsModule],
   templateUrl: './free-trial-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './free-trial-form.component.scss',
 })
 export class FreeTrialFormComponent implements AfterViewInit {
