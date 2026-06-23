@@ -1,5 +1,5 @@
 import { Component, OnInit, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Favorite } from '@shared/models/favorite';
 import { VideoService } from '@shared/services/video.service';
 import { ApiService } from '@shared/services/api.service';
@@ -7,7 +7,7 @@ import { FavoritesService } from '@shared/services/favorites.service';
 
 @Component({
   selector: 'app-favorites-modal',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './favorites-modal.component.html',
   styleUrl: './favorites-modal.component.scss',
   standalone: true,

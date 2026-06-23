@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FreeTrialFormComponent } from '../../components/free-trial-form/free-trial-form.component';
@@ -9,11 +9,10 @@ import { FooterComponent } from '../../components/footer/footer.component';
 @Component({
   selector: 'app-video-detail',
   imports: [
-    CommonModule,
     HeaderComponent,
     FreeTrialFormComponent,
-    FooterComponent,
-  ],
+    FooterComponent
+],
   templateUrl: './video-detail.component.html',
   styleUrl: './video-detail.component.scss',
 })

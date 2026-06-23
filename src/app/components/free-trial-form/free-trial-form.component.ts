@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, ViewChild, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AppData } from 'src/app/app.data';
@@ -18,7 +18,7 @@ export interface FreeTrialFormData {
 
 @Component({
   selector: 'app-free-trial-form',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './free-trial-form.component.html',
   styleUrl: './free-trial-form.component.scss',
 })

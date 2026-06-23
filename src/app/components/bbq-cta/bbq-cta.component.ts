@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-bbq-cta',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './bbq-cta.component.html',
   styleUrl: './bbq-cta.component.scss'
 })

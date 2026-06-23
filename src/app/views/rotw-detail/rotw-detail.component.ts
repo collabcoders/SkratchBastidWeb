@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -24,10 +24,9 @@ export interface RotwDetail {
 @Component({
   selector: 'app-rotw-detail',
   imports: [
-    CommonModule,
     HeaderComponent,
-    FooterComponent,
-  ],
+    FooterComponent
+],
   templateUrl: './rotw-detail.component.html',
   styleUrl: './rotw-detail.component.scss',
 })

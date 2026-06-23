@@ -1,9 +1,9 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-pagination',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <div class="flex items-center gap-1">
       <!-- Previous button -->

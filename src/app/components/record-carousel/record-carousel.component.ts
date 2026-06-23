@@ -1,5 +1,5 @@
 import { Component, Input, ElementRef, ViewChild, input, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Video } from '@shared/models/video';
 import { RouterLink } from '@angular/router';
 
@@ -18,7 +18,7 @@ export interface RecordSection {
 
 @Component({
   selector: 'app-record-carousel',
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './record-carousel.component.html',
   styleUrl: './record-carousel.component.scss',
 })

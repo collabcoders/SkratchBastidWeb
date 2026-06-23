@@ -1,5 +1,5 @@
 import { Component, input, ElementRef, ViewChild, Input, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Video } from '@shared/models/video';
 
 export interface BBQRecap {
@@ -18,7 +18,7 @@ export interface BBQRecapSection {
 
 @Component({
   selector: 'app-bbq-recap-carousel',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './bbq-recap-carousel.component.html',
   styleUrl: './bbq-recap-carousel.component.scss',
 })

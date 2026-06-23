@@ -1,5 +1,5 @@
 import { Component, input, ElementRef, ViewChild, Signal, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ImagePipe } from '@shared/pipes/image.pipe';
 import { Music } from '@shared/models/music';
 import { AudioService } from '@shared/services/audio.service';
@@ -26,7 +26,7 @@ export interface MixesSection {
 
 @Component({
   selector: 'app-mixes-slider',
-  imports: [CommonModule, ImagePipe],
+  imports: [ImagePipe],
   templateUrl: './mixes-slider.component.html',
   styleUrl: './mixes-slider.component.scss'
 })

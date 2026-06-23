@@ -1,5 +1,5 @@
 import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HeaderComponent } from '../../components/header/header.component';
 import { HiveService } from '@shared/services/hive.service';
@@ -8,7 +8,7 @@ import { Config } from '@shared/config';
 
 @Component({
   selector: 'app-newsletter',
-  imports: [CommonModule, FormsModule, HeaderComponent],
+  imports: [FormsModule, HeaderComponent],
   templateUrl: './newsletter.component.html',
   styleUrl: './newsletter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

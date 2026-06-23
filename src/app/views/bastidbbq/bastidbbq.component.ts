@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChild, ViewChildren, signal, WritableSignal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -21,7 +21,6 @@ import { Event } from '@shared/models/event';
 @Component({
   selector: 'app-bastidbbq',
   imports: [
-    CommonModule,
     RouterModule,
     HeaderComponent,
     FooterComponent,
@@ -29,8 +28,8 @@ import { Event } from '@shared/models/event';
     BBQSignupFormComponent,
     AudioPlayerBarComponent,
     VideoCarouselComponent,
-    EventCardComponent,
-  ],
+    EventCardComponent
+],
   templateUrl: './bastidbbq.component.html',
   styleUrl: './bastidbbq.component.scss',
 })

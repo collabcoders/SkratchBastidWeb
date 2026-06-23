@@ -1,5 +1,5 @@
 import { Component, signal, WritableSignal, ViewChild, ElementRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ApiService } from '@shared/services/api.service';
 import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
@@ -16,7 +16,7 @@ interface Product {
 
 @Component({
   selector: 'app-store-products',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './store-products.component.html',
   styleUrl: './store-products.component.scss'
 })

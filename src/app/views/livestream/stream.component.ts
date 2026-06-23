@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { SafePipe } from '@shared/pipes/safe.pipe';
 import { HeaderComponent } from '../../components/header/header.component';
@@ -13,7 +13,7 @@ import { Config } from '@shared/config';
 @Component({
   selector: 'app-stream',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, FooterComponent, SafePipe],
+  imports: [HeaderComponent, FooterComponent, SafePipe],
   templateUrl: './stream.component.html',
   styleUrl: './stream.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

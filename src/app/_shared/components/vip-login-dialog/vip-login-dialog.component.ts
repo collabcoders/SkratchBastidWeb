@@ -1,10 +1,10 @@
 import { Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-vip-login-dialog',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './vip-login-dialog.component.html',
   styleUrl: './vip-login-dialog.component.scss',
   standalone: true,

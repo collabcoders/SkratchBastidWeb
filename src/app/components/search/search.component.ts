@@ -1,9 +1,9 @@
 import { Component, output, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-search',
-  imports: [CommonModule],
+  imports: [],
   template: `
     <input
       type="text"

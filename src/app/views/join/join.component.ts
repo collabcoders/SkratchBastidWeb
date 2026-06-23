@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -12,7 +12,7 @@ interface VIPFeature {
 
 @Component({
   selector: 'app-join',
-  imports: [CommonModule, FormsModule, HeaderComponent, FooterComponent, FreeTrialFormComponent],
+  imports: [FormsModule, HeaderComponent, FooterComponent, FreeTrialFormComponent],
   templateUrl: './join.component.html',
   styleUrl: './join.component.scss',
 })

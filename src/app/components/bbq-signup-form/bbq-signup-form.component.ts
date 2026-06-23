@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HiveService } from '@shared/services/hive.service';
 import { Config } from '@shared/config';
 
 @Component({
   selector: 'app-bbq-signup-form',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './bbq-signup-form.component.html',
   styleUrl: './bbq-signup-form.component.scss',
 })

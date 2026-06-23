@@ -1,5 +1,5 @@
 import { Component, input, ElementRef, ViewChild, Input, inject, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { AudioService } from '@shared/services/audio.service';
 import { Music } from '@shared/models/music';
 import { ImagePipe } from '@shared/pipes/image.pipe';
@@ -21,7 +21,7 @@ export interface AudioSection {
 
 @Component({
   selector: 'app-audio-carousel',
-  imports: [CommonModule, ImagePipe],
+  imports: [ImagePipe],
   templateUrl: './audio-carousel.component.html',
   styleUrl: './audio-carousel.component.scss',
 })
