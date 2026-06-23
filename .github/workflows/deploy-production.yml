@@ -1,0 +1,136 @@
+name: Deploy to Production (IIS / FTPS)
+
+# Deploys when you push a version tag like v1.0.0, v1.2.3, etc.
+# You can also trigger it manually from the Actions tab ("Run workflow").
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+# Never let two production deploys run at the same time.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # @angular/cli 22 requires Node ^22.22.3 || ^24.15.0 || >=26.0.0.
+      # Pinning '22.22' picks the latest 22.22.x, which satisfies that.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.22'
+          # No `cache: npm` here: package-lock.json is gitignored in this repo,
+          # and setup-node's npm cache requires a committed lockfile.
+
+      # The git tag is the single source of truth for the version.
+      #   tag  v1.2.3        -> VERSION=1.2.3   INFORMATIONAL=1.2.3+<sha>
+      #   manual run (no tag) -> VERSION=0.0.0   INFORMATIONAL=0.0.0-manual+<sha>
+      - name: Derive version from tag
+        id: ver
+        run: |
+          SHA="${GITHUB_SHA::7}"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            V="${GITHUB_REF_NAME#v}"
+            echo "version=$V"            >> "$GITHUB_OUTPUT"
+            echo "informational=$V+$SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=0.0.0"                   >> "$GITHUB_OUTPUT"
+            echo "informational=0.0.0-manual+$SHA" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Refuse to deploy a tag that isn't newer than what's already live, so an
+      # accidental lower tag (e.g. v1.2.0 while prod is on v1.2.3) can't silently
+      # downgrade production. Runs only for tag pushes; skipped for manual runs.
+      # Reads the version.json this workflow writes into the site (see below).
+      # Allows the deploy if the live version can't be read (e.g. the first deploy,
+      # before version.json exists).
+      - name: Guard against version downgrade
+        if: github.ref_type == 'tag'
+        run: |
+          NEW="${GITHUB_REF_NAME#v}"
+          LIVE="$(curl -fsS --max-time 15 https://skratchbastid.com/version.json \
+                  | sed -E 's/.*"version" *: *"([^"+]+).*/\1/' || echo '')"
+          if [ -z "$LIVE" ]; then
+            echo "Could not read live version (first deploy?) — allowing."
+            exit 0
+          fi
+          if [ "$LIVE" = "$NEW" ]; then
+            echo "::error::Tag $NEW is already the live version — refusing to redeploy the same version."
+            exit 1
+          fi
+          # sort -V puts the highest semver last; if that's LIVE, then NEW is older.
+          if [ "$(printf '%s\n%s\n' "$LIVE" "$NEW" | sort -V | tail -1)" = "$LIVE" ]; then
+            echo "::error::Tag $NEW is not newer than live version $LIVE — refusing to downgrade."
+            exit 1
+          fi
+          echo "OK: deploying $NEW over live $LIVE"
+
+      # package-lock.json is gitignored, so we can't use `npm ci`.
+      # .npmrc sets legacy-peer-deps=true, which npm picks up automatically.
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      # Production build (angular.json's default configuration is "production",
+      # which swaps in environment.prod.ts). Output: dist/skratchbastid.
+      - name: Build
+        run: npm run build
+
+      # Stamp the deployed version into the site so the downgrade guard above can
+      # read it on the next deploy. Served fresh (web.config marks it no-cache).
+      - name: Write version.json
+        run: |
+          cat > "${{ github.workspace }}/dist/skratchbastid/version.json" <<JSON
+          {
+            "version": "${{ steps.ver.outputs.version }}",
+            "informational": "${{ steps.ver.outputs.informational }}",
+            "commit": "${GITHUB_SHA}",
+            "ref": "${GITHUB_REF_NAME}"
+          }
+          JSON
+          cat "${{ github.workspace }}/dist/skratchbastid/version.json"
+
+      - name: Install lftp
+        run: sudo apt-get update && sudo apt-get install -y lftp
+
+      # Deploy flow for a static SPA (no app_offline.htm — that only works for
+      # ASP.NET apps, and this site is plain static files):
+      #   1. Mirror everything EXCEPT index.html/version.json up first, deleting
+      #      files removed from the build. This puts the new hashed JS/CSS bundles
+      #      in place while the old index.html still points at the old bundles.
+      #   2. Upload index.html and version.json LAST, so users only start getting
+      #      the new index.html once the bundles it references already exist.
+      # cmd:fail-exit yes => if a step fails the script stops and the job is marked
+      # failed; re-run the workflow to recover.
+      - name: Deploy over FTPS
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USERNAME }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
+        run: |
+          LOCAL_DIR="${{ github.workspace }}/dist/skratchbastid"
+          lftp --env-password -u "$FTP_USER" "$FTP_HOST" <<EOF
+          set ftp:ssl-force true
+          set ftp:ssl-protect-data true
+          set ssl:verify-certificate no
+          set ssl:reuse-session true
+          set ftp:passive-mode true
+          set net:max-retries 5
+          set net:timeout 60
+          set net:reconnect-interval-base 5
+          set net:reconnect-interval-multiplier 1
+          set cmd:fail-exit yes
+          set xfer:clobber on
+          mirror -R --delete --verbose --exclude-glob index.html --exclude-glob version.json "$LOCAL_DIR" "$REMOTE_DIR"
+          put -O "$REMOTE_DIR" "$LOCAL_DIR/index.html"
+          put -O "$REMOTE_DIR" "$LOCAL_DIR/version.json"
+          bye
+          EOF
