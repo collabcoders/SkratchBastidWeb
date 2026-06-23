@@ -17,7 +17,7 @@ import { NgxStripeModule, StripeService, StripeCardComponent } from 'ngx-stripe'
 import { environment } from '@env/environment';
 import { RecaptchaModule } from '../lib';
 import { RecaptchaErrorParameters } from '../lib';
-import { ImageCroppedEvent, ImageCropperModule } from 'ngx-image-cropper';
+import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import countriesJson from '../../assets/data/countries.json';
 import { Event as EventModel } from '@shared/models/event';
 import { EventCardComponent } from '../components/event-card/event-card.component';
@@ -42,7 +42,7 @@ type PricingOption = {
 @Component({
   selector: 'app-forms',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule, ImageCropperModule, EventCardComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, NgxStripeModule, RecaptchaModule, ImageCropperComponent, EventCardComponent],
   templateUrl: './forms.component.html',
   styleUrls: ['./forms.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
