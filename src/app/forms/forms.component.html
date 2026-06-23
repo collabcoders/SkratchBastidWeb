@@ -291,7 +291,7 @@
           @if (!(selectedPrice == '' || selectedPrice == 'free') || isReJoin) {
             <div class="mb-3">
               <div class="stripe-card-shell">
-                <ngx-stripe-elements [elementsOptions]="elementsOptions">
+                <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
                   <ngx-stripe-card [options]="cardOptions" (change)="onCardChange($event)"></ngx-stripe-card>
                 </ngx-stripe-elements>
               </div>

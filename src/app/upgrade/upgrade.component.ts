@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { StripeService, StripeCardComponent } from 'ngx-stripe';
+import { StripeService, StripeCardComponent, injectStripe } from 'ngx-stripe';
 import { FormValidator } from '@shared/models/form-validator';
 import { AlertService } from '@shared/services/alert.service';
 import { LegendsPricingService } from '@shared/services/legends/pricing.service';
@@ -21,6 +21,8 @@ import { environment } from '@env/environment';
 
 export class UpgradeComponent implements OnInit {
   @ViewChild(StripeCardComponent) card!: StripeCardComponent;
+  // ngx-stripe v18+ requires an explicit Stripe instance bound to <ngx-stripe-elements>.
+  stripe = injectStripe(environment.stripeKey);
 
   signupForm: FormValidator = {} as any;
   plans: any = [];
@@ -38,6 +40,18 @@ export class UpgradeComponent implements OnInit {
   validToken = false;
   cardComplete = false;
   cardErrorMessage = '';
+  elementsOptions = {
+    locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
+    appearance: {
+      theme: 'flat' as 'flat' | 'stripe' | 'night',
+      variables: {
+        colorText: '#111827',
+        colorPrimary: '#FF5941',
+        colorTextPlaceholder: '#6b7280',
+        colorBackground: '#ffffff',
+      },
+    },
+  };
   cardOptions = {
     hidePostalCode: false,
     style: {
@@ -148,7 +162,7 @@ export class UpgradeComponent implements OnInit {
 
     this.processingSignup = true;
     // Tokenize the card client-side; the server never sees raw card data.
-    this.stripeService.createPaymentMethod({ type: 'card', card: this.card.element }).subscribe((p: any) => {
+    this.stripe.createPaymentMethod({ type: 'card', card: this.card.element }).subscribe((p: any) => {
       if (p.error?.message) {
         this.processingSignup = false;
         this.cardErrorMessage = p.error.message;

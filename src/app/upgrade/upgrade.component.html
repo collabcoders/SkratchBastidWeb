@@ -33,7 +33,9 @@
                 <div class="input-group mb-3">
                     <span class="input-group-text"><i class="fas fa-credit-card"></i></span>
                     <div class="form-control" style="height:auto; padding:12px;">
-                        <ngx-stripe-card [options]="cardOptions" (change)="onCardChange($event)"></ngx-stripe-card>
+                        <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
+                            <ngx-stripe-card [options]="cardOptions" (change)="onCardChange($event)"></ngx-stripe-card>
+                        </ngx-stripe-elements>
                     </div>
                 </div>
                 @if (cardErrorMessage) {

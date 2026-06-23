@@ -13,7 +13,7 @@ import { LegendsEventsService } from '@shared/services/legends/events.service';
 import { LegendsMemberService } from '@shared/services/legends/member.service';
 import { LegendsContactService } from '@shared/services/legends/contact.service';
 import { AppData } from '../app.data';
-import { NgxStripeModule, StripeService, StripeCardComponent } from 'ngx-stripe';
+import { NgxStripeModule, StripeService, StripeCardComponent, injectStripe } from 'ngx-stripe';
 import { environment } from '@env/environment';
 import { RecaptchaModule } from '../lib';
 import { RecaptchaErrorParameters } from '../lib';
@@ -116,6 +116,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
 
     // Stripe integration
     private stripeService = inject(StripeService);
+    // ngx-stripe v18+ requires an explicit Stripe instance bound to <ngx-stripe-elements>.
+    stripe = injectStripe(environment.stripeKey);
     elementsOptions = {
       locale: 'en' as 'auto' | 'en' | 'fr' | 'de' | 'es' | 'it' | 'ja' | 'pt' | 'zh',
       appearance: {
@@ -387,7 +389,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
           return;
         }
         // Stripe payment method creation
-        this.stripeService.createPaymentMethod({
+        this.stripe.createPaymentMethod({
           type: 'card',
           card: this.card.element,
         }).subscribe((p: any) => {
