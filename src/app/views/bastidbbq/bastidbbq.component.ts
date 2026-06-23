@@ -3,7 +3,7 @@ import { AfterViewInit, Component, ElementRef, HostListener, QueryList, ViewChil
 import { Router, RouterModule } from '@angular/router';
 import { HeaderComponent } from '../../components/header/header.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { AudioCarouselComponent, AudioSection } from '../../components/audio-carousel/audio-carousel.component';
+import { AudioSection } from '../../components/audio-carousel/audio-carousel.component';
 import { VideoCarouselComponent, VideoSection } from '../../components/video-carousel/video-carousel.component';
 import { BBQRecapCarouselComponent, BBQRecapSection } from '../../components/bbq-recap-carousel/bbq-recap-carousel.component';
 import { BBQSignupFormComponent } from '../../components/bbq-signup-form/bbq-signup-form.component';
@@ -15,7 +15,6 @@ import { AlertService } from '@shared/services/alert.service';
 import { Config } from '@shared/config';
 import { environment } from '@env/environment';
 import { AudioPlayerBarComponent } from 'src/app/components/audio-player-bar/audio-player-bar.component';
-import { EventCardComponent } from '../../components/event-card/event-card.component';
 import { Event } from '@shared/models/event';
 
 @Component({
@@ -24,11 +23,9 @@ import { Event } from '@shared/models/event';
     RouterModule,
     HeaderComponent,
     FooterComponent,
-    AudioCarouselComponent,
     BBQSignupFormComponent,
     AudioPlayerBarComponent,
-    VideoCarouselComponent,
-    EventCardComponent
+    VideoCarouselComponent
 ],
   templateUrl: './bastidbbq.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
