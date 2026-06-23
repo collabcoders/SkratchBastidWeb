@@ -36,48 +36,33 @@ export class StoreProductsComponent {
 
   constructor(private apiService: ApiService, private alertService: AlertService, public appData: AppData) {
     this.isLoadingProducts.set(true);
-    if (true) {
-      this.apiService.getSectionData("product", true).subscribe((data) => {
-        const zigzags = [
-          '/img/zigzag/zigzag1.png',
-          '/img/zigzag/zigzag2.png',
-          '/img/zigzag/zigzag3.png',
-          '/img/zigzag/zigzag4.png',
-          '/img/zigzag/zigzag1.png',
-          '/img/zigzag/zigzag2.png',
-          '/img/zigzag/zigzag3.png',
-          '/img/zigzag/zigzag4.png',
-        ];
+    this.apiService.getSectionData("product").subscribe((data) => {
+      const zigzags = [
+        '/img/zigzag/zigzag1.png',
+        '/img/zigzag/zigzag2.png',
+        '/img/zigzag/zigzag3.png',
+        '/img/zigzag/zigzag4.png',
+        '/img/zigzag/zigzag1.png',
+        '/img/zigzag/zigzag2.png',
+        '/img/zigzag/zigzag3.png',
+        '/img/zigzag/zigzag4.png',
+      ];
 
-        const filtered = (data?.data || []).filter((p: Product) =>
-          this.allowedTitles.includes(p.title)
-        );
+      const filtered = (data?.data || []).filter((p: Product) =>
+        this.allowedTitles.includes(p.title)
+      );
 
-        const mapped = filtered.map((p: Product, index: number) => ({
-          ...p,
-          zigzag: index < zigzags.length ? zigzags[index] : null,
-        }));
+      const mapped = filtered.map((p: Product, index: number) => ({
+        ...p,
+        zigzag: index < zigzags.length ? zigzags[index] : null,
+      }));
 
-        this.appData.products.set(mapped);
+      this.appData.products.set(mapped);
+      this.isLoadingProducts.set(false);
+    }, (error) => {
+        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
         this.isLoadingProducts.set(false);
-      }, (error) => {
-          this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-          this.isLoadingProducts.set(false);
-      });
-    } else {
-        // this.apiService.getData('product', '', '').subscribe((data: any) => {
-        //   this.appData.products.set(data.data as Product[]);
-        //   this.isLoadingProducts.set(false);
-        // }, (error) => {
-        //    this.apiService.getSectionData("product", true).subscribe((data) => {
-        //       this.appData.products.set(data?.data);
-        //       this.isLoadingProducts.set(false);
-        //     }, (error) => {
-        //         this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
-        //         this.isLoadingProducts.set(false);
-        //     });
-        // });
-    }
+    });
   }
 
   scrollLeft() {
