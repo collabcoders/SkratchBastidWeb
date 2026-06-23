@@ -63,7 +63,7 @@
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "src/assets/js/libs.js",
               "node_modules/@fortawesome/fontawesome-free/js/all.min.js",
-              "node_modules/bootbox/bootbox.js"
+              "node_modules/bootbox/dist/bootbox.js"
             ],
             "browser": "src/main.ts",
             "stylePreprocessorOptions": {
