@@ -19,12 +19,12 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # @angular/cli 22 requires Node ^22.22.3 || ^24.15.0 || >=26.0.0.
       # Pinning '22.22' picks the latest 22.22.x, which satisfies that.
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22.22'
           # No `cache: npm` here: package-lock.json is gitignored in this repo,

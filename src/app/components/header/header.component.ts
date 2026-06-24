@@ -82,13 +82,13 @@ export class HeaderComponent implements OnDestroy, OnInit {
   openLogin() {
     this.accountMenuOpen = false;
     this.closeMobileMenu();
-    this.openAuthRoute('/login', 'loginModal');
+    this.openAuthModal('loginModal');
   }
 
   openRegister() {
     this.accountMenuOpen = false;
     this.closeMobileMenu();
-    this.openAuthRoute('/join', 'registerModal');
+    this.openAuthModal('registerModal');
   }
 
   logout() {
@@ -167,22 +167,11 @@ export class HeaderComponent implements OnDestroy, OnInit {
     }
   }
 
-  private openAuthRoute(route: '/login' | '/join', modalId: 'loginModal' | 'registerModal') {
-    if (this.router.url === route) {
-      setTimeout(() => this.showModal(modalId), 0);
-      return;
-    }
-
-    if (route === '/login') {
-      this.router.navigate([route], {
-        queryParams: {
-          returnUrl: this.router.url,
-        },
-      });
-      return;
-    }
-
-    this.router.navigate([route]);
+  // The login/register modals live globally in <app-forms>, so just open the
+  // requested one in place — no router navigation. (The /login and /join routes
+  // both resolve to HomeComponent, which is why clicking used to jump to home.)
+  private openAuthModal(modalId: 'loginModal' | 'registerModal') {
+    setTimeout(() => this.showModal(modalId), 0);
   }
 
   private showModal(modalId: string, retries = HeaderComponent.modalRetryCount) {

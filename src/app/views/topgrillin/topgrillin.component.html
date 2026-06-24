@@ -52,7 +52,7 @@
   </div>
 
   <!-- VIP Benefits -->
-  <div class="bg-white text-gray-900 px-2 md:px-4 py-14">
+  <div class="bg-[#F9FAFB] text-gray-900 px-2 md:px-4 py-14">
     <div class="max-w-[1440px] mx-auto px-10 md:px-16">
       <h2 #reveal class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-[#1b2130] reveal reveal-up">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-[#FF5941]">
@@ -62,13 +62,24 @@
       </h2>
       <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @for (benefit of benefits; track benefit.title) {
-          <div #reveal class="group rounded-2xl border border-gray-200 bg-white p-7 shadow-sm hover:shadow-[8px_8px_0_0_#142129] hover:-translate-y-1 transition-all reveal reveal-up"
+          <div #reveal class="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white px-7 pt-7 pb-12 shadow-sm hover:shadow-[8px_8px_0_0_#142129] hover:-translate-y-1 transition-all reveal reveal-up"
             [style.transitionDelay]="($index * 120) + 'ms'">
             <div class="w-12 h-12 rounded-xl bg-[#FF5941]/10 text-[#FF5941] flex items-center justify-center mb-5 group-hover:bg-[#FF5941] group-hover:text-white transition-colors">
               <span [innerHTML]="trustIcon(benefit.icon)" class="w-6 h-6 block"></span>
             </div>
             <h3 class="text-lg font-extrabold text-[#1b2130]">{{ benefit.title }}</h3>
             <p class="mt-2 text-sm text-gray-500 leading-relaxed">{{ benefit.description }}</p>
+            <!-- Different-color squiggle accent per card. First card uses the light
+                 blue variant, last card (BBQ Perks) the #1F85FF blue; the rest cycle
+                 the brand zigzags. Some cards are nudged horizontally — Live Streams
+                 (1) & First Access (4) 100px left, Community Access (2) 30px right,
+                 BBQ Perks (5) 100px right — and widened to match so they still span
+                 the full card with no blank edge. -->
+            <img [src]="$index === 0 ? '/img/zigzag/zigzag-blue.png' : ($index === 5 ? '/img/zigzag/zigzag-blue2.png' : '/img/zigzag/zigzag' + (($index % 4) + 1) + '.png')" alt="" aria-hidden="true"
+              class="pointer-events-none absolute bottom-0 left-0 w-full"
+              [style.width]="($index === 1 || $index === 4 || $index === 5) ? 'calc(100% + 100px)' : ($index === 2 ? 'calc(100% + 30px)' : null)"
+              [style.maxWidth]="($index === 1 || $index === 2 || $index === 4 || $index === 5) ? 'none' : null"
+              [style.transform]="($index === 1 || $index === 4) ? 'translateX(-100px)' : null" />
           </div>
         }
       </div>

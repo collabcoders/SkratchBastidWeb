@@ -20,6 +20,8 @@ import { Video } from '@shared/models/video';
 import { mappingFavorites } from '@shared/services/video-access.service';
 import { FavoritesService } from '@shared/services/favorites.service';
 
+declare var bootstrap: any;
+
 type PricingOption = {
   value: string;
   text: string;
@@ -233,8 +235,19 @@ export class TopGrillinComponent implements AfterViewInit {
     }
 
     openSignup(plan: 'free' | 'monthly' | 'yearly' = this.selectedPlan) {
+      // Preselect the toggled plan — a global effect in FormsComponent syncs the
+      // register form's plan to appData.planOpen — then open the register modal
+      // in place. No navigation: the /join route resolves to Home and would
+      // redirect away from this page.
       this.appData.planOpen.set(plan);
-      this.scrollToPricingSection();
+      setTimeout(() => this.openRegisterModal(), 0);
+    }
+
+    private openRegisterModal() {
+      const el = document.getElementById('registerModal');
+      if (el && typeof bootstrap !== 'undefined' && bootstrap?.Modal) {
+        bootstrap.Modal.getOrCreateInstance(el, { backdrop: 'static', keyboard: false }).show();
+      }
     }
 
     openSignupModal(event?: Event) {
