@@ -62,7 +62,7 @@
                         style="scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none">
                         <div class="flex space-x-2 md:space-x-4 pb-4" style="width: max-content">
                             @for (product of appData.products(); track $index) {
-                            <div class="hover:opacity-75 transition-opacity duration-200 relative" style="
+                            <div class="group relative" style="
                                     flex-shrink: 0;
                                     box-sizing: border-box;
                                     min-height: 1px;
@@ -70,7 +70,9 @@
                                 ">
                                 <a [href]="product.link" target="_blank" rel="noopener noreferrer">
                                     <div style="position: relative;">
-                                        <img [src]="product.image" [alt]="product.title" class="rounded-lg aspect-square object-cover w-[280px] bg-gray-100" />
+                                        <div class="overflow-hidden rounded-lg">
+                                            <img [src]="product.image" [alt]="product.title" class="rounded-lg aspect-square object-cover w-[280px] bg-gray-100 transition-transform duration-300 group-hover:scale-110" />
+                                        </div>
                                         @if (product.zigzag) {
                                             <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
                                         }
