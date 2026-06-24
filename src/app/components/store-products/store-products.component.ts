@@ -1,14 +1,18 @@
 import { Component, signal, WritableSignal, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 
-import { ApiService } from '@shared/services/api.service';
+import { LegendsProductsService } from '@shared/services/legends/products.service';
 import { AppData } from 'src/app/app.data';
 
-interface Product {
+// Shape returned by GET /api/products
+interface ApiProduct {
+  productId: number;
   title: string;
+  description: string;
   price: string;
   image: string;
-  link: string;
-  zigzag: string;
+  url: string;
+  category: string;
+  order: number;
 }
 
 @Component({
@@ -19,41 +23,31 @@ interface Product {
   styleUrl: './store-products.component.scss'
 })
 export class StoreProductsComponent {
-  allowedTitles: string[] = [
-    'Skratch Bastid x OBEY: Serato Control Vinyl',
-    "Bastid's BBQ Ball Cap - Available in Black or White",
-    "Bastid's BBQ 2024 Short Sleeve T-Shirt Black",
-    "Bastid's BBQ 2024 Short Sleeve T-Shirt White",
-    'OBEYxBastid - Tee  - Limited Capsule Drop',
-    'OBEYxBastid - Hoodie  - Limited Capsule Drop',
-    'OBEYxBastid - Hat  - Limited Capsule Drop',
-    "Skratch Bastid Socks"
-  ];
   isLoadingProducts: WritableSignal<boolean> = signal(false);
   @ViewChild('storeCarousel') storeCarousel!: ElementRef<HTMLDivElement>;
 
-  constructor(private apiService: ApiService, public appData: AppData) {
+  constructor(private productsService: LegendsProductsService, public appData: AppData) {
     this.isLoadingProducts.set(true);
-    this.apiService.getSectionData("product").subscribe((data) => {
+    this.productsService.getProducts().subscribe((data) => {
       const zigzags = [
-        '/img/zigzag/zigzag1.png',
-        '/img/zigzag/zigzag2.png',
-        '/img/zigzag/zigzag3.png',
-        '/img/zigzag/zigzag4.png',
         '/img/zigzag/zigzag1.png',
         '/img/zigzag/zigzag2.png',
         '/img/zigzag/zigzag3.png',
         '/img/zigzag/zigzag4.png',
       ];
 
-      const filtered = (data?.data || []).filter((p: Product) =>
-        this.allowedTitles.includes(p.title)
-      );
-
-      const mapped = filtered.map((p: Product, index: number) => ({
-        ...p,
-        zigzag: index < zigzags.length ? zigzags[index] : null,
-      }));
+      // The API returns the curated, order-sorted set; map its fields onto the
+      // shape the template expects (url -> link) and cycle the zigzag accents.
+      const mapped = (data?.data || [])
+        .slice()
+        .sort((a: ApiProduct, b: ApiProduct) => (a.order ?? 0) - (b.order ?? 0))
+        .map((p: ApiProduct, index: number) => ({
+          title: p.title,
+          price: p.price,
+          image: p.image,
+          link: p.url,
+          zigzag: zigzags[index % zigzags.length],
+        }));
 
       this.appData.products.set(mapped);
       this.isLoadingProducts.set(false);
