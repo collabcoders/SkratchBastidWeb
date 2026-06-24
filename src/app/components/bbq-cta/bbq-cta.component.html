@@ -1,22 +1,29 @@
 <div class="w-full bg-white p-6 rounded-2xl">
-  <video #ctaVideo src="/assets/bbq-home.mp4" class="w-full rounded-xl mb-6 object-cover md:h-[100%] h-[30vh]"
-    autoplay loop muted playsinline aria-label="Bastid's BBQ"></video>
+  <!-- Section Header -->
+  <div class="flex justify-between items-center pr-4 mb-4">
+    <div class="flex items-center gap-2">
+      <img src="/img/bbqImg.png" alt="New in Top Grillin" class="w-6 h-6" />
+      <h2 class="text-[16px] font-semibold text-gray-800">Bastid's BBQ</h2>
+    </div>
+    <div>
+      <a href="/bastidbbq" rel="noopener noreferrer" target="_blank"
+        class="text-white hover:text-black hover:bg-white text-sm py-1">
+        <div class="bg-[#FF5941] px-4 py-2 rounded-lg">
+          <span class="text-[14px] font-bold text-white uppercase tracking-wide">Learn More</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <video #ctaVideo src="/assets/bbq-home.mp4" class="w-full rounded-xl mb-6 object-cover md:h-[100%] h-[30vh]" autoplay
+    loop muted playsinline aria-label="Bastid's BBQ"></video>
   <div class="grid grid-cols-12 items-center gap-4 md:grid md:grid-cols-12 md:gap-4 md:items-center">
-    <h2 class="col-span-12 md:col-span-2 text-lg font-bold text-gray-800 mb-2 md:mb-0">
-      Bastid's BBQ
-    </h2>
-    <p class="col-span-12 md:col-span-8 text-gray-600 mb-4 md:mb-0">
+    <p class="col-span-12 text-gray-600">
       Bastid's BBQ was founded in 2011 by acclaimed DJ Skratch Bastid as a platform to channel his
       passions of music, food, and building community. Today, the party has become a globally
       recognized event series, spanning multiple cities around the world and bringing some of the
       most talented and legendary DJs and producers in music to its stage. Life is always better
       with good music, good food, and good people.
     </p>
-    <a href="/bastidbbq" rel="noopener noreferrer" class="w-[max-content]">
-      <button
-        class=" col-span-12 md:col-span-2 bg-[#FF5941] text-white py-2 px-4 !rounded-lg hover:bg-[#e04f39] transition">
-        Learn more
-      </button>
-    </a>
   </div>
 </div>
