@@ -44,8 +44,8 @@
                                 box-sizing: border-box;
                                 min-height: 1px;
                                 scroll-snap-align: start;
-                                width: 200px;">
-                            <div class="rounded-lg aspect-square object-cover w-[200px] bg-gray-200 mb-2" style="height: 200px;"></div>
+                                width: 280px;">
+                            <div class="rounded-lg aspect-square object-cover w-[280px] bg-gray-200 mb-2" style="height: 280px;"></div>
                             <div class="h-4 w-2/3 bg-gray-300 rounded mb-2"></div>
                             <div class="h-3 w-1/2 bg-gray-200 rounded mb-1"></div>
                         </div>
@@ -70,12 +70,12 @@
                                 ">
                                 <a [href]="product.link" target="_blank" rel="noopener noreferrer">
                                     <div style="position: relative;">
-                                        <img [src]="product.image" [alt]="product.title" class="rounded-lg aspect-square object-cover w-[200px]" />
+                                        <img [src]="product.image" [alt]="product.title" class="rounded-lg aspect-square object-cover w-[280px]" />
                                         @if (product.zigzag) {
                                             <img [src]="product.zigzag" alt="Rotating Banner" class="rotating-banner">
                                         }
                                     </div>
-                                    <div class="mt-2" style="width: 200px">
+                                    <div class="mt-2" style="width: 280px">
                                         <div class="font-semibold mt-4 mb-2 text-[16px] leading-tight truncate">{{ product.title }}</div>
                                         <p class="text-[12px] truncate">{{ product.price }}</p>
                                     </div>
