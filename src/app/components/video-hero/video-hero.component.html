@@ -56,6 +56,26 @@
       }
     </div>
 
+    <!-- Side Navigation Arrows (vertically centered, aligned to each edge) -->
+    @if (videos.length > 1) {
+      <button (click)="previousVideo()"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
+        title="Previous Video">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-6 h-6 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <button (click)="nextVideo()"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
+        title="Next Video">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+          class="w-6 h-6 text-black">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+    }
+
     <!-- Bottom gradient for button visibility -->
     <div
       class="px-4 pb-4 absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/100 to-transparent flex items-end justify-between">
@@ -97,42 +117,15 @@
             }
           </button>
         }
-
-        <!-- Navigation Controls -->
-        @if (videos.length > 1) {
-        <div class="flex gap-2 items-center">
-          <!-- Previous Button -->
-          <button (click)="previousVideo()"
-            class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
-            title="Previous Video">
-            <svg data-v-23e43524="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" class="w-6 h-6 text-black">
-              <path data-v-23e43524="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 19l-7-7 7-7"></path>
-            </svg>
-          </button>
-
-          <!-- Next Button -->
-          <button (click)="nextVideo()"
-            class="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all backdrop-blur-sm"
-            title="Next Video">
-            <svg data-v-23e43524="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor" class="w-6 h-6 text-black">
-              <path data-v-23e43524="" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-              </path>
-            </svg>
-          </button>
-        </div>
-        }
       </div>
 
       <!-- Position Indicators (bottom-right) -->
       @if (videos.length > 1) {
         <div class="indicator-wrapper">
           @for (banner of videos; track banner.adId; let i = $index) {
-            <button type="button" (click)="goToIndex(i)" class="indicator-dot" [ngClass]="{'active': currentVideoIndex() === i}">
-              {{ i + 1 }}
-            </button>
+            <button type="button" (click)="goToIndex(i)" class="indicator-dot"
+              [ngClass]="{'active': currentVideoIndex() === i}"
+              [attr.aria-label]="'Go to slide ' + (i + 1)"></button>
           }
         </div>
       }

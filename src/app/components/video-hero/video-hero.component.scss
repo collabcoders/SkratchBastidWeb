@@ -135,25 +135,21 @@
 }
 
 .indicator-dot {
-  width: 2rem;
-  height: 2rem;
+  width: 0.625rem;
+  height: 0.625rem;
+  padding: 0;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   background: rgba(0, 0, 0, 0.35);
-  color: #fff;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 700;
+  flex: 0 0 auto;
   transition: all 0.2s ease;
 
   &.active {
     background: #fff;
-    color: #000;
     border-color: #fff;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
   }
 }
 
