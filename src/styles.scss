@@ -16,6 +16,14 @@
 }
 /* Tailwind is loaded via src/tailwind.css (see angular.json styles). */
 
+/* Bootstrap's reboot sets a global `button { border-radius: 0 }`. Because that
+   rule is unlayered while Tailwind utilities live in a cascade layer, it wins
+   over `.rounded-full` and squares off icon buttons (carousel arrows, etc.).
+   Restore the intended pill/circle for any button explicitly asking for it. */
+button.rounded-full {
+  border-radius: 9999px;
+}
+
 /* Use Poppins for BBQ page */
 @font-face {
   font-family: 'Poppins';
