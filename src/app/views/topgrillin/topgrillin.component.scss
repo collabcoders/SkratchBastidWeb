@@ -1,5 +1,47 @@
 /* Top Grillin Component Styles */
 
+/* Reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  /* Slower, smoother ease-out for a graceful settle. */
+  transition: opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-left {
+  transform: translateX(-32px);
+}
+
+.reveal-right {
+  transform: translateX(32px);
+}
+
+.reveal-up {
+  transform: translateY(32px);
+}
+
+.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* Consistent, on-brand keyboard focus ring for the block-style CTAs/controls. */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #ffffff, 0 0 0 6px #ff5941;
+}
+
+/* Respect users who prefer reduced motion: reveal everything immediately and
+   disable parallax-driven transitions. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
 .image-shell {
   position: relative;
   overflow: hidden;

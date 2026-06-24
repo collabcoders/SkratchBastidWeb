@@ -7,23 +7,25 @@
   <!-- Video Carousel Section -->
   <!-- <app-video-carousel [section]="featuredVideosSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel> -->
 
-  <!-- New in Top Grillin Section -->
-  <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop"></app-video-carousel>
+  <!-- New in Top Grillin Section — carousel staggers its own slides in -->
+  <app-video-carousel [section]="topGrillinSection" [isLoadingVideo]="isLoadingVideoTop" [reveal]="true"
+    containerClass="bg-[#F9FAFB] border-x-2 border-b-2 border-dotted border-[#FFA503] pb-6 mb-6"></app-video-carousel>
 
   <!-- Store Products Section -->
-  <app-store-products></app-store-products>
+  <app-store-products #reveal class="reveal reveal-up"></app-store-products>
 
   <!-- Mixes Section -->
-  <app-mixes-slider [section]="mixesSection" [isLoadingMusic]="isLoadingMusic"></app-mixes-slider>
+  <app-mixes-slider #reveal class="reveal reveal-up" [section]="mixesSection" [isLoadingMusic]="isLoadingMusic"
+    containerClass="bg-[#F9FAFB] border-t-2 border-b-2 border-dotted border-t-[#EFDA0F] border-b-[#FF95BC] py-6"></app-mixes-slider>
 
   <!-- BBQ CTA Section -->
-  <app-bbq-cta></app-bbq-cta>
+  <app-bbq-cta #reveal class="reveal reveal-up"></app-bbq-cta>
 
   <!-- Free Trial Form -->
-  <app-free-trial-form [showTopMargin]="true"></app-free-trial-form>
+  <app-free-trial-form #reveal class="reveal reveal-up" [showTopMargin]="true"></app-free-trial-form>
 
   <!-- Global Audio Player Bar -->
   <app-audio-player-bar></app-audio-player-bar>
   <!-- Footer -->
-  <app-footer></app-footer>
+  <app-footer #reveal class="reveal reveal-up"></app-footer>
 </div>

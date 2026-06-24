@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, WritableSignal, ChangeDetectionStrategy, AfterViewInit, OnDestroy, ElementRef, inject, ViewChildren, QueryList } from '@angular/core';
 import { HeaderComponent } from '../../components/header/header.component';
 import { VideoHeroComponent } from '../../components/video-hero/video-hero.component';
 import {
@@ -45,7 +45,13 @@ import { LegendsAdsService } from '@shared/services/legends/ads.service';
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements AfterViewInit, OnDestroy {
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  // Read ElementRef explicitly: these refs sit on component elements, so the
+  // default read would hand back component instances, not their host elements.
+  @ViewChildren('reveal', { read: ElementRef }) revealBlocks!: QueryList<ElementRef>;
+  private revealObserver?: IntersectionObserver;
+
   // Featured Videos Section (top hero section)
   featuredVideosSection: VideoSection = {
     title: 'Latest Live Sets',
@@ -142,5 +148,39 @@ export class HomeComponent {
           this.isLoadingMusic.set(false);
         });
     }
+  }
+
+  // Scroll-reveal for the content sections, mirroring the Bastid's BBQ page:
+  // each `.reveal` block rises and fades in once it's well into the viewport
+  // (bottom 30% excluded), so they appear progressively as you scroll. Bails out
+  // under reduced motion or without IntersectionObserver, leaving sections fully
+  // visible (the .home-parallax-ready gate is what hides them, so no-JS = shown).
+  ngAfterViewInit() {
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      return;
+    }
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    this.host.nativeElement.classList.add('home-parallax-ready');
+
+    this.revealObserver = new IntersectionObserver(
+      (entries, observer) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold: 0, rootMargin: '0px 0px -30% 0px' }
+    );
+
+    this.revealBlocks.forEach((el) => this.revealObserver!.observe(el.nativeElement));
+  }
+
+  ngOnDestroy() {
+    this.revealObserver?.disconnect();
   }
 }

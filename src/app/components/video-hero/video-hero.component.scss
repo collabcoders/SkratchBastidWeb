@@ -23,6 +23,25 @@
   --hero-transition-ms: 600ms;
 }
 
+// Parallax carrier. Reads --hero-parallax (set per-frame by the component on
+// scroll) and shifts the media layers vertically. Sits between the root and
+// .hero-media so this translateY composes with the slides' translateX rather
+// than clobbering it. The offset is capped (component side) within the media's
+// scale-110 bleed, so edges never reveal.
+.hero-parallax {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transform: translate3d(0, var(--hero-parallax, 0px), 0);
+}
+
+// Parallax is a vestibular trigger — never animate it under reduced motion.
+@media (prefers-reduced-motion: reduce) {
+  .hero-parallax {
+    transform: none !important;
+  }
+}
+
 .hero-media {
   position: absolute;
   inset: 0;

@@ -34,6 +34,9 @@ export interface MixesSection {
 export class MixesSliderComponent {
   section = input.required<MixesSection>();
   @Input({ required: true }) isLoadingMusic!: Signal<boolean>;
+  /** Tailwind classes for the section's outer container, so a host page can give
+   *  it a panel look (e.g. a light-grey bordered card). Defaults to plain white. */
+  @Input() containerClass = 'bg-white';
 
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;

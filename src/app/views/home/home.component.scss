@@ -1,1 +1,36 @@
 // Using Tailwind classes in the template instead
+
+// Scroll-reveal for the home page's content sections, matching the Bastid's BBQ
+// page (same classes, timing and easing). Sections only hide once JS confirms it
+// can animate (adds .home-parallax-ready on the host), so without JS or under
+// reduced motion everything stays visible.
+:host(.home-parallax-ready) {
+  .reveal {
+    display: block;
+    opacity: 0;
+    transform: translateY(24px);
+    // Slow, smooth ease-out for a graceful settle.
+    transition:
+      opacity 1100ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 1300ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform, opacity;
+  }
+
+  .reveal-up {
+    transform: translateY(32px);
+  }
+
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+// Large-scale scroll motion is a vestibular trigger — never animate it here.
+@media (prefers-reduced-motion: reduce) {
+  :host(.home-parallax-ready) .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

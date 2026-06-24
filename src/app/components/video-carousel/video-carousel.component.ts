@@ -58,6 +58,9 @@ export class VideoCarouselComponent implements OnInit, AfterViewInit, OnDestroy 
   @Input({ required: true }) isLoadingVideo!: Signal<boolean>;
   /** Opt-in: stagger-reveal each slide as the carousel scrolls into view. */
   @Input() reveal = false;
+  /** Tailwind classes for the section's outer container, so a host page can give
+   *  it a panel look (e.g. a light-grey bordered card). Defaults to plain white. */
+  @Input() containerClass = 'bg-white';
 
   @ViewChild('carousel', { static: false }) carousel!: ElementRef;
   @ViewChildren('revealCard') revealCards!: QueryList<ElementRef>;

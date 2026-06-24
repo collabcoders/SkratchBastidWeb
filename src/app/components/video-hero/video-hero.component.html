@@ -5,24 +5,28 @@
     </div>
   }
   @if (videos.length! > 0) {
+    <!-- Parallax carrier: shifts the media layers at a fraction of scroll for depth.
+         Slide animations live on .hero-media (translateX); this wraps them so the
+         parallax translateY composes instead of conflicting. -->
+    <div class="hero-parallax">
     <!-- Outgoing slide (previous slide sliding out) -->
     @if (isTransitioning() && getPreviousVideo()) {
       <div class="hero-media outgoing"
         [class.slide-next]="lastDirection() === 'next'"
         [class.slide-prev]="lastDirection() === 'prev'">
         @if (heroVideoSrc(getPreviousVideo()!)) {
-          <video class="absolute inset-0 w-full h-full object-cover scale-110 origin-top" muted
+          <video class="absolute inset-0 w-full h-full object-cover scale-125 origin-top" muted
             autoplay loop playsinline [poster]="heroPoster(getPreviousVideo()!)" [src]="heroVideoSrc(getPreviousVideo()!)">
           </video>
         } @else {
-          <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top hero-image-shell">
+          <div class="absolute inset-0 w-full h-full object-cover scale-125 origin-top hero-image-shell">
             @if (isImageLoading(getPreviousVideo()!.image)) {
               <div class="hero-image-shimmer absolute inset-0"></div>
             }
             <img
               [src]="getPreviousVideo()!.image"
               [alt]="getPreviousVideo()!.title"
-              class="inset-0 w-full h-full object-cover scale-110 origin-top hero-image"
+              class="inset-0 w-full h-full object-cover scale-125 origin-top hero-image"
               [class.hero-image--loaded]="!isImageLoading(getPreviousVideo()!.image)"
               (load)="onImageLoaded(getPreviousVideo()!.image)" />
           </div>
@@ -37,24 +41,26 @@
       [class.slide-prev]="lastDirection() === 'prev'">
       <!-- Background Video -->
       @if (heroVideoSrc(getCurrentVideo())) {
-      <video #videoElement class="absolute inset-0 w-full h-full object-cover scale-110 origin-top" [muted]="isMuted()"
+      <video #videoElement class="absolute inset-0 w-full h-full object-cover scale-125 origin-top" [muted]="isMuted()"
         autoplay loop playsinline [poster]="heroPoster(getCurrentVideo())" [src]="heroVideoSrc(getCurrentVideo())">
         Your browser does not support the video tag.
       </video>
       } @else {
-      <div class="absolute inset-0 w-full h-full object-cover scale-110 origin-top hero-image-shell">
+      <div class="absolute inset-0 w-full h-full object-cover scale-125 origin-top hero-image-shell">
         @if (isImageLoading(getCurrentVideo().image)) {
           <div class="hero-image-shimmer absolute inset-0"></div>
         }
         <img
           [src]="getCurrentVideo().image"
           [alt]="getCurrentVideo().title"
-          class="inset-0 w-full h-full object-cover scale-110 origin-top hero-image"
+          class="inset-0 w-full h-full object-cover scale-125 origin-top hero-image"
           [class.hero-image--loaded]="!isImageLoading(getCurrentVideo().image)"
           (load)="onImageLoaded(getCurrentVideo().image)" />
       </div>
       }
     </div>
+    </div>
+    <!-- /.hero-parallax -->
 
     <!-- Side Navigation Arrows (vertically centered, aligned to each edge) -->
     @if (videos.length > 1) {

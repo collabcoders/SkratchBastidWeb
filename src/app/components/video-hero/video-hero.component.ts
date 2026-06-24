@@ -45,6 +45,15 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
   private progressInterval: ReturnType<typeof setInterval> | null = null;
   private progressRaf: number | null = null;
 
+  // Parallax: host element to write the --hero-parallax CSS var onto, plus the
+  // rAF/scroll plumbing. Factor 0.2 lifts the media up to 20vh as the hero
+  // exits — clearly readable depth while staying inside the media's scale-125
+  // bleed (25vh) so no edge ever reveals.
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly parallaxFactor = 0.2;
+  private parallaxRaf: number | null = null;
+  private parallaxScrollHandler?: () => void;
+
   isMuted = signal(true);
   currentVideoIndex = signal(0);
   isTransitioning = signal(false);
@@ -65,6 +74,7 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     this.setupVideo();
     this.isLoggedIn$ = this.token.isValid(undefined);
     this.setupAutoRotate();
+    this.setupParallax();
   }
 
   ngOnDestroy() {
@@ -73,6 +83,51 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     this.clearProgressTimer();
     this.cancelProgressRaf();
     this.rotationEffect?.destroy();
+    this.teardownParallax();
+  }
+
+  // Drive a subtle scroll parallax on the hero media by writing a CSS var the
+  // .hero-parallax layer consumes. Bails out entirely under reduced motion —
+  // parallax is a vestibular trigger — leaving the var unset (no transform).
+  private setupParallax() {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    this.parallaxScrollHandler = () => {
+      if (this.parallaxRaf !== null) {
+        return;
+      }
+      this.parallaxRaf = requestAnimationFrame(() => {
+        this.parallaxRaf = null;
+        this.updateParallax();
+      });
+    };
+
+    window.addEventListener('scroll', this.parallaxScrollHandler, { passive: true });
+    this.updateParallax();
+  }
+
+  private updateParallax() {
+    const viewportH = window.innerHeight || 1;
+    // Shift up at a fraction of scroll, clamped to one viewport so the offset
+    // stays within the media's bleed once the hero has scrolled away.
+    const offset = Math.min(window.scrollY, viewportH) * this.parallaxFactor;
+    this.host.nativeElement.style.setProperty('--hero-parallax', `${-offset}px`);
+  }
+
+  private teardownParallax() {
+    if (this.parallaxScrollHandler) {
+      window.removeEventListener('scroll', this.parallaxScrollHandler);
+      this.parallaxScrollHandler = undefined;
+    }
+    if (this.parallaxRaf !== null) {
+      cancelAnimationFrame(this.parallaxRaf);
+      this.parallaxRaf = null;
+    }
   }
 
   setupVideo() {
