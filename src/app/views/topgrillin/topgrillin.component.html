@@ -1,181 +1,152 @@
 <app-header></app-header>
 
 @if (!(isLoggedIn$ | async)) {
-<div class="">
+<div class="bg-white">
   <!-- Hero Section -->
-  <div class="bg-[#142129] text-white md:px-12 px-6 py-28 flex flex-col items-center md:flex-row gap-24">
-    <div class="flex-1 md:w-70 flex flex-col gap-4">
-      <div class="image-shell rounded-lg h-[334px]">
-        @if (isImageLoading('heroPrimary')) {
-          <div class="image-shimmer rounded-lg h-full w-full"></div>
-        }
-        <img
-          src="/img/services2.png"
-          alt="Image 1"
-          class="rounded-lg w-full h-[334px] object-cover image-fade"
-          [class.image-fade--loaded]="!isImageLoading('heroPrimary')"
-          (load)="onImageLoaded('heroPrimary')" />
+  <div class="relative h-[calc(100vh-50px)] flex items-end justify-start text-white overflow-hidden pb-12 md:pb-16">
+    <video
+      #heroVideo
+      class="absolute inset-0 w-full h-full object-cover z-0 will-change-transform"
+      [style.transform]="'translate3d(0,' + (parallaxOffset * 0.5) + 'px,0) scale(1.2)'"
+      autoplay
+      muted
+      loop
+      playsinline
+      poster="/img/services2.png">
+      <source src="/assets/top-grillin.mp4" type="video/mp4" />
+    </video>
+    <div class="absolute inset-0 bg-gradient-to-t from-[#0c151b] via-black/55 to-black/40 z-0"></div>
+    <div class="absolute bottom-0 left-0 z-10 w-full max-w-[1440px] px-10 md:px-16 pb-12 md:pb-16 will-change-transform"
+      [style.transform]="'translate3d(0,' + (parallaxOffset * -0.3) + 'px,0)'"
+      [style.opacity]="heroOpacity">
+      <div class="text-left" style="
+          font-family: 'WT Volkolak Grotesque', system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-weight: 700;
+        ">
+        <span #heroReveal class="reveal reveal-left inline-flex items-center gap-2 mb-5 rounded-full border border-white/25 bg-white/10 backdrop-blur-sm px-4 py-1.5 text-xs font-extrabold uppercase tracking-[0.2em] text-white" style="transition-delay: 200ms;">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#FF5941]"></span>
+          Members-Only VIP Access
+        </span>
+        <h1 #heroReveal class="!text-[48px] md:!text-[64px] font-bold leading-[2.5rem] md:leading-[3.25rem] reveal reveal-left" style="transition-delay: 400ms;">WELCOME TO</h1>
+        <h1 #heroReveal class="!text-[48px] md:!text-[64px] font-bold leading-[2.5rem] md:leading-[3.25rem] text-[#FF5941] reveal reveal-left" style="transition-delay: 800ms;">TOP GRILLIN'</h1>
       </div>
-      <div class="image-shell rounded-lg h-[334px]">
-        @if (isImageLoading('heroSecondary')) {
-          <div class="image-shimmer rounded-lg h-full w-full"></div>
-        }
-        <img
-          src="/img/services1.png"
-          alt="Image 2"
-          class="rounded-lg w-full h-[334px] object-cover image-fade"
-          [class.image-fade--loaded]="!isImageLoading('heroSecondary')"
-          (load)="onImageLoaded('heroSecondary')" />
-      </div>
-    </div>
-    <div class="flex-1 md:w-30">
-      <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">Welcome to</h1>
-      <h1 class="text-[48px] md:text-[64px] font-bold" style="line-height: 4rem">TOP GRILLIN'</h1>
-      <h2 class="text-2xl mt-2 font-bold">As a VIP, you'll enjoy</h2>
-      <p class="mt-2 text-gray-300">
-        Access to Skratch Bastid's DJ Streams – Get up close and personal with epic sets you won't
-        hear anywhere else.  Join our community for exclusive access to Skratch Bastid's world.
+      <p #heroReveal class="mt-6 max-w-xl text-base md:text-lg text-gray-200 leading-relaxed reveal reveal-up" style="transition-delay: 1100ms;">
+        Get up close with Skratch Bastid's world — exclusive DJ streams, members-only sets, and the perks that come with being a VIP.
       </p>
-      <div class="mt-4 border-l-4 border-[#FF5941] pl-8 p-4 mt-8 mb-8">
-        <ul class="list-disc list-inside text-gray-300">
-          <li class="mb-6">
-            Complete Archive of Twitch Streams – Access over 500 shows of Skratch Bastid's streaming
-            content, including Tuesday Morning Coffee sessions, Pop-Up events, and more.
-          </li>
-          <li class="mb-6">
-            Exclusive Mixes – AAccess to high-quality micless audio of every stream, including other exclusive mixes curated playlits.
-          </li>
-          <li class="mb-6">
-            Private Virtual Performances – Experience intimate, members-only shows from the man
-            himself.
-          </li>
-          <li class="mb-6">
-            Merch Discounts – Score deals on Bastid-branded gear to rep your love for music and
-            flavor.
-          </li>
-          <li>
-            Discounts and Early Access to Everything Skratch Bastid – Be the first to know about new music,
-            and events, including Skratch's globally recognized Bastid's BBQ!
-          </li>
-        </ul>
-      </div>
-      <a href="#" (click)="scrollToPricingSection($event)"
-        class="mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
-        JOIN NOW
-      </a>
-    </div>
-  </div>
-
-  <!-- Video Section -->
-  <app-video-carousel [section]="videoSection" [isLoadingVideo]="isLoadingVideo"></app-video-carousel>
-
-  <!-- Platform Section -->
-  <div class="bg-[#142129] text-white md:px-12 px-6 py-12 flex flex-col items-center md:flex-row gap-24">
-    <div class="flex-1 md:w-30">
-      <h2 class="text-3xl font-bold">Platform</h2>
-      <p class="mt-2 text-gray-300">
-        Join our private server and community for exclusive access to Skratch Bastid's world.
-      </p>
-      <div class="mt-4 border-l-4 border-[#FF5941] pl-8 p-4 mt-8 mb-8">
-        <ul class="list-none pl-0 text-gray-300">
-          @for (feature of platformFeatures; track feature.number) {
-          <li class="mb-8 flex items-center" [class.mb-0]="$last">
-            <span
-              class="w-8 h-8 mr-4 rounded-full border-2 border-white text-white text-center flex items-center justify-center p-6 text-[30px]">
-              {{ feature.number }}
-            </span>
-            <div>
-              <h3 class="text-white font-bold text-[20px]">{{ feature.title }}</h3>
-              <p class="text-[14px]">{{ feature.description }}</p>
-            </div>
-          </li>
-          }
-        </ul>
-      </div>
-      <p class="mt-2 text-gray-300">Become a Top Griller today!</p>
-      <a href="#" (click)="openSignupModal($event)"
-        class="mt-6 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
-        JOIN NOW
-      </a>
-    </div>
-    <div class="flex-1 md:w-70 flex flex-col gap-4">
-      <div class="image-shell rounded-lg h-100">
-        @if (isImageLoading('platform')) {
-          <div class="image-shimmer rounded-lg h-full w-full"></div>
-        }
-        <img
-          src="/img/platformimg.png"
-          alt="Image 1"
-          class="rounded-lg w-full h-100 object-cover image-fade"
-          [class.image-fade--loaded]="!isImageLoading('platform')"
-          (load)="onImageLoaded('platform')" />
-      </div>
-    </div>
-  </div>
-
-  <!-- Pricing Section -->
-  <div id="topgrillin-pricing-section" class="bg-[#fff] text-white md:px-12 px-6 py-12 items-center md:flex-row gap-24">
-    <h2 class="text-3xl !text-[#142129] font-bold text-center">Become a VIP Top Griller now</h2>
-    <p class="text-[#142129] text-center">Our membership offerings</p>
-    <div
-      class="md:max-w-[30%] ml-auto mr-auto flex flex-col-reverse md:flex-row justify-center items-stretch gap-16 mt-8">
-      <div class="flex-1 rounded-xl p-6 flex flex-col border-2 border-[#c0c0c05e] md:w-[35%] mb-2">
-        <div class="relative mb-4">
-          <h3 class="text-left font-bold text-2xl text-[#142129]">Join now</h3>
-        </div>
-        <ul class="text-left mb-8 flex-grow">
-          @for (feature of pricingFeatures; track feature) {
-          <li class="flex items-end mb-2">
-            <div class="w-6 h-6 flex-shrink-0 mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true"
-                role="img" class="icon w-full h-full text-[#FF5941]" width="1em" height="1em" viewBox="0 0 24 24">
-                <path fill="currentColor" fill-rule="evenodd"
-                  d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094z"
-                  clip-rule="evenodd"></path>
-              </svg>
-            </div>
-            <span class="flex-grow text-[14px] font-light text-[#5F5F5F]">{{ feature }}</span>
-          </li>
-          }
-        </ul>
-        <div class="flex items-center justify-center mb-4">
-          <span class="text-sm font-medium text-[#5F5F5F] mr-2" [class.font-bold]="!isAnnual">Monthly</span>
-          <button (click)="togglePricing()"
-            class="relative w-12 h-6 flex items-center rounded-full transition duration-300"
-            [class.bg-[#FF5941]]="isAnnual" [class.bg-gray-300]="!isAnnual">
-            <div class="absolute left-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300"
-              [class.translate-x-5]="isAnnual" [class.translate-x-0]="!isAnnual"></div>
-          </button>
-          <span class="text-sm font-medium text-[#5F5F5F] ml-2" [class.font-bold]="isAnnual">Annual</span>
-        </div>
-        <div class="text-[20px] font-bold mb-0 text-[#142129]">
-          ${{ currentPrice }}<span class="text-[14px] font-light">{{ currentPeriod }}</span>
-        </div>
-        <a (click)="openSignup(selectedPlan)"
-          class="text-center mt-4 inline-block bg-[#FF5941] text-white py-3 px-20 font-bold rounded-lg hover:bg-orange-600 transition">
-          SELECT
+      <div #heroReveal class="mt-8 reveal reveal-up" style="transition-delay: 1300ms;">
+        <a href="#" (click)="scrollToPricingSection($event)"
+          class="focus-ring inline-flex items-center justify-center gap-2 bg-[#FF5941] text-white font-extrabold uppercase tracking-widest text-sm px-9 py-4 rounded-2xl shadow-[6px_6px_0_0_#142129] hover:bg-orange-600 hover:-translate-y-0.5 transition-all">
+          Join Now →
         </a>
       </div>
     </div>
   </div>
 
-  <!-- Free Trial Form -->
-  <div id="topgrillin-free-trial-form">
-    <app-free-trial-form></app-free-trial-form>
+  <!-- Accent bar / intro blurb directly under the hero -->
+  <div class="bg-[#142129] border-b-[3px] border-[#FF5941] min-h-[100px] flex items-center px-2 md:px-4 py-8">
+    <div #reveal class="max-w-[1440px] mx-auto px-10 md:px-16 reveal reveal-up">
+      <p class="text-white text-base md:text-lg leading-relaxed text-center md:text-left">
+        Top Grillin' is your all-access pass to Skratch Bastid. Stream over 2,000 hours of exclusive DJ sets, join a private community, unlock store discounts, and be first in line for new music, merch, and events — including the globally recognized Bastid's BBQ.
+      </p>
+    </div>
   </div>
 
-  <!-- Bottom Image Section -->
-  <div class="bg-white relative">
-    <div class="image-shell">
-      @if (isImageLoading('footer')) {
-        <div class="image-shimmer h-[240px] md:h-[320px] w-full"></div>
-      }
-      <img
-        src="/img/bottom_image.png"
-        alt="Bottom Image"
-        class="bottom-0 left-0 w-full object-cover image-fade"
-        [class.image-fade--loaded]="!isImageLoading('footer')"
-        (load)="onImageLoaded('footer')" />
+  <!-- VIP Benefits -->
+  <div class="bg-white text-gray-900 px-2 md:px-4 py-14">
+    <div class="max-w-[1440px] mx-auto px-10 md:px-16">
+      <h2 #reveal class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-[#1b2130] reveal reveal-up">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-7 h-7 text-[#FF5941]">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+        </svg>
+        What you get as a VIP
+      </h2>
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        @for (benefit of benefits; track benefit.title) {
+          <div #reveal class="group rounded-2xl border border-gray-200 bg-white p-7 shadow-sm hover:shadow-[8px_8px_0_0_#142129] hover:-translate-y-1 transition-all reveal reveal-up"
+            [style.transitionDelay]="($index * 120) + 'ms'">
+            <div class="w-12 h-12 rounded-xl bg-[#FF5941]/10 text-[#FF5941] flex items-center justify-center mb-5 group-hover:bg-[#FF5941] group-hover:text-white transition-colors">
+              <span [innerHTML]="trustIcon(benefit.icon)" class="w-6 h-6 block"></span>
+            </div>
+            <h3 class="text-lg font-extrabold text-[#1b2130]">{{ benefit.title }}</h3>
+            <p class="mt-2 text-sm text-gray-500 leading-relaxed">{{ benefit.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Dotted divider -->
+  <div class="border-t-2 border-dotted border-[#FFA503]"></div>
+
+  <!-- Video Section -->
+  <app-video-carousel [section]="videoSection" [isLoadingVideo]="isLoadingVideo" [reveal]="true"></app-video-carousel>
+
+  <!-- Dotted divider -->
+  <div class="border-t-2 border-dotted border-[#EFDA0F]"></div>
+
+  <!-- Pricing Section -->
+  <div id="topgrillin-pricing-section" class="bg-[#F9FAFB] px-2 md:px-4 py-16">
+    <div class="max-w-[1440px] mx-auto px-10 md:px-16">
+      <div #reveal class="text-center reveal reveal-up">
+        <h2 class="text-2xl md:text-3xl font-bold text-[#142129]">Become a VIP Top Griller</h2>
+        <p class="mt-2 text-gray-500">One membership. Everything Skratch Bastid.</p>
+      </div>
+
+      <div #reveal class="mt-10 mx-auto max-w-md reveal reveal-up">
+        <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[10px_10px_0_0_#142129]">
+          <div class="h-2 w-full bg-gradient-to-r from-[#FF5941] via-[#FFA503] to-[#EFDA0F]"></div>
+          <div class="p-8">
+          <div class="flex items-center justify-between">
+            <h3 class="font-extrabold text-2xl text-[#142129]">Top Grillin' VIP</h3>
+            <span class="inline-block bg-[#FF5941] text-white text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full">Best value</span>
+          </div>
+
+          <ul class="text-left mt-6 mb-8 space-y-3">
+            @for (feature of pricingFeatures; track feature) {
+            <li class="flex items-start">
+              <div class="w-6 h-6 flex-shrink-0 mr-2 text-[#FF5941]">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" class="w-full h-full" width="1em" height="1em" viewBox="0 0 24 24">
+                  <path fill="currentColor" fill-rule="evenodd"
+                    d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75s-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12m13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <span class="flex-grow text-sm text-[#5F5F5F]">{{ feature }}</span>
+            </li>
+            }
+          </ul>
+
+          <div class="flex flex-wrap items-center justify-center gap-y-2 mb-5">
+            <span class="text-sm font-medium text-[#5F5F5F] mr-2" [class.font-bold]="!isAnnual">Monthly</span>
+            <button (click)="togglePricing()" type="button" role="switch"
+              [attr.aria-checked]="isAnnual"
+              [attr.aria-label]="'Toggle billing period, currently ' + (isAnnual ? 'annual' : 'monthly')"
+              class="focus-ring relative w-12 h-6 flex items-center rounded-full transition duration-300"
+              [class.bg-[#FF5941]]="isAnnual" [class.bg-gray-300]="!isAnnual">
+              <div class="absolute left-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300"
+                [class.translate-x-5]="isAnnual" [class.translate-x-0]="!isAnnual"></div>
+            </button>
+            <span class="text-sm font-medium text-[#5F5F5F] ml-2" [class.font-bold]="isAnnual">Annual</span>
+            @if (annualSavingsPercent > 0) {
+            <span class="ml-2 inline-block rounded-full bg-[#EFDA0F] text-[#142129] text-xs font-extrabold uppercase tracking-wide px-2.5 py-1">
+              Save {{ annualSavingsPercent }}%
+            </span>
+            }
+          </div>
+
+          <div class="text-center text-[34px] font-extrabold text-[#142129] leading-none">
+            ${{ currentPrice }}<span class="text-sm font-light text-[#5F5F5F]">{{ currentPeriod }}</span>
+          </div>
+
+          <button (click)="openSignup(selectedPlan)" type="button"
+            class="focus-ring cursor-pointer !mt-8 w-full inline-flex items-center justify-center gap-2 bg-[#142129] text-white font-extrabold uppercase tracking-widest text-sm px-7 py-4 rounded-full shadow-[6px_6px_0_0_#FF5941] hover:bg-[#FF5941] hover:shadow-[6px_6px_0_0_#142129] hover:-translate-y-0.5 transition-all">
+            Select Plan →
+          </button>
+
+          <p class="mt-4 text-center text-xs text-gray-400">Cancel anytime · Instant access to 2,000+ hours</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
