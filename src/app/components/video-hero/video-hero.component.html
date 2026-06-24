@@ -76,13 +76,22 @@
       </button>
     }
 
-    <!-- Bottom gradient for button visibility -->
-    <div
-      class="px-4 pb-4 absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/100 to-transparent flex items-end justify-between">
-      @if (getCurrentVideo().title || getCurrentVideo().button) {
-        <div class="bg-white bg-opacity-90 text-black px-6 py-4 rounded-lg max-w-xs">
+    <!-- Bottom gradient for button visibility (visual only) -->
+    <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/100 to-transparent pointer-events-none"></div>
+
+    <!-- Content card — position comes from the slide's API `alignment` -->
+    @if (getCurrentVideo().title || getCurrentVideo().button) {
+      <div class="absolute z-10"
+        [ngClass]="{
+          'left-4': heroAlignment() === 'left',
+          'right-4': heroAlignment() === 'right',
+          'bottom-4': heroAlignment() !== 'center',
+          'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2': heroAlignment() === 'center'
+        }">
+        <div class="bg-white bg-opacity-90 text-black px-6 py-4 rounded-lg max-w-xs"
+          [class.text-center]="heroAlignment() === 'center'">
           <p class="text-xl font-bold mb-2">{{getCurrentVideo().title}}</p>
-          @if (getCurrentVideo().description) {<p class="text-sm mb-2">{{getCurrentVideo().description}}</p>} 
+          @if (getCurrentVideo().description) {<p class="text-sm mb-2">{{getCurrentVideo().description}}</p>}
           @if (getCurrentVideo().button != '' && getCurrentVideo().url != '') {
           <button (click)="goToVideos($event, getCurrentVideo().url, getCurrentVideo().category)"
             class="w-full bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition">
@@ -90,19 +99,19 @@
           </button>
           }
         </div>
-      }
+      </div>
+    }
 
-      <!-- Position Indicators (bottom-right) -->
-      @if (videos.length > 1) {
-        <div class="indicator-wrapper">
-          @for (banner of videos; track banner.adId; let i = $index) {
-            <button type="button" (click)="goToIndex(i)" class="indicator-dot"
-              [ngClass]="{'active': currentVideoIndex() === i}"
-              [attr.aria-label]="'Go to slide ' + (i + 1)"></button>
-          }
-        </div>
-      }
-    </div>
+    <!-- Position Indicators — bottom-right by default, bottom-left when the card is right-aligned -->
+    @if (videos.length > 1) {
+      <div class="indicator-wrapper" [class.indicator-wrapper--left]="heroAlignment() === 'right'">
+        @for (banner of videos; track banner.adId; let i = $index) {
+          <button type="button" (click)="goToIndex(i)" class="indicator-dot"
+            [ngClass]="{'active': currentVideoIndex() === i}"
+            [attr.aria-label]="'Go to slide ' + (i + 1)"></button>
+        }
+      </div>
+    }
   }
 
   <!-- Progress bar (bottom full width) -->

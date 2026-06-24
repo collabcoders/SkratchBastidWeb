@@ -160,6 +160,12 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
+
+  // When the slide's card is right-aligned, move pagination to the bottom-left.
+  &--left {
+    right: auto;
+    left: 2rem;
+  }
 }
 
 .progress-wrapper {

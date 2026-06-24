@@ -268,6 +268,15 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     return this.videos[this.currentVideoIndex()];
   }
 
+  // Where the current slide's content card/button sits, driven by the API's
+  // `alignment` field. Empty/unknown values fall back to 'left'.
+  heroAlignment(): 'left' | 'right' | 'center' {
+    const a = (this.getCurrentVideo()?.alignment || '').toLowerCase().trim();
+    if (a === 'right') return 'right';
+    if (a === 'center' || a === 'centered' || a === 'centre') return 'center';
+    return 'left';
+  }
+
   getPreviousVideo(): Ads | null {
     const prevIndex = this.previousVideoIndex();
     return prevIndex !== null ? this.videos[prevIndex] : null;
