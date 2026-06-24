@@ -85,13 +85,6 @@ export class VideoHeroComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleMute() {
-    const video = this.videoElement.nativeElement;
-    const newMutedState = !this.isMuted();
-    this.isMuted.set(newMutedState);
-    video.muted = newMutedState;
-  }
-
   // Resolve the hero media for a banner: prefer an explicit video URL, fall back
   // to a legacy image-as-mp4, otherwise null (render the image as before).
   heroVideoSrc(b: Ads): string | null {
