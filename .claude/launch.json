@@ -2,6 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "skratchbastid",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["start", "--", "--port", "4300"],
+      "port": 4300,
+      "autoPort": false
+    },
+    {
       "name": "djjazzyjeff",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["start", "--prefix", "/Users/jarguelles/Documents/DJJazzyJeffWeb"],
