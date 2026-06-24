@@ -1,9 +1,6 @@
 import { Component, signal, WritableSignal, ViewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 
 import { ApiService } from '@shared/services/api.service';
-import { AlertService } from '@shared/services/alert.service';
-import { Config } from '@shared/config';
-import { environment } from '@env/environment';
 import { AppData } from 'src/app/app.data';
 
 interface Product {
@@ -35,7 +32,7 @@ export class StoreProductsComponent {
   isLoadingProducts: WritableSignal<boolean> = signal(false);
   @ViewChild('storeCarousel') storeCarousel!: ElementRef<HTMLDivElement>;
 
-  constructor(private apiService: ApiService, private alertService: AlertService, public appData: AppData) {
+  constructor(private apiService: ApiService, public appData: AppData) {
     this.isLoadingProducts.set(true);
     this.apiService.getSectionData("product").subscribe((data) => {
       const zigzags = [
@@ -61,7 +58,10 @@ export class StoreProductsComponent {
       this.appData.products.set(mapped);
       this.isLoadingProducts.set(false);
     }, (error) => {
-        this.alertService.error('', error?.error?.message || error?.message || "Something went wrong!", Config.alertOptions);
+        // Store products are non-critical home-page content: fail quietly and let
+        // the template show its "No products available" empty state instead of a growl.
+        console.error('Failed to load store products', error);
+        this.appData.products.set([]);
         this.isLoadingProducts.set(false);
     });
   }
