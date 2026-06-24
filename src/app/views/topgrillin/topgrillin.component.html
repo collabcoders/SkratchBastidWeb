@@ -92,7 +92,22 @@
         <p class="mt-2 text-gray-500">One membership. Everything Skratch Bastid.</p>
       </div>
 
-      <div #reveal class="mt-10 mx-auto max-w-md reveal reveal-up">
+      <div class="mt-10 flex flex-col-reverse md:flex-row items-center justify-center gap-12 md:gap-20">
+        <!-- Preview video, to the left of the pricing form (mirrors the Bastid's BBQ layout) -->
+        <div #reveal class="w-full md:flex-1 reveal reveal-left">
+          <video
+            #previewVideo
+            class="rounded-2xl w-full h-[70vh] object-cover"
+            autoplay
+            muted
+            loop
+            playsinline
+            poster="/img/services2.png">
+            <source src="/assets/top-grillin-preview.mp4" type="video/mp4" />
+          </video>
+        </div>
+
+        <div #reveal class="w-full max-w-md reveal reveal-right">
         <div class="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[10px_10px_0_0_#142129]">
           <div class="h-2 w-full bg-gradient-to-r from-[#FF5941] via-[#FFA503] to-[#EFDA0F]"></div>
           <div class="p-8">
@@ -145,6 +160,7 @@
 
           <p class="mt-4 text-center text-xs text-gray-400">Cancel anytime · Instant access to 2,000+ hours</p>
           </div>
+        </div>
         </div>
       </div>
     </div>

@@ -50,6 +50,7 @@ export class TopGrillinComponent implements AfterViewInit {
     @ViewChildren('reveal') revealBlocks!: QueryList<ElementRef>;
     @ViewChildren('heroReveal') heroReveals!: QueryList<ElementRef>;
     @ViewChild('heroVideo') heroVideoRef?: ElementRef<HTMLVideoElement>;
+    @ViewChild('previewVideo') previewVideoRef?: ElementRef<HTMLVideoElement>;
 
     benefits = [
       {
@@ -151,13 +152,14 @@ export class TopGrillinComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     // Force muted autoplay — Angular only sets the `muted` attribute, not the
     // property, so Chrome's autoplay policy blocks playback on a fresh load.
-    const video = this.heroVideoRef?.nativeElement;
-    if (video) {
+    [this.heroVideoRef, this.previewVideoRef].forEach((ref) => {
+      const video = ref?.nativeElement;
+      if (!video) return;
       video.muted = true;
       const tryPlay = () => video.play().catch(() => {});
       tryPlay();
       video.addEventListener('canplay', tryPlay, { once: true });
-    }
+    });
 
     // Hero headline + sub-content reveal on load; per-element transition-delay staggers them.
     requestAnimationFrame(() => {
