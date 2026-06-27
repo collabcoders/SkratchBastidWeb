@@ -155,9 +155,11 @@ export class VideoCarouselComponent implements OnInit, AfterViewInit, OnDestroy 
     setTimeout(() => {
       const modalElement = document.getElementById('videoModal');
       if (modalElement) {
-        // Check if Bootstrap is loaded
+        // Use getOrCreateInstance so we don't spawn multiple Modal
+        // instances for the same element (causes stuck backdrops/white
+        // screen after close on subsequent opens).
         if (typeof (window as any).bootstrap !== 'undefined') {
-          const modal = new (window as any).bootstrap.Modal(modalElement);
+          const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
           modal.show();
         } else if (typeof $ !== 'undefined' && typeof ($ as any).fn.modal !== 'undefined') {
           // Fallback to jQuery if available

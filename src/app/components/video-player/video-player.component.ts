@@ -120,6 +120,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     $('#videoModal').on('hidden.bs.modal', () => {
       console.log("CLOSE a VIDEO");
       this.distroyVideo();
+      this.cleanupModalArtifacts();
       this.isClose.next(this.video);
     });
 
@@ -270,8 +271,42 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     this.videohls = '';
     this.videotitle = '';
     this.videoId = 0;
-    $('#videoModal').modal('hide');
+
+    const modalEl = document.getElementById('videoModal');
+    // Prefer the Bootstrap 5 native API and reuse the existing instance so
+    // we don't leave stale backdrops / a frozen white screen behind.
+    if (modalEl && typeof (window as any).bootstrap !== 'undefined') {
+      const instance = (window as any).bootstrap.Modal.getOrCreateInstance(modalEl);
+      instance.hide();
+    } else if (typeof $ !== 'undefined' && typeof ($ as any).fn?.modal !== 'undefined') {
+      $('#videoModal').modal('hide');
+    }
+
+    // Belt-and-suspenders cleanup in case Bootstrap left artifacts behind.
+    this.cleanupModalArtifacts();
     this.isClose.next(this.video);
+  }
+
+  /**
+   * Remove leftover Bootstrap modal artifacts. If multiple Modal instances
+   * get created for the same element (older code path) or focus/hidden
+   * events race with disposal, the body can end up stuck with the
+   * `modal-open` class and one or more `.modal-backdrop` divs covering the
+   * page — appearing as a blank white screen after the modal closes.
+   */
+  private cleanupModalArtifacts() {
+    // Defer to next tick so Bootstrap finishes its own cleanup first and we
+    // only remove genuinely stale artifacts (no other modal is open).
+    setTimeout(() => {
+      const anyOpenModal = document.querySelector('.modal.show');
+      if (anyOpenModal) {
+        return;
+      }
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('padding-right');
+    }, 0);
   }
 
   selectedVideo(videoData: any, isrel: boolean, time?: number) {
