@@ -121,7 +121,10 @@ export class FavoritesModalComponent implements OnInit {
       const modalElement = document.getElementById('videoModal');
       if (modalElement) {
         if (typeof (window as any).bootstrap !== 'undefined') {
-          const modal = new (window as any).bootstrap.Modal(modalElement);
+          // Use getOrCreateInstance so we don't spawn multiple Modal
+          // instances for the same element (causes stuck backdrops/white
+          // screen after close on subsequent opens).
+          const modal = (window as any).bootstrap.Modal.getOrCreateInstance(modalElement);
           modal.show();
         }
       }
