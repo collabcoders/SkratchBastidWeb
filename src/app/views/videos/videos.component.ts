@@ -220,7 +220,10 @@ export class VideosComponent implements OnInit, OnDestroy {
 
   onPageChange(page: number): void {
     this.currentPage = page;
-    console.log('Page changed to:', page);
+    // Scroll to top of the video grid so the user sees the new page.
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   // Get all videos for the selected category (before search filtering)
@@ -288,6 +291,11 @@ export class VideosComponent implements OnInit, OnDestroy {
     const totalVideos = this.getSearchFilteredVideos().length;
     this.totalPages = Math.ceil(totalVideos / this.itemsPerPage);
     if (this.totalPages === 0) this.totalPages = 1;
+    // Defensive: if the active page is now out of range (filter shrank the
+    // list), snap back to the last valid page.
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
+    }
   }
 
   // Check if showing filtered view (any category except 'All')
