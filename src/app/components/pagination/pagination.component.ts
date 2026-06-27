@@ -15,18 +15,22 @@ import { Component, input, output, ChangeDetectionStrategy } from '@angular/core
         ‹
       </button>
 
-      <!-- Page numbers -->
-      @for (page of getVisiblePages(); track page) {
-      <button
-        (click)="goToPage(page)"
-        [class]="
-          page === currentPage()
-            ? 'px-3 py-2  bg-gray-600 text-white rounded '
-            : 'px-3 py-2 bg-white text-black rounded hover:bg-gray-100'
-        "
-      >
-        {{ page }}
-      </button>
+      <!-- Page numbers (sliding window with ellipses) -->
+      @for (item of getVisibleItems(); track $index) {
+        @if (item === '...') {
+          <span class="px-2 py-2 text-white select-none">…</span>
+        } @else {
+          <button
+            (click)="goToPage(+item)"
+            [class]="
+              +item === currentPage()
+                ? 'px-3 py-2  bg-gray-600 text-white rounded '
+                : 'px-3 py-2 bg-white text-black rounded hover:bg-gray-100'
+            "
+          >
+            {{ item }}
+          </button>
+        }
       }
 
       <!-- Next button -->
@@ -49,23 +53,58 @@ export class PaginationComponent {
   totalPages = input<number>(1);
   pageChange = output<number>();
 
-  getVisiblePages(): number[] {
-    const current = this.currentPage();
+  /**
+   * Sliding-window page list with first/last anchors and ellipses.
+   * Shows up to ~7 numeric slots so users can see context around the
+   * current page and jump to first/last quickly.
+   *
+   * Examples (totalPages, currentPage) -> output:
+   *   (3, 2)   -> [1, 2, 3]
+   *   (10, 1)  -> [1, 2, 3, 4, 5, '...', 10]
+   *   (10, 5)  -> [1, '...', 4, 5, 6, '...', 10]
+   *   (10, 10) -> [1, '...', 6, 7, 8, 9, 10]
+   */
+  getVisibleItems(): (number | '...')[] {
     const total = this.totalPages();
-    const pages: number[] = [];
+    const current = this.currentPage();
 
-    // Show first 6 pages if total > 6, otherwise show all
-    if (total <= 6) {
-      for (let i = 1; i <= total; i++) {
-        pages.push(i);
-      }
-    } else {
-      for (let i = 1; i <= 6; i++) {
-        pages.push(i);
-      }
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
     }
 
-    return pages;
+    const items: (number | '...')[] = [];
+    const windowSize = 1; // pages on each side of current in the middle window
+
+    // Always show page 1
+    items.push(1);
+
+    const leftEdge = Math.max(2, current - windowSize);
+    const rightEdge = Math.min(total - 1, current + windowSize);
+
+    if (leftEdge > 2) {
+      items.push('...');
+    }
+
+    for (let i = leftEdge; i <= rightEdge; i++) {
+      items.push(i);
+    }
+
+    if (rightEdge < total - 1) {
+      items.push('...');
+    }
+
+    // Always show last page
+    items.push(total);
+
+    return items;
+  }
+
+  /**
+   * Backwards-compat: keep the old method name in case anything external
+   * relies on it. Returns just the numeric pages from getVisibleItems().
+   */
+  getVisiblePages(): number[] {
+    return this.getVisibleItems().filter((x): x is number => x !== '...');
   }
 
   goToPage(page: number) {
