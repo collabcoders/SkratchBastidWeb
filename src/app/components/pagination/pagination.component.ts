@@ -55,13 +55,16 @@ export class PaginationComponent {
 
   /**
    * Sliding-window page list with first/last anchors and ellipses.
-   * Shows up to ~7 numeric slots so users can see context around the
-   * current page and jump to first/last quickly.
+   * Guarantees at least 6 numeric buttons whenever totalPages >= 6, so
+   * the UI never collapses to just `[1] ... [10]` when sitting at an
+   * edge. The middle band is at least 3 wide and slides with currentPage.
    *
    * Examples (totalPages, currentPage) -> output:
    *   (3, 2)   -> [1, 2, 3]
    *   (10, 1)  -> [1, 2, 3, 4, 5, '...', 10]
+   *   (10, 3)  -> [1, 2, 3, 4, 5, '...', 10]
    *   (10, 5)  -> [1, '...', 4, 5, 6, '...', 10]
+   *   (10, 8)  -> [1, '...', 6, 7, 8, 9, 10]
    *   (10, 10) -> [1, '...', 6, 7, 8, 9, 10]
    */
   getVisibleItems(): (number | '...')[] {
@@ -72,28 +75,47 @@ export class PaginationComponent {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
 
-    const items: (number | '...')[] = [];
-    const windowSize = 1; // pages on each side of current in the middle window
+    // Minimum width (in pages) of the middle band between the first/last
+    // anchors. Width 3 + 2 anchors = 5 numeric buttons, plus any ellipses.
+    const minMiddleWidth = 3;
 
-    // Always show page 1
-    items.push(1);
+    // Initial window: 1 page on each side of current.
+    let leftEdge = Math.max(2, current - 1);
+    let rightEdge = Math.min(total - 1, current + 1);
 
-    const leftEdge = Math.max(2, current - windowSize);
-    const rightEdge = Math.min(total - 1, current + windowSize);
+    // Grow the window outward until it has at least minMiddleWidth pages,
+    // staying inside [2, total - 1].
+    while (rightEdge - leftEdge + 1 < minMiddleWidth) {
+      if (leftEdge > 2) {
+        leftEdge--;
+      } else if (rightEdge < total - 1) {
+        rightEdge++;
+      } else {
+        break; // can't grow further
+      }
+    }
+
+    // If we're near the start, push the window further right so the band
+    // shows 1,2,3,4,5,...,N instead of collapsing to 1,...,N.
+    if (leftEdge === 2 && rightEdge - leftEdge + 1 < minMiddleWidth + 1) {
+      rightEdge = Math.min(total - 1, leftEdge + minMiddleWidth);
+    }
+    // Mirror at the end: show 1,...,N-4,N-3,N-2,N-1,N.
+    if (rightEdge === total - 1 && rightEdge - leftEdge + 1 < minMiddleWidth + 1) {
+      leftEdge = Math.max(2, rightEdge - minMiddleWidth);
+    }
+
+    const items: (number | '...')[] = [1];
 
     if (leftEdge > 2) {
       items.push('...');
     }
-
     for (let i = leftEdge; i <= rightEdge; i++) {
       items.push(i);
     }
-
     if (rightEdge < total - 1) {
       items.push('...');
     }
-
-    // Always show last page
     items.push(total);
 
     return items;
