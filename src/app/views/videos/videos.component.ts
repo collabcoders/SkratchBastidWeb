@@ -265,25 +265,13 @@ export class VideosComponent implements OnInit, OnDestroy {
     }
 
     const query = this.searchQuery.toLowerCase();
-    const searchFieldOne = 'title';
-    const searchFieldTwo = 'featuring';
 
+    // Match against title and featuring (featured artist). Both fields
+    // may be null/undefined on a given record so we coerce to '' first.
     return categoryVideos.filter((video: any) => {
-      const hasFieldOne = !!video[searchFieldOne];
-      const hasFieldTwo = !!video[searchFieldTwo];
-
-      if (hasFieldOne && !hasFieldTwo) {
-        return video[searchFieldOne]?.toLowerCase()?.includes(query);
-      }
-
-      if (!hasFieldOne && hasFieldTwo) {
-        return video[searchFieldTwo]?.toLowerCase()?.includes(query);
-      }
-
-      return (
-        video[searchFieldOne]?.toLowerCase()?.includes(query) ||
-        video[searchFieldTwo]?.toLowerCase()?.includes(query)
-      );
+      const title = (video?.title ?? '').toString().toLowerCase();
+      const featuring = (video?.featuring ?? '').toString().toLowerCase();
+      return title.includes(query) || featuring.includes(query);
     });
   }
 
