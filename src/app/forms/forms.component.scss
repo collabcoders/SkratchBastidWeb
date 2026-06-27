@@ -155,10 +155,31 @@ button[disabled], .btn[disabled], .w-full[disabled] {
 }
 
 .modal-light .modal-header button,
-.modal-light button.text-white,
 .modal-light button.text-gray-300,
 .modal-light button.text-gray-500 {
   color: #111827 !important;
+}
+
+/*
+  Earlier this selector also targeted `.modal-light button.text-white`,
+  which unintentionally killed the white label on solid-background submit
+  buttons (e.g. the large "Sign In" button inside the login modal which
+  has `bg-[#FF5941]`). Submit buttons opt out via the `.login-submit-btn`
+  class — anything else with `text-white` inside a modal-light still gets
+  forced to dark text as before.
+*/
+.modal-light button.text-white:not(.login-submit-btn) {
+  color: #111827 !important;
+}
+
+/*
+  Bootstrap's reboot squares off buttons (`button { border-radius: 0 }`) and
+  beats Tailwind utilities living in a cascade layer. Restore rounded
+  corners on submit-style buttons inside our forms. The .login-submit-btn
+  class is the high-specificity escape hatch for the Sign In button.
+*/
+.login-submit-btn {
+  border-radius: 0.5rem !important; /* matches Tailwind rounded-lg */
 }
 
 .modal-light .border-gray-600,

@@ -286,7 +286,7 @@ export class HeaderComponent implements OnDestroy, OnInit {
       color: '#D4582D',
     },
     {
-      label: 'Login',
+      label: 'Sign In',
       href: '/login',
       hoverColor: '#D4582D',
       color: '#D4582D',

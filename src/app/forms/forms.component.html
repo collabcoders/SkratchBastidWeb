@@ -49,7 +49,7 @@
   <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px">
     <div class="modal-content modal-light rounded-lg" style="max-height: 90vh; overflow-y: auto">
       <div class="modal-header px-6 pt-6 pb-4 flex justify-between items-center">
-        <h2 class="modal-title font-semibold text-center flex-1" id="loginModalLabel" style="font-size: 24px">Login</h2>
+        <h2 class="modal-title font-semibold text-center flex-1" id="loginModalLabel" style="font-size: 24px">Sign In</h2>
         <button type="button"
           class="text-white hover:text-gray-300 text-2xl font-bold leading-none p-0 border-0 bg-transparent"
           data-bs-dismiss="modal" aria-label="Close">×</button>
@@ -88,12 +88,12 @@
             }
           </div>
           <button type="submit"
-            class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold rounded-lg hover:bg-orange-600 transition"
+            class="login-submit-btn w-full mt-4 bg-[#FF5941] !text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
             [disabled]="loginLoading() || !loginForm.valid">
             @if (loginLoading()) {
               <span class="loader mr-2"></span> Signing in...
             } @else {
-              Login
+              Sign In
             }
           </button>
         </form>
