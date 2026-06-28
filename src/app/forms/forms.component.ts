@@ -576,6 +576,16 @@ export class FormsComponent implements AfterViewInit, OnInit {
   }
 
   openLoginModal() {
+    // When the modal is opened directly (header Sign In, VIP dialog, etc.) the
+    // router never navigates to /login, so the NavigationEnd handler that
+    // normally seeds loginReturnUrl from the URL doesn't fire. Snapshot the
+    // current page here so a successful sign-in returns the user to it instead
+    // of bouncing them back to '/'. Skip /login and /join URLs to avoid
+    // returning them to an auth route after they log in.
+    const currentUrl = this.router.url;
+    if (!currentUrl.startsWith('/login') && !currentUrl.startsWith('/join')) {
+      this.loginReturnUrl = currentUrl || '/';
+    }
     this.showModal('loginModal', { backdrop: 'static', keyboard: false });
   }
 
