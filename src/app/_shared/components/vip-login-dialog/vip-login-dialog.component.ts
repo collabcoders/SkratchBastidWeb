@@ -1,6 +1,7 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
-import { Router } from '@angular/router';
+declare const bootstrap: any;
+declare const $: any;
 
 @Component({
   selector: 'app-vip-login-dialog',
@@ -11,10 +12,13 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class VipLoginDialogComponent {
+  // Retry config mirrors HeaderComponent so we wait for the bootstrap/jQuery
+  // modal library to be ready before giving up.
+  private static readonly modalRetryDelay = 200;
+  private static readonly modalRetryCount = 10;
+
   isVisible = input<boolean>(false);
   closeDialog = output<void>();
-
-  constructor(private router: Router) {}
 
   onClose() {
     this.closeDialog.emit();
@@ -24,17 +28,18 @@ export class VipLoginDialogComponent {
     this.closeDialog.emit();
   }
 
+  // The login/register modals live globally in <app-forms>, so just open the
+  // requested one in place — no router navigation. The /login and /join routes
+  // both resolve to HomeComponent, so navigating there would yank the user off
+  // the current page (e.g. a video detail) back to the home view, even though
+  // the auth modal still opens on top.
   onSignIn() {
-    this.router.navigate(['/login'], {
-      queryParams: {
-        returnUrl: this.router.url,
-      },
-    });
+    this.openAuthModal('loginModal');
     this.closeDialog.emit();
   }
 
   onJoinVip() {
-    this.router.navigate(['/join']);
+    this.openAuthModal('registerModal');
     this.closeDialog.emit();
   }
 
@@ -42,6 +47,38 @@ export class VipLoginDialogComponent {
     // Close dialog when clicking on backdrop (outside the modal content)
     if (event.target === event.currentTarget) {
       this.onClose();
+    }
+  }
+
+  private openAuthModal(modalId: 'loginModal' | 'registerModal') {
+    setTimeout(() => this.showModal(modalId), 0);
+  }
+
+  private showModal(modalId: string, retries = VipLoginDialogComponent.modalRetryCount) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) {
+      if (retries > 0) {
+        setTimeout(() => this.showModal(modalId, retries - 1), VipLoginDialogComponent.modalRetryDelay);
+      }
+      return;
+    }
+
+    if (typeof bootstrap !== 'undefined' && bootstrap?.Modal) {
+      const modal = bootstrap.Modal.getOrCreateInstance(modalEl, {
+        backdrop: 'static',
+        keyboard: false,
+      });
+      modal.show();
+      return;
+    }
+
+    if (typeof $ !== 'undefined' && typeof $.fn?.modal === 'function') {
+      $('#' + modalId).modal('show');
+      return;
+    }
+
+    if (retries > 0) {
+      setTimeout(() => this.showModal(modalId, retries - 1), VipLoginDialogComponent.modalRetryDelay);
     }
   }
 }
