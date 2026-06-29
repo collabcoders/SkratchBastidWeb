@@ -453,12 +453,17 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content modal-login modal-light">
         <div class="modal-header">
-          <span class="subscription-text">{{subscrSum}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
-                    @if (cancelOption) {
-                      <a href="#" (click)="showCancel($event)" class="cancel-btn"
-                         data-bs-toggle="tooltip" data-bs-placement="top"
-                         title="Cancel Subscription">[Cancel]</a>
-                    }
+          <span class="subscription-text">
+            <span class="subscription-text__main">{{subscriptionMain}}</span>
+            @if (subscriptionRenewal) {
+              <span class="subscription-text__renewal">{{subscriptionRenewal}}</span>
+            }
+          </span>
+          @if (cancelOption) {
+            <a href="#" (click)="showCancel($event)" class="cancel-btn"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               title="Cancel Subscription">[Cancel]</a>
+          }
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
             aria-label="Close"></button>
         </div>
