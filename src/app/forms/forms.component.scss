@@ -254,14 +254,23 @@ re-captcha.is-invalid>div {
   color: #111827;
 }
 
-#profileModal .cancel-btn {
-  color: #ef4444;
-  text-decoration: none;
+// Global `a { color: inherit !important; }` in src/styles.scss wins on
+// specificity without these !importants, so the Cancel link rendered in the
+// modal-header's inherited color instead of red. Keep !important until the
+// global anchor reset is scoped more narrowly.
+#profileModal .cancel-btn,
+#profileModal .cancel-btn:visited {
+  color: #ef4444 !important;
+  text-decoration: none !important;
   font-weight: 600;
+  cursor: pointer;
 }
 
-#profileModal .cancel-btn:hover {
-  color: #b91c1c;
+#profileModal .cancel-btn:hover,
+#profileModal .cancel-btn:focus,
+#profileModal .cancel-btn:active {
+  color: #b91c1c !important;
+  text-decoration: underline !important;
 }
 
 #profileModal .pic-preview {

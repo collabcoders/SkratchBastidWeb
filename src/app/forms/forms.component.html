@@ -455,7 +455,9 @@
         <div class="modal-header">
           <span class="subscription-text">{{subscrSum}}</span>&nbsp;&nbsp;&nbsp;&nbsp;
                     @if (cancelOption) {
-                      <a href="#" (click)="showCancel($event)" class="cancel-btn">[Cancel]</a>
+                      <a href="#" (click)="showCancel($event)" class="cancel-btn"
+                         data-bs-toggle="tooltip" data-bs-placement="top"
+                         title="Cancel Subscription">[Cancel]</a>
                     }
           <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
             aria-label="Close"></button>
