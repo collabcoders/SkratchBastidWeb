@@ -436,6 +436,24 @@ export class FormsComponent implements AfterViewInit, OnInit {
       });
     }
 
+    // Snapshot the current URL as the post-login return URL every time the
+    // login modal opens, regardless of opener (header, footer, VIP dialog,
+    // router-driven /login, inline data-bs-toggle links, etc.). Without this,
+    // openers that bypass FormsComponent.openLoginModal() leave
+    // loginReturnUrl at its default '/' and a successful sign-in bounces the
+    // user to the home page instead of returning them to the page they came
+    // from. /login and /join are skipped so users don't get returned to an
+    // auth route.
+    const loginEl = document.getElementById('loginModal');
+    if (loginEl) {
+      loginEl.addEventListener('show.bs.modal', () => {
+        const currentUrl = this.router.url;
+        if (!currentUrl.startsWith('/login') && !currentUrl.startsWith('/join')) {
+          this.loginReturnUrl = currentUrl || '/';
+        }
+      });
+    }
+
     this.router.events.subscribe((event: any) => {
       if (!(event instanceof NavigationEnd) || !event.url) {
         return;
@@ -576,16 +594,8 @@ export class FormsComponent implements AfterViewInit, OnInit {
   }
 
   openLoginModal() {
-    // When the modal is opened directly (header Sign In, VIP dialog, etc.) the
-    // router never navigates to /login, so the NavigationEnd handler that
-    // normally seeds loginReturnUrl from the URL doesn't fire. Snapshot the
-    // current page here so a successful sign-in returns the user to it instead
-    // of bouncing them back to '/'. Skip /login and /join URLs to avoid
-    // returning them to an auth route after they log in.
-    const currentUrl = this.router.url;
-    if (!currentUrl.startsWith('/login') && !currentUrl.startsWith('/join')) {
-      this.loginReturnUrl = currentUrl || '/';
-    }
+    // loginReturnUrl is captured via the #loginModal `show.bs.modal` listener
+    // installed in ngAfterViewInit, which fires for every opener.
     this.showModal('loginModal', { backdrop: 'static', keyboard: false });
   }
 
