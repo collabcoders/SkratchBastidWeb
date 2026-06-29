@@ -14,7 +14,9 @@ export class Video {
 
     // Optional metadata
     featuring?: string | null;
+    audio?: string;
     audio1?: string;
+    audio2?: string;
     url?: string;
     file?: string;
     comments?: number;
@@ -35,7 +37,9 @@ export class Video {
         this.date = init.date ?? '';
 
         this.featuring = init.featuring ?? null;
+        this.audio = init.audio ?? '';
         this.audio1 = init.audio1 ?? '';
+        this.audio2 = init.audio2 ?? '';
         this.url = init.url ?? '';
         this.file = init.file ?? '';
         this.comments = init.comments ?? 0;

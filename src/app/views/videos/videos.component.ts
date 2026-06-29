@@ -15,6 +15,9 @@ import {
 } from '../../components/bbq-recap-carousel/bbq-recap-carousel.component';
 
 import { VideoPlayerComponent } from '../../components/video-player/video-player.component';
+import { AudioPlayerBarComponent } from '../../components/audio-player-bar/audio-player-bar.component';
+import { AudioService } from '@shared/services/audio.service';
+import { Music } from '@shared/models/music';
 import {
   RecordCarouselComponent,
   RecordSection,
@@ -50,6 +53,7 @@ import { finalize, take } from 'rxjs/operators';
     RecordCarouselComponent,
     SearchComponent,
     PaginationComponent,
+    AudioPlayerBarComponent,
   ],
   templateUrl: './videos.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -110,7 +114,86 @@ export class VideosComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private legendsVideos: LegendsVideosService,
     private legendsCategories: LegendsCategoriesService,
-    private legendsEngagement: LegendsEngagementService) {}
+    private legendsEngagement: LegendsEngagementService,
+    public audioService: AudioService) {}
+
+  // Video whose audio source the user is choosing between (No Mic / With Mic).
+  // Non-null while the selection modal is open.
+  audioChoiceVideo: Video | null = null;
+
+  // True when a video has at least one streamable audio source.
+  hasAudio(video: Video): boolean {
+    return !!(video.audio?.trim() || video.audio1?.trim());
+  }
+
+  // Note-icon click: route to direct playback or the No Mic / With Mic chooser.
+  onAudioNoteClick(video: Video, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const noMic = video.audio?.trim();
+    const withMic = video.audio1?.trim();
+
+    if (noMic && withMic) {
+      // Both available — toggle the No Mic / With Mic chooser dropdown.
+      this.audioChoiceVideo = this.audioChoiceVideo?.videoId === video.videoId ? null : video;
+    } else if (noMic) {
+      this.playAudio(video, noMic, 'No Mic');
+    } else if (withMic) {
+      // Only the with-mic track exists — play it directly.
+      this.playAudio(video, withMic, 'With Mic');
+    }
+  }
+
+  chooseNoMic(event: Event): void {
+    // Stop here first: setting audioChoiceVideo=null removes this dropdown,
+    // so we must halt propagation before the click can reach the card.
+    event.preventDefault();
+    event.stopPropagation();
+    const video = this.audioChoiceVideo;
+    this.audioChoiceVideo = null;
+    if (video?.audio?.trim()) {
+      this.playAudio(video, video.audio.trim(), 'No Mic');
+    }
+  }
+
+  chooseWithMic(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const video = this.audioChoiceVideo;
+    this.audioChoiceVideo = null;
+    if (video?.audio1?.trim()) {
+      this.playAudio(video, video.audio1.trim(), 'With Mic');
+    }
+  }
+
+  closeAudioChoice(): void {
+    this.audioChoiceVideo = null;
+  }
+
+  // Build a Music track from a video + audio url and hand it to the player bar.
+  private playAudio(video: Video, url: string, label: string): void {
+    const title = label ? `${video.title} (${label})` : video.title;
+    const track = new Music(
+      video.videoId,            // musicId (unique per card for play/pause toggle)
+      video.featuring ?? '',    // artist
+      title,                    // title
+      '',                       // genre
+      video.duration ?? '',     // duration
+      this.getPoster(video),    // image
+      url,                      // file
+      video.date ?? '',         // date
+      '',                       // description
+      video.category ?? '',     // category
+      0,                        // index
+      video.favId ?? 0,         // favId
+      1,                        // featured
+      '',                       // href
+      true,                     // external (url is a full https link)
+      url,                      // url
+    );
+    this.audioService.playTrack(track);
+  }
 
   ngOnInit(): void {
       this.isLoggedIn$ = this.token.isValid(undefined);
@@ -309,6 +392,11 @@ export class VideosComponent implements OnInit, OnDestroy {
     if (!hasAccess) {
       // Dialog will be shown automatically by the service
       return;
+    }
+
+    // Pause any audio playing in the player bar so it doesn't run over the video.
+    if (this.audioService.isPlaying()) {
+      this.audioService.togglePlayPause();
     }
 
     // Convert VideoMix to Video format

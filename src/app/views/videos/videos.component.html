@@ -96,19 +96,53 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
                 </svg>
               </div>
+              @if (video.duration) {
+                <div class="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-[13px] font-medium leading-none text-white pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{{ video.duration }}</span>
+                </div>
+              }
             </div>
-            <div class="font-semibold mt-2 truncate text-[14px]">{{ video.title }}</div>
-            <div class="text-[12px] text-gray-600 leading-snug mt-1 space-y-0.5">
-              <div class="text-[12px] text-gray-600 leading-snug mt-1 space-y-0.5">
-                @if (video.featuring?.trim()) {
-                  <div>Featuring: {{ video.featuring }}</div>
-                }
-                @if (formatDate(video.date)) {
-                  <div>Date: {{ formatDate(video.date) }}</div>
-                }
-                @if (video.duration) {
-                  <div>Duration: {{ video.duration }}</div>
-                }
+            <div class="mt-2 flex items-center gap-2">
+              @if (hasAudio(video)) {
+                <div class="relative shrink-0">
+                  <button
+                    type="button"
+                    class="p-0.5 text-[#85C541] transition-transform hover:scale-110"
+                    (click)="onAudioNoteClick(video, $event)"
+                    title="Recorded Audio"
+                    aria-label="Recorded Audio">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                      <path d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .658.122Z" />
+                    </svg>
+                  </button>
+                  @if (audioChoiceVideo?.videoId === video.videoId) {
+                    <!-- transparent backdrop closes the menu on any outside click -->
+                    <div class="fixed inset-0 z-40" (click)="closeAudioChoice(); $event.stopPropagation()"></div>
+                    <div class="absolute left-0 top-full z-50 mt-1 w-28 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                      (click)="$event.stopPropagation()">
+                      <button type="button"
+                        class="block w-full px-3 py-1.5 text-left text-[13px] text-gray-700 hover:bg-[#85C541] hover:text-white"
+                        (click)="chooseNoMic($event)">No Mic</button>
+                      <button type="button"
+                        class="block w-full px-3 py-1.5 text-left text-[13px] text-gray-700 hover:bg-[#85C541] hover:text-white"
+                        (click)="chooseWithMic($event)">With Mic</button>
+                    </div>
+                  }
+                </div>
+              }
+              <div class="min-w-0 flex-1">
+                <div class="font-semibold truncate text-[14px]">{{ video.title }}</div>
+                <div class="mt-0.5 text-[12px] text-gray-600 leading-snug space-y-0.5">
+                  @if (video.featuring?.trim()) {
+                    <div>Featuring: {{ video.featuring }}</div>
+                  }
+                  @if (formatDate(video.date)) {
+                    <div>Date: {{ formatDate(video.date) }}</div>
+                  }
+                </div>
               </div>
             </div>
           </div>
@@ -150,3 +184,6 @@
 
 <!-- Video Player Modal -->
 <!-- <app-video-player></app-video-player> -->
+
+<!-- Global audio player bar (driven by AudioService) -->
+<app-audio-player-bar></app-audio-player-bar>
