@@ -105,19 +105,23 @@
                 </div>
               }
             </div>
-            <div class="mt-2 flex items-center gap-2">
+            <div class="mt-2 flex items-start gap-2">
               @if (hasAudio(video)) {
-                <div class="relative shrink-0">
+                <div class="group/note relative shrink-0">
                   <button
                     type="button"
                     class="p-0.5 text-[#85C541] transition-transform hover:scale-110"
                     (click)="onAudioNoteClick(video, $event)"
-                    title="Recorded Audio"
                     aria-label="Recorded Audio">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
                       <path d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .658.122Z" />
                     </svg>
                   </button>
+                  <!-- Hover tooltip -->
+                  <div role="tooltip"
+                    class="pointer-events-none absolute bottom-full left-0 z-[60] mb-1 hidden whitespace-nowrap rounded bg-black/90 px-2 py-1 text-[11px] font-medium text-white shadow-md group-hover/note:block">
+                    Recorded Audio
+                  </div>
                   @if (audioChoiceVideo?.videoId === video.videoId) {
                     <!-- transparent backdrop closes the menu on any outside click -->
                     <div class="fixed inset-0 z-40" (click)="closeAudioChoice(); $event.stopPropagation()"></div>
@@ -137,7 +141,7 @@
                 <div class="font-semibold truncate text-[14px]">{{ video.title }}</div>
                 <div class="mt-0.5 text-[12px] text-gray-600 leading-snug space-y-0.5">
                   @if (video.featuring?.trim()) {
-                    <div>Featuring: {{ video.featuring }}</div>
+                    <div class="italic">Featuring: {{ video.featuring }}</div>
                   }
                   @if (formatDate(video.date)) {
                     <div>Date: {{ formatDate(video.date) }}</div>

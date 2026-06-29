@@ -51,7 +51,7 @@ export class AudioService {
   // Equalizer data for visualization
   equalizerData = signal<number[]>([0, 0, 0, 0, 0, 0, 0, 8]);
 
-  playTrack(music: Music): void {
+  playTrack(music: Music, logContentType: string = 'music'): void {
     this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
       console.log("valid", valid, music)
       if (valid) {
@@ -95,7 +95,7 @@ export class AudioService {
             this.isLoading.set(false);
             // Log an audio play (once per track load; best-effort).
             if (music?.musicId) {
-              this.legendsEngagement.logAccess(music.musicId, 'music', 'play').subscribe({ error: () => {} });
+              this.legendsEngagement.logAccess(music.musicId, logContentType, 'play').subscribe({ error: () => {} });
             }
           }).catch(err => {
             console.log("Autoplay blocked:", err);

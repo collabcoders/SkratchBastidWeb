@@ -192,7 +192,7 @@ export class VideosComponent implements OnInit, OnDestroy {
       true,                     // external (url is a full https link)
       url,                      // url
     );
-    this.audioService.playTrack(track);
+    this.audioService.playTrack(track, 'video-audio');
   }
 
   ngOnInit(): void {
