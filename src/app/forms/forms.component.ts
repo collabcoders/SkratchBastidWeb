@@ -434,6 +434,22 @@ export class FormsComponent implements AfterViewInit, OnInit {
       profileEl.addEventListener('show.bs.modal', () => {
         this.loadProfileModal(false);
       });
+
+      // Bootstrap tooltips are opt-in: initialize the [Cancel] link's tooltip
+      // after the profile modal is fully rendered, and dispose it on hide so
+      // the floating tooltip element doesn't linger across reopens.
+      profileEl.addEventListener('shown.bs.modal', () => {
+        const cancelEl = profileEl.querySelector<HTMLElement>('.cancel-btn[data-bs-toggle="tooltip"]');
+        if (cancelEl && typeof bootstrap !== 'undefined' && bootstrap?.Tooltip) {
+          bootstrap.Tooltip.getOrCreateInstance(cancelEl);
+        }
+      });
+      profileEl.addEventListener('hide.bs.modal', () => {
+        const cancelEl = profileEl.querySelector<HTMLElement>('.cancel-btn[data-bs-toggle="tooltip"]');
+        if (cancelEl && typeof bootstrap !== 'undefined' && bootstrap?.Tooltip) {
+          bootstrap.Tooltip.getInstance(cancelEl)?.dispose();
+        }
+      });
     }
 
     // Snapshot the current URL as the post-login return URL every time the
