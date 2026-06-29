@@ -180,6 +180,28 @@ export class FormsComponent implements AfterViewInit, OnInit {
   subscrSum = '';
   cancelOption = false;
 
+  // Split label used by the profile modal header so 'Next Renewal: <date>'
+  // renders on its own line below the rest of the summary. Defensive: if the
+  // API string doesn't include the 'Next Renewal:' marker, the whole string
+  // falls into subscriptionMain and subscriptionRenewal stays empty.
+  private static readonly nextRenewalMarker = 'Next Renewal:';
+
+  get subscriptionMain(): string {
+    const s = this.subscrSum ?? '';
+    const idx = s.indexOf(FormsComponent.nextRenewalMarker);
+    if (idx === -1) return s.trim();
+    // Strip trailing separators (' - ', en/em dashes, whitespace) so the line
+    // above the renewal doesn't end with a dangling dash.
+    return s.slice(0, idx).replace(/[\s\-\u2013\u2014]+$/, '').trim();
+  }
+
+  get subscriptionRenewal(): string {
+    const s = this.subscrSum ?? '';
+    const idx = s.indexOf(FormsComponent.nextRenewalMarker);
+    if (idx === -1) return '';
+    return s.slice(idx).trim();
+  }
+
   loginLoading = signal(false);
   resetLoading = signal(false);
   registerLoading = signal(false);

@@ -245,13 +245,25 @@ re-captcha.is-invalid>div {
 }
 
 #profileModal .modal-header {
+  // Header now holds a stacked subscription block + cancel link + close btn.
   align-items: center;
   padding: 14px 18px;
+  gap: 12px;
 }
 
 #profileModal .subscription-text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
   font-weight: 600;
-  color: #111827;
+  color: #1F85FF;
+  line-height: 1.25;
+}
+
+#profileModal .subscription-text__main,
+#profileModal .subscription-text__renewal {
+  display: block;
+  color: inherit;
 }
 
 // Global `a { color: inherit !important; }` in src/styles.scss wins on
