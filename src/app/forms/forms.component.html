@@ -460,6 +460,9 @@
             }
           </span>
           @if (cancelOption) {
+            <a href="#" (click)="openUpdatePaymentModal(); $event.preventDefault()" class="update-payment-btn"
+               data-bs-toggle="tooltip" data-bs-placement="top"
+               title="Update Payment Method">[Update Card]</a>
             <a href="#" (click)="showCancel($event)" class="cancel-btn"
                data-bs-toggle="tooltip" data-bs-placement="top"
                title="Cancel Subscription">[Cancel]</a>
@@ -611,6 +614,46 @@
       </div>
     </div>
   </form>
+</div>
+
+<!-- Update Payment Modal -->
+<div class="modal fade" id="updatePaymentModal" tabindex="-1" aria-labelledby="updatePaymentModalLabel"
+  data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered mx-auto" style="max-width: 500px">
+    <div class="modal-content modal-login modal-light">
+      <div class="modal-header">
+        <h5 class="modal-title" id="updatePaymentModalLabel">Update Payment Method</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeUpdatePaymentModal()"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="form-text mb-3">Enter your new card details below. Future subscription charges will use this card.</p>
+        @if (paymentModalOpen) {
+          <div class="stripe-card-shell">
+            <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
+              <ngx-stripe-card #updatePaymentCard [options]="cardOptions" (change)="onUpdateCardChange($event)"></ngx-stripe-card>
+            </ngx-stripe-elements>
+          </div>
+        }
+        @if (updateCardErrorMessage) {
+          <div class="text-red-500 text-xs mt-1">{{ updateCardErrorMessage }}</div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeUpdatePaymentModal()"
+          [disabled]="updatingPayment()">Cancel</button>
+        <button type="button"
+          class="w-full mt-4 bg-[#FF5941] text-white py-3 px-6 font-bold !rounded-lg hover:bg-orange-600 transition"
+          (click)="submitUpdatePayment()" [disabled]="!canSubmitUpdatePayment()">
+          @if (updatingPayment()) {
+            <span class="loader mr-2"></span>Saving...
+          } @else {
+            Save Card
+          }
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Change Password Modal -->

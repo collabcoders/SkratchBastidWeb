@@ -286,6 +286,23 @@ re-captcha.is-invalid>div {
   text-decoration: underline !important;
 }
 
+// Update Card link sits beside [Cancel] in the header; same reset dance as
+// .cancel-btn to beat the global `a { color: inherit !important }`.
+#profileModal .update-payment-btn,
+#profileModal .update-payment-btn:visited {
+  color: #1F85FF !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#profileModal .update-payment-btn:hover,
+#profileModal .update-payment-btn:focus,
+#profileModal .update-payment-btn:active {
+  color: #0a5fc4 !important;
+  text-decoration: underline !important;
+}
+
 #profileModal .pic-preview {
   width: 128px;
   height: 128px;

@@ -61,4 +61,13 @@ export class LegendsMemberService {
   cancelSubscription(): Observable<any> {
     return this.api.post('/api/member/subscription/cancel', {});
   }
+
+  /**
+   * Swap the member's Stripe payment method so future subscription charges hit
+   * the new card. Member from JWT memberId; tenant from X-App header (both
+   * attached by LegendsApiService). PUT /api/UpdatePayment { paymentMethodId }.
+   */
+  updatePayment(paymentMethodId: string): Observable<any> {
+    return this.api.put('/api/UpdatePayment', { paymentMethodId });
+  }
 }

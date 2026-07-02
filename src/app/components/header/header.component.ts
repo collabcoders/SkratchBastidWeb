@@ -79,6 +79,13 @@ export class HeaderComponent implements OnDestroy, OnInit {
     this.showModal('profileModal');
   }
 
+  openUpdatePaymentModal() {
+    this.accountMenuOpen = false;
+    this.closeMobileMenu();
+    // forms.component's `show.bs.modal` listener mounts the Stripe card element.
+    this.showModal('updatePaymentModal');
+  }
+
   openLogin() {
     this.accountMenuOpen = false;
     this.closeMobileMenu();

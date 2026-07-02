@@ -107,6 +107,9 @@ export class FormsComponent implements AfterViewInit, OnInit {
         });
     }
     @ViewChild(StripeCardComponent) card!: StripeCardComponent;
+    // Dedicated card element for the Update Payment modal, queried by template
+    // ref so it never collides with the registration card above.
+    @ViewChild('updatePaymentCard') updatePaymentCard!: StripeCardComponent;
     processingSignup = false;
     // Add paymentMethodId and paymentMethodLast4 to registerForm if not present
     // Stripe/plan properties for registration
@@ -208,6 +211,12 @@ export class FormsComponent implements AfterViewInit, OnInit {
   loginReturnUrl = '/';
   cardComplete = false;
   cardErrorMessage = '';
+
+  // Update Payment modal state (separate from registration's card state).
+  paymentModalOpen = false;
+  updateCardComplete = false;
+  updateCardErrorMessage = '';
+  updatingPayment = signal(false);
 
   ngOnInit(): void {
     this.loadUpcomingEvents();
@@ -471,6 +480,27 @@ export class FormsComponent implements AfterViewInit, OnInit {
         if (cancelEl && typeof bootstrap !== 'undefined' && bootstrap?.Tooltip) {
           bootstrap.Tooltip.getInstance(cancelEl)?.dispose();
         }
+      });
+    }
+
+    // Own the Update Payment modal lifecycle on the modal element itself so it
+    // works for every opener (the account menu in header.component opens it
+    // directly via bootstrap, bypassing FormsComponent.openUpdatePaymentModal).
+    // `show.bs.modal` mounts a fresh Stripe card element; `hidden.bs.modal`
+    // unmounts it so the next open starts clean.
+    const paymentEl = document.getElementById('updatePaymentModal');
+    if (paymentEl) {
+      paymentEl.addEventListener('show.bs.modal', () => {
+        this.alertService.clear();
+        this.updateCardComplete = false;
+        this.updateCardErrorMessage = '';
+        this.updatingPayment.set(false);
+        this.paymentModalOpen = true;
+        this.cdr.markForCheck();
+      });
+      paymentEl.addEventListener('hidden.bs.modal', () => {
+        this.paymentModalOpen = false;
+        this.cdr.markForCheck();
       });
     }
 
@@ -987,6 +1017,73 @@ export class FormsComponent implements AfterViewInit, OnInit {
           this.cancelSubscription();
         }
       }
+    });
+  }
+
+  openUpdatePaymentModal() {
+    // Setup + card mount happen in the modal's `show.bs.modal` listener.
+    this.showModal('updatePaymentModal', { backdrop: 'static', keyboard: false });
+  }
+
+  closeUpdatePaymentModal() {
+    // The `hidden.bs.modal` listener unmounts the card so the next open is clean.
+    this.hideModal('updatePaymentModal');
+  }
+
+  onUpdateCardChange(event: any) {
+    this.updateCardComplete = !!event?.complete;
+    this.updateCardErrorMessage = event?.error?.message || '';
+    this.cdr.markForCheck();
+  }
+
+  canSubmitUpdatePayment(): boolean {
+    return !this.updatingPayment() && this.updateCardComplete;
+  }
+
+  submitUpdatePayment() {
+    if (!this.updateCardComplete) {
+      const message = this.updateCardErrorMessage || 'Please complete your card details, including ZIP/postal code.';
+      this.alertService.error('Error', message, Config.alertOptions);
+      return;
+    }
+    this.updatingPayment.set(true);
+    this.stripe.createPaymentMethod({
+      type: 'card',
+      card: this.updatePaymentCard.element,
+    }).subscribe((p: any) => {
+      if (p.error?.message) {
+        this.updatingPayment.set(false);
+        this.updateCardErrorMessage = p.error.message;
+        this.alertService.error('Error', p.error.message, Config.alertOptions);
+        this.cdr.markForCheck();
+        return;
+      }
+      const paymentMethodId = p.paymentMethod?.id;
+      if (!paymentMethodId) {
+        this.updatingPayment.set(false);
+        this.alertService.error('Error', 'Could not create a payment method. Please try again.', Config.alertOptions);
+        this.cdr.markForCheck();
+        return;
+      }
+      this.legendsMember.updatePayment(paymentMethodId).subscribe({
+        next: (data: any) => {
+          this.updatingPayment.set(false);
+          if (!data?.error) {
+            this.alertService.success('Payment Updated', data?.msg || 'Your payment method has been updated.', Config.alertOptions);
+            this.closeUpdatePaymentModal();
+            // Refresh the subscription summary shown in the profile modal.
+            this.loadSubscription();
+          } else {
+            this.alertService.error('Error', data?.msg || 'Could not update your payment method.', Config.alertOptions);
+          }
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          this.updatingPayment.set(false);
+          this.alertService.error('Error', err?.error?.message || err?.message || 'Could not update your payment method.', Config.alertOptions);
+          this.cdr.markForCheck();
+        }
+      });
     });
   }
 
