@@ -438,57 +438,12 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
     });
   }
 
-  private getMusicFileUrl(music: Music): string {
-    const file = music?.file || music?.url || '';
-    if (!file) {
-      return '';
-    }
-    return file.toLowerCase().startsWith('http') ? file : `${Config.content}${file}`;
-  }
-
-  private getMusicFileName(music: Music): string {
-    const source = music?.file || music?.url || music?.title || 'audio';
-    const fileName = (source.split('/').pop() || 'audio').split('?')[0].split('#')[0];
-    if (/\.[a-z0-9]+$/i.test(fileName)) {
-      return fileName;
-    }
-    return `${fileName}.mp3`;
-  }
-
-  async downloadAudio($event: any, music?: Music) {
+  // Download the current track via the LegendsOnly /api/download endpoint
+  // (server renames + logs + increments the play count). Delegates to the
+  // shared AudioService helper so the bar and waveform players behave alike.
+  downloadAudio($event: any, music?: Music) {
     $event.preventDefault();
-    const track = music || this.music;
-    if (!track) {
-      return;
-    }
-
-    const fileUrl = this.getMusicFileUrl(track);
-    if (!fileUrl) {
-      return;
-    }
-
-    const fileName = this.getMusicFileName(track);
-
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to download audio: ${response.status}`);
-      }
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const element = document.createElement('a');
-      element.href = blobUrl;
-      element.download = fileName;
-      element.click();
-      window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
-    } catch (err) {
-      const element = document.createElement('a');
-      element.href = fileUrl;
-      element.target = '_blank';
-      element.rel = 'noopener noreferrer';
-      element.download = fileName;
-      element.click();
-    }
+    this.audioService.downloadTrack(music || this.music);
   }
 
   openShare(music: Music) {

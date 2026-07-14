@@ -17,6 +17,12 @@ export class Music {
     href: string;
     url: string;
 
+    // Optional pointer to the backing media for downloads. Video audio-versions
+    // reuse musicId as the videoId for card play/pause toggling, so the real
+    // id/type/version the /api/download endpoint needs live here. Absent for
+    // ordinary music tracks (which download as type 'audio' by their musicId).
+    mediaRef?: { type: 'video' | 'audio'; id: number; version?: 'audio' | 'audio1' | 'audio2' };
+
     // Constructor
     // (accepts a value so you can initialize engine)
     constructor(

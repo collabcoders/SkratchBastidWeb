@@ -5,6 +5,7 @@ import { ApiService } from './api.service';
 import { TokenService } from './token.service';
 import { AppData } from 'src/app/app.data';
 import { Config } from '@shared/config';
+import { environment } from '@env/environment';
 import { VideoAccessService } from './video-access.service';
 import { LegendsEngagementService } from './legends/engagement.service';
 
@@ -112,6 +113,38 @@ export class AudioService {
         // bootbox.alert('<h4>Membership Only</h4><br>' + 'Sorry, music streaming is reserved for members only.  Please Sign-In or Sign-Up (links are on the top-right) to get access.');
       }
     });
+  }
+
+  /**
+   * Download a track through the LegendsOnly /api/download endpoint, which
+   * fetches the file, renames it (title with underscores), logs the download
+   * to logContentAccess, and increments the play/view count.
+   *
+   * Video audio-versions carry a `mediaRef` (type=video + real videoId +
+   * version); ordinary music tracks default to type=audio by their musicId.
+   * The request goes through a hidden iframe so the SPA never navigates — the
+   * API's Content-Disposition header supplies the downloaded filename.
+   */
+  downloadTrack(track: Music | null | undefined): void {
+    if (!track) { return; }
+    const ref = track.mediaRef ?? { type: 'audio' as const, id: track.musicId };
+    if (!ref.id) { return; }
+
+    const memberId = this.token.getMember()?.memberId ?? 0;
+    const params = new URLSearchParams({
+      id: String(ref.id),
+      type: ref.type,
+      memberId: String(memberId),
+      app: Config.app,
+    });
+    if (ref.version) { params.set('version', ref.version); }
+
+    const url = `${environment.legendsApi}/api/download?${params.toString()}`;
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(() => iframe.remove(), 60000);
   }
 
   togglePlayPause(): void {

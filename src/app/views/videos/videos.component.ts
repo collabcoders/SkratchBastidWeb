@@ -192,6 +192,15 @@ export class VideosComponent implements OnInit, OnDestroy {
       true,                     // external (url is a full https link)
       url,                      // url
     );
+    // Tag the real backing media so the download hits /api/download with the
+    // correct type/id/version (musicId above is the videoId for card toggling).
+    const a1 = video.audio1?.trim();
+    const a2 = video.audio2?.trim();
+    track.mediaRef = {
+      type: 'video',
+      id: video.videoId,
+      version: url === a1 ? 'audio1' : url === a2 ? 'audio2' : 'audio',
+    };
     this.audioService.playTrack(track, 'video-audio');
   }
 

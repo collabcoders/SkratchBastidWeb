@@ -2,8 +2,6 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { AudioService } from '@shared/services/audio.service';
 import { ImagePipe } from '@shared/pipes/image.pipe';
-import { Config } from '@shared/config';
-import { Music } from '@shared/models/music';
 
 @Component({
   selector: 'app-audio-player-bar',
@@ -15,62 +13,13 @@ import { Music } from '@shared/models/music';
 export class AudioPlayerBarComponent {
   audioService = inject(AudioService);
 
-  private getTrackFileUrl(track: Music | null | undefined): string {
-    const file = track?.file || track?.url || '';
-    if (!file) {
-      return '';
-    }
-
-    return file.toLowerCase().startsWith('http') ? file : `${Config.content}${file}`;
-  }
-
-  private getTrackFileName(track: Music | null | undefined): string {
-    const source = track?.file || track?.url || track?.title || 'audio';
-    const fileName = (source.split('/').pop() || 'audio').split('?')[0].split('#')[0];
-    if (/\.[a-z0-9]+$/i.test(fileName)) {
-      return fileName;
-    }
-
-    return `${fileName}.mp3`;
-  }
-
-  async downloadCurrentTrack(event: MouseEvent): Promise<void> {
+  // Download the currently-playing track via the LegendsOnly /api/download
+  // endpoint (server renames + logs + increments the play count). Handles both
+  // ordinary music and video audio-versions (which carry a mediaRef).
+  downloadCurrentTrack(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-
-    const track = this.audioService.currentTrack();
-    if (!track) {
-      return;
-    }
-
-    const fileUrl = this.getTrackFileUrl(track);
-    if (!fileUrl) {
-      return;
-    }
-
-    const fileName = this.getTrackFileName(track);
-
-    try {
-      const response = await fetch(fileUrl);
-      if (!response.ok) {
-        throw new Error(`Failed to download audio: ${response.status}`);
-      }
-
-      const blob = await response.blob();
-      const blobUrl = window.URL.createObjectURL(blob);
-      const element = document.createElement('a');
-      element.href = blobUrl;
-      element.download = fileName;
-      element.click();
-      window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
-    } catch {
-      const element = document.createElement('a');
-      element.href = fileUrl;
-      element.target = '_blank';
-      element.rel = 'noopener noreferrer';
-      element.download = fileName;
-      element.click();
-    }
+    this.audioService.downloadTrack(this.audioService.currentTrack());
   }
 
   seekTo(event: MouseEvent, progressBar: HTMLElement): void {
