@@ -4,14 +4,23 @@
     {
       "name": "skratchbastid",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start", "--", "--port", "4300"],
+      "runtimeArgs": [
+        "start",
+        "--",
+        "--port",
+        "4300"
+      ],
       "port": 4300,
       "autoPort": false
     },
     {
       "name": "djjazzyjeff",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start", "--prefix", "/Users/jarguelles/Documents/DJJazzyJeffWeb"],
+      "runtimeArgs": [
+        "start",
+        "--prefix",
+        "/Users/jarguelles/Documents/DJJazzyJeffWeb"
+      ],
       "port": 4200,
       "autoPort": false
     }
