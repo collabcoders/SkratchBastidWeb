@@ -56,15 +56,29 @@
       <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         @for (date of tourDates; track date.city) {
           <div #reveal class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col reveal reveal-up"
+            [style.filter]="date.past ? 'grayscale(1)' : null"
+            [style.opacity]="date.past ? '0.6' : null"
             [style.transitionDelay]="($index * 200) + 'ms'">
-            <a [href]="date.ticketUrl" target="_blank" rel="noopener noreferrer" class="bbq-card-media relative block">
-              <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto" />
-              <div class="bbq-card-overlay absolute inset-0 flex items-center justify-center cursor-pointer">
-                <span class="inline-flex items-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-8 py-4 rounded-2xl">
-                  Get Tickets →
-                </span>
+            @if (date.past) {
+              <!-- Past event: greyed media with a non-clickable "Event Over" overlay. -->
+              <div class="bbq-card-media relative block">
+                <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto grayscale" />
+                <div class="absolute inset-0 flex items-center justify-center bg-white/60">
+                  <span class="inline-flex items-center gap-2 bg-gray-700 text-white font-extrabold uppercase tracking-widest text-sm px-8 py-4 rounded-2xl">
+                    Event Over
+                  </span>
+                </div>
               </div>
-            </a>
+            } @else {
+              <a [href]="date.ticketUrl" target="_blank" rel="noopener noreferrer" class="bbq-card-media relative block">
+                <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto" />
+                <div class="bbq-card-overlay absolute inset-0 flex items-center justify-center cursor-pointer">
+                  <span class="inline-flex items-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-8 py-4 rounded-2xl">
+                    Get Tickets →
+                  </span>
+                </div>
+              </a>
+            }
             <div class="p-5 flex flex-col flex-1">
               <div class="text-xl font-extrabold tracking-tight text-[#1F85FF]">{{ date.city }}</div>
               <div class="text-sm font-semibold text-[#FF5941] mt-1">{{ date.date }}</div>
@@ -73,13 +87,21 @@
                 <div class="text-sm text-gray-500">{{ date.address }}</div>
               }
               <div class="text-sm text-gray-500">{{ date.time }}</div>
-              <a
-                [href]="date.ticketUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="mt-4 mb-1 inline-flex items-center justify-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-7 py-3.5 rounded-2xl shadow-[6px_6px_0_0_#F4623A] hover:bg-[#F4623A] hover:shadow-[6px_6px_0_0_#1b2130] transition-all">
-                🎟 Get Tickets
-              </a>
+              @if (date.past) {
+                <span
+                  aria-disabled="true"
+                  class="mt-4 mb-1 inline-flex items-center justify-center gap-2 bg-gray-400 text-white font-extrabold uppercase tracking-widest text-sm px-7 py-3.5 rounded-2xl cursor-not-allowed select-none">
+                  Event Over
+                </span>
+              } @else {
+                <a
+                  [href]="date.ticketUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="mt-4 mb-1 inline-flex items-center justify-center gap-2 bg-[#1b2130] text-white font-extrabold uppercase tracking-widest text-sm px-7 py-3.5 rounded-2xl shadow-[6px_6px_0_0_#F4623A] hover:bg-[#F4623A] hover:shadow-[6px_6px_0_0_#1b2130] transition-all">
+                  🎟 Get Tickets
+                </a>
+              }
             </div>
           </div>
         }
