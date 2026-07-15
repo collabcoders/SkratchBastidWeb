@@ -421,7 +421,11 @@ export class VideosComponent implements OnInit, OnDestroy {
       image: video.image || video.image,
       screenshot: video.screenshot,
       date: video.date || new Date().toISOString(),
-      audio1: '',
+      // Carry the recorded-audio tracks through so the modal can offer the
+      // same No Mic / With Mic chooser the list cards show.
+      audio: video.audio || '',
+      audio1: video.audio1 || '',
+      audio2: video.audio2 || '',
       favId: video.favId ?? 0,
       featured: 0
     };

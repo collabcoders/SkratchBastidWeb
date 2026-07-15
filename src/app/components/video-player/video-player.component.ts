@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewEncapsulation, ElementRef, ViewChild, OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewChecked, Input, Output, EventEmitter, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ImagePipe } from '@shared/pipes/image.pipe';
@@ -11,6 +11,8 @@ import videojsqualityselector from 'videojs-hls-quality-selector';
 import { Video } from '@shared/models/video';
 import { Bookmark } from '@shared/models/bookmark';
 import { VideoService } from '@shared/services/video.service';
+import { AudioService } from '@shared/services/audio.service';
+import { Music } from '@shared/models/music';
 import { Comment } from '@shared/models/comment';
 import { ApiService } from '@shared/services/api.service';
 import { LegendsEngagementService } from '@shared/services/legends/engagement.service';
@@ -100,8 +102,147 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     private videoAccessService: VideoAccessService,
     private legendsEngagement: LegendsEngagementService,
     private legendsVideos: LegendsVideosService,
+    public audioService: AudioService,
     private cdr: ChangeDetectorRef) {
       this.distroyVideo = this.distroyVideo.bind(this);
+
+      // Whenever the audio service starts playback (the player bar appears and
+      // a track begins), pause the modal video so the two don't play over each
+      // other. This fires on the real playback start, not just the note click,
+      // so it covers the async audio load and any other audio source.
+      effect(() => {
+        if (this.audioService.isPlaying()) {
+          this.pauseVideo();
+        }
+      });
+  }
+
+  // Pause the modal video robustly: through the Video.js handle, and — as a
+  // fallback in case that handle is stale/disposed — the raw media element.
+  private pauseVideo(): void {
+    try {
+      const player = this.getPlayerInstance();
+      if (player && !player.isDisposed?.() && typeof player.pause === 'function' && !player.paused?.()) {
+        player.pause();
+      }
+    } catch {}
+    try {
+      const el = document.querySelector('#videoModal video') as HTMLVideoElement | null;
+      if (el && !el.paused) {
+        el.pause();
+      }
+    } catch {}
+  }
+
+  // Audio version chooser (No Mic / With Mic), mirrors the video list cards.
+  // Open only while both audio versions exist and the user taps the note icon.
+  showAudioMenu = false;
+
+  // True when the current video has at least one streamable audio track.
+  hasAudio(video: Video | null): boolean {
+    return !!(video?.audio?.trim() || video?.audio1?.trim());
+  }
+
+  // Note-icon click: play directly when one track exists, or open the
+  // No Mic / With Mic chooser when both do.
+  onAudioNoteClick(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const video = this.video;
+    if (!video) return;
+    const noMic = video.audio?.trim();
+    const withMic = video.audio1?.trim();
+    if (noMic && withMic) {
+      this.showAudioMenu = !this.showAudioMenu;
+    } else if (noMic) {
+      this.playAudio(video, noMic, 'No Mic');
+    } else if (withMic) {
+      this.playAudio(video, withMic, 'With Mic');
+    }
+  }
+
+  chooseNoMic(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showAudioMenu = false;
+    const video = this.video;
+    if (video?.audio?.trim()) {
+      this.playAudio(video, video.audio.trim(), 'No Mic');
+    }
+  }
+
+  chooseWithMic(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.showAudioMenu = false;
+    const video = this.video;
+    if (video?.audio1?.trim()) {
+      this.playAudio(video, video.audio1.trim(), 'With Mic');
+    }
+  }
+
+  closeAudioMenu(): void {
+    this.showAudioMenu = false;
+  }
+
+  // Build a Music track from the video + audio url and hand it to the global
+  // player bar. Pauses the video first so audio doesn't play over it.
+  private playAudio(video: Video, url: string, label: string): void {
+    // Pause immediately for snappy feedback; the audioService effect also
+    // pauses once the track actually starts (covers the async audio load).
+    this.pauseVideo();
+
+    const title = label ? `${video.title} (${label})` : video.title;
+    const poster = video.screenshot || video.image || this.videoPoster;
+    const track = new Music(
+      video.videoId,            // musicId (unique per card for play/pause toggle)
+      video.featuring ?? '',    // artist
+      title,                    // title
+      '',                       // genre
+      video.duration ?? '',     // duration
+      poster,                   // image
+      url,                      // file
+      video.date ?? '',         // date
+      '',                       // description
+      video.category ?? '',     // category
+      0,                        // index
+      video.favId ?? 0,         // favId
+      1,                        // featured
+      '',                       // href
+      true,                     // external (url is a full https link)
+      url,                      // url
+    );
+    const a1 = video.audio1?.trim();
+    const a2 = video.audio2?.trim();
+    track.mediaRef = {
+      type: 'video',
+      id: video.videoId,
+      version: url === a1 ? 'audio1' : url === a2 ? 'audio2' : 'audio',
+    };
+    this.audioService.playTrack(track, 'video-audio');
+  }
+
+  // Start playback, falling back to muted autoplay when the browser blocks
+  // autoplay-with-sound. Opening the modal is a user gesture so sound usually
+  // succeeds; the muted retry guarantees the video still starts either way.
+  private attemptAutoplay(player: any): void {
+    if (!player || player.isDisposed?.()) {
+      return;
+    }
+    try {
+      const result = player.play();
+      if (result && typeof result.catch === 'function') {
+        result.catch(() => {
+          try {
+            player.muted(true);
+            const retry = player.play();
+            if (retry && typeof retry.catch === 'function') {
+              retry.catch(() => {});
+            }
+          } catch {}
+        });
+      }
+    } catch {}
   }
   ngOnInit(): void {
     this.isLoggedIn$ = this.token.isValid(undefined);
@@ -178,7 +319,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
         const player = this.getPlayerInstance();
         if (player && this.videohls) {
           player.src({ src: this.videohls, type: 'application/x-mpegURL' });
-          player.play();
+          this.attemptAutoplay(player);
         }
       });
     }
@@ -200,7 +341,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     if (changes?.['video']?.currentValue?.videoId === changes?.['video']?.previousValue?.videoId) {
       const player = this.getPlayerInstance();
       if (player && !player.isDisposed?.()) {
-        player.play();
+        this.attemptAutoplay(player);
       }
     }
   }
@@ -404,7 +545,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       if (existing && !existing.isDisposed?.()) {
         this.player = existing;
         existing.src({ src: this.videohls, type: 'application/x-mpegURL' });
-        existing.play();
+        this.attemptAutoplay(existing);
         if (!this.playerInitialized) {
           this.setupPlayerEvents(existing);
           this.playerInitialized = true;
@@ -429,7 +570,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
       player.ready(() => {
         // Force set the poster to ensure screenshot shows
         player.poster(this.videoPoster);
-        player.play();
+        this.attemptAutoplay(player);
         if (!this.playerInitialized) {
           this.setupPlayerEvents(player);
           this.playerInitialized = true;
