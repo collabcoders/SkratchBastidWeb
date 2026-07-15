@@ -1,6 +1,6 @@
 @if (audioService.currentTrack()) {
 <div
-  class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 player-bar"
+  class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-[1060] player-bar"
 >
   <!-- Progress Bar (Top) -->
   <div
@@ -218,6 +218,18 @@
         </button>
       </div>
     </div>
+  </div>
+</div>
+}
+
+<!-- Download processing overlay — shown from the moment Download is clicked
+     until the server responds and the browser download begins. -->
+@if (audioService.isDownloadProcessing()) {
+<div class="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50"
+  role="status" aria-live="polite">
+  <div class="flex flex-col items-center gap-4 rounded-2xl bg-white px-10 py-8 shadow-2xl">
+    <div class="w-10 h-10 rounded-full border-4 border-gray-200 border-t-[#85C541] animate-spin"></div>
+    <div class="text-sm font-semibold text-gray-800">Processing download...</div>
   </div>
 </div>
 }

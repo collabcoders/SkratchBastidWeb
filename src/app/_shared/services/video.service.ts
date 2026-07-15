@@ -48,16 +48,24 @@ export class VideoService {
  
   showPlayer(video: Video) {
     $('#favoritesModal1').modal('hide');
-    this.audioService.resetPlayer();
+    // Pause any playing audio so it never overlaps the video that's opening.
+    // Every video-open path (list, carousel, hero, favorites modal) funnels
+    // through here, so this is the single place that guarantees no overlap.
+    this.audioService.pause();
     const _video = {
       videoId: video.videoId,
       title: video.title,
       source: video.source,
       sourceId: video.sourceId,
+      // All three recorded-audio tracks must survive to the modal so it can
+      // offer the same No Mic (audio) / With Mic (audio1) chooser as the cards.
+      audio: video.audio,
       audio1: video.audio1,
+      audio2: video.audio2,
       duration: video.duration,
       featuring: video.featuring,
       image: video.image,
+      screenshot: video.screenshot,
       date: video.date,
       favId: video.favId ?? 0,
       hls: video.hls,

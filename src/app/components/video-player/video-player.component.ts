@@ -135,8 +135,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   // Audio version chooser (No Mic / With Mic), mirrors the video list cards.
-  // Open only while both audio versions exist and the user taps the note icon.
+  // Two triggers open it — the one by the title ('title') and the header
+  // button left of the favorite heart ('header') — each with its own menu
+  // flag so only the tapped one's dropdown opens.
   showAudioMenu = false;
+  showHeaderAudioMenu = false;
 
   // True when the current video has at least one streamable audio track.
   hasAudio(video: Video | null): boolean {
@@ -144,8 +147,9 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   }
 
   // Note-icon click: play directly when one track exists, or open the
-  // No Mic / With Mic chooser when both do.
-  onAudioNoteClick(event: Event): void {
+  // No Mic / With Mic chooser when both do. `source` picks which trigger's
+  // dropdown to toggle (and closes the other).
+  onAudioNoteClick(event: Event, source: 'title' | 'header' = 'title'): void {
     event.preventDefault();
     event.stopPropagation();
     const video = this.video;
@@ -153,7 +157,13 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     const noMic = video.audio?.trim();
     const withMic = video.audio1?.trim();
     if (noMic && withMic) {
-      this.showAudioMenu = !this.showAudioMenu;
+      if (source === 'header') {
+        this.showHeaderAudioMenu = !this.showHeaderAudioMenu;
+        this.showAudioMenu = false;
+      } else {
+        this.showAudioMenu = !this.showAudioMenu;
+        this.showHeaderAudioMenu = false;
+      }
     } else if (noMic) {
       this.playAudio(video, noMic, 'No Mic');
     } else if (withMic) {
@@ -164,7 +174,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   chooseNoMic(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.showAudioMenu = false;
+    this.closeAudioMenu();
     const video = this.video;
     if (video?.audio?.trim()) {
       this.playAudio(video, video.audio.trim(), 'No Mic');
@@ -174,7 +184,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
   chooseWithMic(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.showAudioMenu = false;
+    this.closeAudioMenu();
     const video = this.video;
     if (video?.audio1?.trim()) {
       this.playAudio(video, video.audio1.trim(), 'With Mic');
@@ -183,6 +193,7 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
 
   closeAudioMenu(): void {
     this.showAudioMenu = false;
+    this.showHeaderAudioMenu = false;
   }
 
   // Build a Music track from the video + audio url and hand it to the global
@@ -229,6 +240,11 @@ export class VideoPlayerComponent implements OnInit, AfterViewInit, OnDestroy, O
     if (!player || player.isDisposed?.()) {
       return;
     }
+    // A video is (re)starting — pause any audio so the two never overlap. This
+    // is the single funnel every playback path hits (initial open, related-video
+    // clicks via showreldetails, and autoplay retries), including the ones that
+    // don't go through VideoService.showPlayer.
+    this.audioService.pause();
     try {
       const result = player.play();
       if (result && typeof result.catch === 'function') {

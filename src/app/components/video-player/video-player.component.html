@@ -4,13 +4,42 @@
       <div class="modal-header px-5 flex justify-between items-center">
 
         @if (video) {
-        <div class="absolute top-3 left-3 z-10" (click)="fav($event, video, video.videoId)">
+        <div class="absolute top-3 left-3 z-10 flex items-center gap-2">
           <button
-            class="w-8 h-8 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all duration-200">
+            type="button"
+            class="w-8 h-8 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all duration-200"
+            [tooltip]="(video.favId ?? 0) > 0 ? 'Remove from Favorites' : 'Add to Favorites'"
+            placement="bottom"
+            (click)="fav($event, video, video.videoId)"
+            aria-label="Toggle favorite">
             <svg class="w-5 h-5" [ngClass]="{'text-red-500': (video.favId ?? 0) > 0, 'text-white': (video.favId ?? 0) <= 0}" fill="currentColor" viewBox="0 0 24 24">
               <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
           </button>
+          @if (hasAudio(video)) {
+            <!-- Recorded-audio chooser, right of the favorite heart. Circular to
+                 match the heart; opens the shared No Mic / With Mic menu. -->
+            <div class="mp-audio-note">
+              <button
+                type="button"
+                class="w-8 h-8 flex items-center justify-center bg-black bg-opacity-50 rounded-full hover:bg-opacity-75 transition-all duration-200"
+                tooltip="Recorded Audio"
+                placement="bottom"
+                (click)="onAudioNoteClick($event, 'header')"
+                aria-label="Recorded Audio">
+                <svg class="w-5 h-5 text-[#85C541]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .658.122Z" />
+                </svg>
+              </button>
+              @if (showHeaderAudioMenu) {
+                <div class="mp-audio-backdrop" (click)="closeAudioMenu(); $event.stopPropagation()"></div>
+                <div class="mp-audio-menu" (click)="$event.stopPropagation()">
+                  <button type="button" (click)="chooseNoMic($event)">No Mic</button>
+                  <button type="button" (click)="chooseWithMic($event)">With Mic</button>
+                </div>
+              }
+            </div>
+          }
         </div>
         }
         
@@ -90,33 +119,27 @@
                   <h2 class="h3 fw-bold mb-0 text-capitalize">{{ videotitle }}</h2>
                   @if (hasAudio(video)) {
                     <!-- Recorded-audio chooser — mirrors the No Mic / With Mic
-                         popover shown under each video list card. -->
-                    <div class="group/note relative shrink-0" style="line-height:0">
+                         popover under each video list card. Styled with scoped
+                         classes (see .scss) because this modal uses
+                         ViewEncapsulation.None + heavy global CSS that stomps
+                         Tailwind utilities. -->
+                    <div class="mp-audio-note">
                       <button
                         type="button"
-                        class="p-0.5 text-[#85C541] transition-transform hover:scale-110"
+                        class="mp-audio-btn"
                         (click)="onAudioNoteClick($event)"
                         aria-label="Recorded Audio">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .658.122Z" />
                         </svg>
                       </button>
-                      <!-- Hover tooltip -->
-                      <div role="tooltip"
-                        class="pointer-events-none absolute bottom-full left-0 z-[60] mb-1 hidden whitespace-nowrap rounded bg-black/90 px-2 py-1 text-[11px] font-medium text-white shadow-md group-hover/note:block">
-                        Recorded Audio
-                      </div>
+                      <span class="mp-audio-tip" role="tooltip">Recorded Audio</span>
                       @if (showAudioMenu) {
                         <!-- transparent backdrop closes the menu on any outside click -->
-                        <div class="fixed inset-0 z-40" (click)="closeAudioMenu(); $event.stopPropagation()"></div>
-                        <div class="absolute left-0 top-full z-50 mt-1 w-28 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
-                          (click)="$event.stopPropagation()">
-                          <button type="button"
-                            class="block w-full px-3 py-1.5 text-left text-[13px] text-gray-700 hover:bg-[#85C541] hover:text-white"
-                            (click)="chooseNoMic($event)">No Mic</button>
-                          <button type="button"
-                            class="block w-full px-3 py-1.5 text-left text-[13px] text-gray-700 hover:bg-[#85C541] hover:text-white"
-                            (click)="chooseWithMic($event)">With Mic</button>
+                        <div class="mp-audio-backdrop" (click)="closeAudioMenu(); $event.stopPropagation()"></div>
+                        <div class="mp-audio-menu" (click)="$event.stopPropagation()">
+                          <button type="button" (click)="chooseNoMic($event)">No Mic</button>
+                          <button type="button" (click)="chooseWithMic($event)">With Mic</button>
                         </div>
                       }
                     </div>

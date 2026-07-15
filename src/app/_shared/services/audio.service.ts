@@ -31,6 +31,10 @@ export class AudioService {
   isLoggedIn$!: Observable<boolean>;
 
   private audio: HTMLAudioElement | null = null;
+  // True while a track is loading and still intends to autoplay. Cleared when a
+  // video opens (pause) so a not-yet-started audio load can't start playing
+  // over the video after its `loadedmetadata` fires.
+  private pendingAutoplay = false;
 
   // Signals for reactive state management
   currentTrack = signal<Music | null>(null);
@@ -39,6 +43,9 @@ export class AudioService {
   duration = signal<number>(0);
   volume = signal<number>(1);
   isLoading = signal<boolean>(false);
+  // True from the moment a download is requested until the server responds and
+  // the browser download begins. Drives the "Processing download..." overlay.
+  isDownloadProcessing = signal<boolean>(false);
 
   // Computed values
   progress = computed(() => {
@@ -64,6 +71,7 @@ export class AudioService {
         this.stopCurrentTrack();
         this.currentTrack.set(music);
         this.isLoading.set(true);
+        this.pendingAutoplay = true;
 
         let url = music.file;
         if (url.toLocaleLowerCase().indexOf('http') === -1) {
@@ -88,12 +96,24 @@ export class AudioService {
         }, 500);
 
         this.audio.addEventListener('loadedmetadata', () => {
+          // A video opened while this track was still loading — don't start
+          // playing over it.
+          if (!this.pendingAutoplay) {
+            this.isLoading.set(false);
+            return;
+          }
           this.audio!.volume = this.volume();
           this.audio!.muted = false;
 
           this.audio!.play().then(() => {
-            this.isPlaying.set(true);
             this.isLoading.set(false);
+            // If a video opened (pause) between play() and this resolving, don't
+            // flip the indicator back to "playing" — that would strand the bar
+            // showing playback while the element is actually paused.
+            if (!this.pendingAutoplay || !this.audio || this.audio.paused) {
+              return;
+            }
+            this.isPlaying.set(true);
             // Log an audio play (once per track load; best-effort).
             if (music?.musicId) {
               this.legendsEngagement.logAccess(music.musicId, logContentType, 'play').subscribe({ error: () => {} });
@@ -139,11 +159,26 @@ export class AudioService {
     });
     if (ref.version) { params.set('version', ref.version); }
 
+    // Show a "Processing download..." overlay while the server prepares the
+    // file (it fetches, renames, logs, and increments the count before the
+    // download begins). Clear it when the iframe response arrives (download
+    // starting), with a fallback timeout in case a browser suppresses the
+    // iframe `load` event for attachment downloads — so it can never stick.
+    this.isDownloadProcessing.set(true);
+    let settled = false;
+    const done = () => {
+      if (settled) { return; }
+      settled = true;
+      this.isDownloadProcessing.set(false);
+    };
+
     const url = `${environment.legendsApi}/api/download?${params.toString()}`;
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
+    iframe.addEventListener('load', done);
     iframe.src = url;
     document.body.appendChild(iframe);
+    setTimeout(done, 10000);
     setTimeout(() => iframe.remove(), 60000);
   }
 
@@ -160,7 +195,19 @@ export class AudioService {
     }
   }
 
+  // Pause playback without tearing down the track, so the player bar stays
+  // visible (paused). Called when a video opens so audio never overlaps video.
+  // Also cancels a still-loading track's pending autoplay.
+  pause(): void {
+    this.pendingAutoplay = false;
+    if (this.audio && this.isPlaying()) {
+      this.audio.pause();
+      this.isPlaying.set(false);
+    }
+  }
+
   stopCurrentTrack(): void {
+    this.pendingAutoplay = false;
     if (this.audio) {
       this.audio.pause();
       this.audio.currentTime = 0;

@@ -403,10 +403,8 @@ export class VideosComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Pause any audio playing in the player bar so it doesn't run over the video.
-    if (this.audioService.isPlaying()) {
-      this.audioService.togglePlayPause();
-    }
+    // (Audio is paused centrally in VideoService.showPlayer so it never
+    // overlaps the video — no per-caller handling needed here.)
 
     // Convert VideoMix to Video format
     const videoData: Video= {
