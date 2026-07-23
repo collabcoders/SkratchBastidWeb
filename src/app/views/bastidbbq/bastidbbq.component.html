@@ -56,10 +56,10 @@
       <div class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         @for (date of tourDates; track date.city) {
           <div #reveal class="rounded-2xl border border-gray-200 bg-white overflow-hidden shadow-sm flex flex-col reveal reveal-up"
-            [style.filter]="date.past ? 'grayscale(1)' : null"
-            [style.opacity]="date.past ? '0.6' : null"
+            [style.filter]="isEventPast(date.dateISO) ? 'grayscale(1)' : null"
+            [style.opacity]="isEventPast(date.dateISO) ? '0.6' : null"
             [style.transitionDelay]="($index * 200) + 'ms'">
-            @if (date.past) {
+            @if (isEventPast(date.dateISO)) {
               <!-- Past event: greyed media with a non-clickable "Event Over" overlay. -->
               <div class="bbq-card-media relative block">
                 <img [src]="date.image" [alt]="date.city + ' — Bastid\'s BBQ'" class="w-full h-auto grayscale" />
@@ -87,7 +87,7 @@
                 <div class="text-sm text-gray-500">{{ date.address }}</div>
               }
               <div class="text-sm text-gray-500">{{ date.time }}</div>
-              @if (date.past) {
+              @if (isEventPast(date.dateISO)) {
                 <span
                   aria-disabled="true"
                   class="mt-4 mb-1 inline-flex items-center justify-center gap-2 bg-gray-400 text-white font-extrabold uppercase tracking-widest text-sm px-7 py-3.5 rounded-2xl cursor-not-allowed select-none">
