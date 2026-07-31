@@ -71,3 +71,28 @@ Repo secrets required (per-repository, already set on this repo): `FTP_HOST`, `F
 - Stripe publishable key and the reCAPTCHA **site** key are committed in `src/environments/`.
   Both are client-side-public by design, so this is fine — but note `prodId`
   (`prod_RvMADg6RCwpL34`) is also hardcoded there, so a Stripe product change means a code change.
+
+---
+
+## Claude Code project config (added 2026-07-30)
+
+`.claude/settings.json` is now **committed**. It pre-approves this project's ordinary
+build/test commands so a fresh session doesn't prompt for each one:
+
+- `Bash(npm install)`
+- `Bash(npx ng build *)`
+- `Bash(npx ng serve *)`
+- `Bash(npx ng test *)`
+- `Bash(git fetch *)`
+- `Bash(curl -fsS --max-time 15 https://skratchbastid.com/version.json)`
+
+`.claude/settings.local.json` is deliberately **not** committed — it is the per-machine
+override layer. Its entries here were either machine-specific (absolute paths, scratchpad
+one-offs, `Read(//Users/jarguelles/**)`) or outward-facing (`git push`, `git tag`, `gh run`).
+The outward-facing ones are left out on purpose: a clone should not start life with irreversible
+actions pre-approved for whoever runs it.
+
+The `.gitignore` stanza enforcing this is in the repo, so it survives a machine change.
+Previously the only thing keeping `settings.local.json` out was `~/.config/git/ignore`, which
+is a user dotfile and does not travel.
+

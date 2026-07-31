@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npx ng build *)",
+      "Bash(npx ng serve *)",
+      "Bash(npx ng test *)",
+      "Bash(git fetch *)",
+      "Bash(curl -fsS --max-time 15 https://skratchbastid.com/version.json)"
+    ]
+  }
+}

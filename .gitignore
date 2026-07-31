@@ -21,3 +21,11 @@ build
 # Mac/OSX
 .DS_Store
 /.DS_Store
+# Claude Code — share project config (.claude/settings.json), keep machine-local state out
+.claude/settings.local.json
+.claude/worktrees/
+.claude/checkpoints/
+.claude/mailbox/
+.claude/agent-registry.json
+.claude/scheduled_tasks*.json
+.claude/*.lock
