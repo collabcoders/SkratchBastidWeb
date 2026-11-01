@@ -41,7 +41,7 @@ serving DJJazzyJeffWeb and LegendsOnlyWeb. Treat API/DTO changes as cross-cuttin
 
 ## Deploy
 
-Tag-triggered FTPS mirror to the production IIS box (skratchbastid.com):
+Tag-triggered FTPS mirror to the production IIS box (skratchbastid.johnnyja.com):
 
 ```bash
 git tag v1.0.013 && git push origin v1.0.013
@@ -84,7 +84,7 @@ build/test commands so a fresh session doesn't prompt for each one:
 - `Bash(npx ng serve *)`
 - `Bash(npx ng test *)`
 - `Bash(git fetch *)`
-- `Bash(curl -fsS --max-time 15 https://skratchbastid.com/version.json)`
+- `Bash(curl -fsS --max-time 15 https://skratchbastid.johnnyja.com/version.json)`
 
 `.claude/settings.local.json` is deliberately **not** committed — it is the per-machine
 override layer. Its entries here were either machine-specific (absolute paths, scratchpad
@@ -105,5 +105,17 @@ is a user dotfile and does not travel.
   the VPS (exit 0, same 3 benign font warnings). No unit tests exist.
 - Next steps: Johnny to confirm where the Angular app is served now — skratchbastid.com is a
   Nuxt site and the deploy workflow's downgrade guard is inert (see MEMORY.md Gotchas).
+- Blockers: none.
+
+## 2026-11-01 — Johnny5 (deploy guard host fix)
+- What changed: Johnny confirmed the Angular app lives at https://skratchbastid.johnnyja.com
+  (IIS, version.json = 1.0.012 = 78e4a9a = main HEAD). Deploy workflow downgrade guard, workflow
+  README, .claude/settings.json and docs now point at that host instead of skratchbastid.com
+  (a different Nuxt site; the guard was silently passing on its 301 page). Also fixed the
+  guard's version extraction (line-based sed couldn't parse multi-line version.json). Guard
+  script run locally vs live 1.0.012: v1.0.013 → OK, v1.0.012 → refused, v1.0.011 → refused.
+- Current state: main == live v1.0.012 + docs/CI-only commits. No app code changed.
+- Next steps: dead share host magmob.skratchbastid.com (audio-player.component.ts:453,
+  check-image.pipe.ts:12) — needs a deep-link route decision before fixing.
 - Blockers: none.
 

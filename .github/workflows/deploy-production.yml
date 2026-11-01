@@ -56,8 +56,11 @@ jobs:
         if: github.ref_type == 'tag'
         run: |
           NEW="${GITHUB_REF_NAME#v}"
-          LIVE="$(curl -fsS --max-time 15 https://skratchbastid.com/version.json \
-                  | sed -E 's/.*"version" *: *"([^"+]+).*/\1/' || echo '')"
+          # version.json is multi-line JSON, so pull the field with grep -o (a
+          # line-based sed passed the whole file through and the guard never fired).
+          LIVE="$(curl -fsS --max-time 15 https://skratchbastid.johnnyja.com/version.json \
+                  | grep -oE '"version" *: *"[^"+]+' | head -1 \
+                  | sed -E 's/.*"([^"]+)$/\1/' || echo '')"
           if [ -z "$LIVE" ]; then
             echo "Could not read live version (first deploy?) — allowing."
             exit 0

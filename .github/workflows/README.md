@@ -1,7 +1,7 @@
 # Production deployment
 
 `deploy-production.yml` builds the Angular **skratchbastid** app and deploys the
-static output to the production IIS server (skratchbastid.com) over FTPS.
+static output to the production IIS server (skratchbastid.johnnyja.com) over FTPS.
 
 ## One-time setup: add repository secrets
 
@@ -40,7 +40,7 @@ Or run it manually: **Actions → Deploy to Production (IIS / FTPS) → Run work
 4. Uploads `index.html` and `version.json` **last**, so users only start getting
    the new `index.html` once the bundles it references already exist.
 
-Before deploying a tag, the workflow reads `https://skratchbastid.com/version.json`
+Before deploying a tag, the workflow reads `https://skratchbastid.johnnyja.com/version.json`
 and **refuses to deploy** a version that is equal to or older than what's live,
 so an accidental lower tag can't downgrade production. The first deploy (before
 `version.json` exists) is allowed through.

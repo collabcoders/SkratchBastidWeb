@@ -60,13 +60,14 @@ Read both before any work.
 
 ## Gotchas
 
-- ⚠️ **The domain no longer serves this app (checked 2026-11-01).** `skratchbastid.com` 301s to
-  `www.skratchbastid.com`, which is a Cloudflare-fronted **Nuxt** site, not this Angular build;
-  `/version.json` 404s there. Where the IIS deploy is actually reachable is unconfirmed.
-- ⚠️ The downgrade guard in the deploy workflow curls `https://skratchbastid.com/version.json`
-  without `-L`; it receives the 301 HTML, `sed` passes it through, and the comparison falls
-  through to "OK". **The guard currently guards nothing** — it neither blocks nor reads the
-  real live version.
+- **Live app host: `https://skratchbastid.johnnyja.com`** (IIS 10, confirmed by Johnny 2026-11-01;
+  `/version.json` there = the deployed tag). `skratchbastid.com` / `www.` is a separate
+  Cloudflare-fronted **Nuxt** site — NOT this app; never use it to check a deploy.
+- Deploy downgrade guard reads `https://skratchbastid.johnnyja.com/version.json` (fixed 2026-11-01;
+  it used to curl skratchbastid.com without `-L`, got 301 HTML, and silently passed every deploy;
+  its line-based `sed` also could not parse the multi-line JSON — now `grep -o`). Simulated against
+  live 1.0.012: v1.0.013 OK, v1.0.012 refused (same), v1.0.011 refused (downgrade).
+- Confirm a deploy landed by polling that `version.json` for the new tag, not by a green run.
 - ⚠️ Share URLs are hardcoded to `https://magmob.skratchbastid.com/` (dead host — does not
   resolve): `audio-player.component.ts:453` (track share) and `check-image.pipe.ts:12`
   (default avatar). Same rot DJJazzyJeffWeb fixed by building from `window.location.origin`.

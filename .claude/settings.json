@@ -6,7 +6,7 @@
       "Bash(npx ng serve *)",
       "Bash(npx ng test *)",
       "Bash(git fetch *)",
-      "Bash(curl -fsS --max-time 15 https://skratchbastid.com/version.json)"
+      "Bash(curl -fsS --max-time 15 https://skratchbastid.johnnyja.com/version.json)"
     ]
   }
 }
