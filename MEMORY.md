@@ -68,9 +68,13 @@ Read both before any work.
   its line-based `sed` also could not parse the multi-line JSON — now `grep -o`). Simulated against
   live 1.0.012: v1.0.013 OK, v1.0.012 refused (same), v1.0.011 refused (downgrade).
 - Confirm a deploy landed by polling that `version.json` for the new tag, not by a green run.
-- ⚠️ Share URLs are hardcoded to `https://magmob.skratchbastid.com/` (dead host — does not
-  resolve): `audio-player.component.ts:453` (track share) and `check-image.pipe.ts:12`
-  (default avatar). Same rot DJJazzyJeffWeb fixed by building from `window.location.origin`.
+- **Share is HIDDEN by Johnny's call (2026-11-01).** `AudioPlayerComponent.shareEnabled = false`
+  gates both share buttons. The share URL still points at the dead `magmob.skratchbastid.com`
+  host and there is no single-track deep-link route, so do not re-enable it until both are fixed.
+  `AudioPlayerComponent` isn't rendered anywhere today (only `app-audio-player-bar` is), and the
+  `#urlShareSocialMediaModal` it opens doesn't exist in this repo, so share was already unreachable
+  on live v1.0.012. The flag keeps it hidden if the player gets reused.
+  `check-image.pipe.ts:12` default avatar also uses the dead host (cosmetic, untouched).
 - Committed client keys in `src/environments/` (Stripe `pk_live`, reCAPTCHA site key) are public by
   design. `prodId` (`prod_RvMADg6RCwpL34`) is hardcoded — a Stripe product change is a code change.
   No server-side secrets found in the repo (scanned 2026-11-01).

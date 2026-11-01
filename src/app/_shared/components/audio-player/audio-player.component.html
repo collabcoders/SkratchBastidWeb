@@ -54,7 +54,7 @@
                             </span>
                         </div>
 
-                        @if (music) {
+                        @if (music && shareEnabled) {
                             <div (click)="openShare(music)" class="share-audio-desktop player-control cursor-pointer">
                                 <i class="fa fa-share fa-2x cursor-pointer"></i>
                             </div>
@@ -145,9 +145,11 @@
                                         class="fas fa-heart fa-2x fa-stack-1x"></i>
                                     <i class="far fa-heart fa-2x fa-stack-1x"></i>
                                 </span>
-                                <div (click)="openShare(music)" class="player-control cursor-pointer">
-                                    <i class="fa fa-share fa-2x cursor-pointer"></i>
-                                </div>
+                                @if (shareEnabled) {
+                                    <div (click)="openShare(music)" class="player-control cursor-pointer">
+                                        <i class="fa fa-share fa-2x cursor-pointer"></i>
+                                    </div>
+                                }
                                 <div (click)="downloadAudio($event, music)" class="player-control cursor-pointer" tooltip="DOWNLOAD" placement="top">
                                     <i class="fa fa-download fa-2x cursor-pointer"></i>
                                 </div>

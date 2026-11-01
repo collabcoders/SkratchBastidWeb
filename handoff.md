@@ -119,3 +119,13 @@ is a user dotfile and does not travel.
   check-image.pipe.ts:12) — needs a deep-link route decision before fixing.
 - Blockers: none.
 
+## 2026-11-01 — Johnny5 (hide share)
+- What changed: Johnny: "hide the share link feature for now". Added
+  `AudioPlayerComponent.shareEnabled = false` gating both share buttons (desktop + mobile).
+  Investigation: the component isn't rendered anywhere and the share modal doesn't exist here,
+  so share was already unreachable on live v1.0.012. The flag makes the decision explicit.
+- Current state: prod build exit 0 (same 3 font warnings), and the share markup is compiled out of the bundle.
+  Not deployed; there is no user-visible change, so no tag is needed.
+- Next steps: re-enable only after a deep-link route plus a live share host exist.
+- Blockers: none.
+

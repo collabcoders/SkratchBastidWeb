@@ -446,6 +446,11 @@ export class AudioPlayerComponent implements OnInit, OnDestroy, OnChanges {
     this.audioService.downloadTrack(music || this.music);
   }
 
+  // Share is hidden for now (Johnny, 2026-11-01): the share URL pointed at the dead
+  // magmob.skratchbastid.com host and this app has no single-track deep-link route yet.
+  // Flip to true only once both exist.
+  readonly shareEnabled = false;
+
   openShare(music: Music) {
     console.log("openShare");
     this.isLoggedIn$?.pipe(take(1)).subscribe(valid => {
