@@ -96,3 +96,14 @@ The `.gitignore` stanza enforcing this is in the repo, so it survives a machine 
 Previously the only thing keeping `settings.local.json` out was `~/.config/git/ignore`, which
 is a user dotfile and does not travel.
 
+---
+
+## 2026-11-01 — Johnny5 (onboarding)
+- What changed: repo connected to Slack #skratchbastid-web (C0CDGPAPBF1); added AGENTS.md,
+  MEMORY.md, RUN_LOCAL.md, .vscode/launch.json, .harness.json (standard six).
+- Current state: `main` = v1.0.012 (last deploy 2026-07-23). Production build verified green on
+  the VPS (exit 0, same 3 benign font warnings). No unit tests exist.
+- Next steps: Johnny to confirm where the Angular app is served now — skratchbastid.com is a
+  Nuxt site and the deploy workflow's downgrade guard is inert (see MEMORY.md Gotchas).
+- Blockers: none.
+

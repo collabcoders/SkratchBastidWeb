@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "name": "SkratchBastidWeb",
+  "toolchain": "node+angular",
+  "gates": {
+    "typecheck": "./node_modules/.bin/tsc -p tsconfig.app.json --noEmit",
+    "test": "npm test -- --watch=false --browsers=ChromeHeadless",
+    "build": "npm run build"
+  },
+  "gate_order": [
+    "typecheck",
+    "build",
+    "test"
+  ],
+  "heavy": [
+    "typecheck",
+    "build",
+    "test"
+  ],
+  "sandboxed": [],
+  "e2e": {
+    "runner": "netns"
+  },
+  "platform": {},
+  "link_deps": [
+    "node_modules"
+  ],
+  "append_only": [
+    "handoff.md",
+    "MEMORY.md"
+  ],
+  "branch": {
+    "integration": "main",
+    "base": "main"
+  },
+  "baseline": {
+    "tests": null,
+    "known_failures": [
+      "test"
+    ]
+  },
+  "worktree_root": "../.harness-wt"
+}
