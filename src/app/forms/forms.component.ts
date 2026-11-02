@@ -208,6 +208,11 @@ export class FormsComponent implements AfterViewInit, OnInit {
   loginLoading = signal(false);
   resetLoading = signal(false);
   registerLoading = signal(false);
+  // "Show Password" eye toggles (sign-in + sign-up). Reset to hidden whenever
+  // the modal closes so a revealed password never persists to the next open.
+  showLoginPassword = signal(false);
+  showRegisterPassword = signal(false);
+  showConfirmPassword = signal(false);
   loginReturnUrl = '/';
   cardComplete = false;
   cardErrorMessage = '';
@@ -483,6 +488,14 @@ export class FormsComponent implements AfterViewInit, OnInit {
       });
     }
 
+    const registerEl = document.getElementById('registerModal');
+    if (registerEl) {
+      registerEl.addEventListener('hidden.bs.modal', () => {
+        this.showRegisterPassword.set(false);
+        this.showConfirmPassword.set(false);
+      });
+    }
+
     // Own the Update Payment modal lifecycle on the modal element itself so it
     // works for every opener (the account menu in header.component opens it
     // directly via bootstrap, bypassing FormsComponent.openUpdatePaymentModal).
@@ -514,6 +527,7 @@ export class FormsComponent implements AfterViewInit, OnInit {
     // auth route.
     const loginEl = document.getElementById('loginModal');
     if (loginEl) {
+      loginEl.addEventListener('hidden.bs.modal', () => this.showLoginPassword.set(false));
       loginEl.addEventListener('show.bs.modal', () => {
         const currentUrl = this.router.url;
         if (!currentUrl.startsWith('/login') && !currentUrl.startsWith('/join')) {

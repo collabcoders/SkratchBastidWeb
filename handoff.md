@@ -129,3 +129,20 @@ is a user dotfile and does not travel.
 - Next steps: re-enable only after a deep-link route plus a live share host exist.
 - Blockers: none.
 
+## 2026-11-01 — Johnny5 (show-password eye toggle)
+- What changed: Johnny asked for a "Show Password" eye icon, right-aligned, on the sign-up and sign-in
+  password fields. `forms.component.html` now has an eye `<button type="button" class="password-toggle">`
+  on #loginPassword, #registerPassword and #confirmPassword (inline SVG eye / eye-off, input `pr-10`).
+  The eye/eye-off icon swaps, aria-label switches between Show/Hide password, and the `autocomplete`
+  hints are current-/new-password. Signals in `forms.component.ts`
+  (`showLoginPassword` / `showRegisterPassword` / `showConfirmPassword`) reset to hidden on each
+  modal's `hidden.bs.modal`. SCSS hides Edge's native `::-ms-reveal` so there's only one eye. Also fixed
+  the login lock icon typo `fill="currentCol or"`.
+- Verified: prod build exit 0 (3 known font warnings). Served the dist locally and drove headless Chrome
+  with real mouse clicks. Sign In: password→text→password. Sign Up: each field toggles on its own. The
+  toggle never submits the form, and closing and reopening a modal re-masks the password. The icon sits
+  flush right and vertically centred (0px delta), and screenshots were checked by eye.
+- Current state: pushed to main and NOT deployed (live is still v1.0.012). Next tag: v1.0.013.
+- Next steps: tag v1.0.013 when Johnny says ship.
+- Blockers: none.
+

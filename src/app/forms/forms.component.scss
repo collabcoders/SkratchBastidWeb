@@ -389,3 +389,9 @@ re-captcha.is-invalid>div {
     }
   }
 }
+
+// Hide Edge/IE's built-in password reveal so it doesn't double up with our eye toggle.
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}

@@ -60,6 +60,14 @@ Read both before any work.
 
 ## Gotchas
 
+- Auth modals (`#loginModal`, `#registerModal`) use a `.modal-light` theme whose component SCSS
+  forces `.text-gray-400/.text-white/...` to `rgb(17,24,39)` !important on a near-white input.
+  `text-white` / `hover:text-white` inside them either has no effect or makes an icon disappear on hover; check the computed colour.
+- Show-password toggles are a component signal per field, reset on `hidden.bs.modal`. Keep that pattern
+  for any new password field (changePasswordModal doesn't have one yet).
+- Headless QA trap: bootstrap `hide()` then `show()` within ~1 s can leave two modals stacked, and real
+  clicks then hit the upper modal. Wait ≥2 s between them, and assert `.modal.show` count == 1 before clicking.
+
 - **Live app host: `https://skratchbastid.johnnyja.com`** (IIS 10, confirmed by Johnny 2026-11-01;
   `/version.json` there = the deployed tag). `skratchbastid.com` / `www.` is a separate
   Cloudflare-fronted **Nuxt** site — NOT this app; never use it to check a deploy.
