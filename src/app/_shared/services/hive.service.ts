@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Config } from '@shared/config';
 
 type HiveQueuedFn = ((...args: any[]) => void) & { q?: any[] };
 
@@ -94,6 +95,23 @@ export class HiveService {
     });
   }
 
+  /**
+   * Runs a signup command, then adds the now-linked contact to the site-wide
+   * segment (Config.hiveSiteSegment). Segment failure never fails the signup.
+   */
+  private async signupWithSiteSegment(...signupArgs: any[]): Promise<any> {
+    const result = await this.runHiveSdk(...signupArgs);
+    const segment = Config.hiveSiteSegment;
+    if (segment) {
+      try {
+        await this.runHiveSdk('addToSegment', segment);
+      } catch (error) {
+        console.warn(`Unable to add contact to Hive segment "${segment}".`, error);
+      }
+    }
+    return result;
+  }
+
   sendMemberDataToHive(member: any) {
     const contactData = {
       email: member?.email,
@@ -101,7 +119,7 @@ export class HiveService {
       lastName: member?.lastName,
     };
 
-    return this.runHiveSdk('emailSignup', contactData);
+    return this.signupWithSiteSegment('emailSignup', contactData);
   }
 
   sendEmailSignup(email: string) {
@@ -110,7 +128,7 @@ export class HiveService {
       email,
     };
 
-    return this.runHiveSdk('emailSignup', contactData);
+    return this.signupWithSiteSegment('emailSignup', contactData);
   }
 
   sendToHive(formData: any) {
@@ -126,7 +144,7 @@ export class HiveService {
     };
 
     return Promise.all([
-      this.runHiveSdk('emailSignup', contactData),
+      this.signupWithSiteSegment('emailSignup', contactData),
       this.runHiveSdk('addToSegment', `BBQ Buyers - ${contactData.city || 'Unknown'}`),
     ]).then(() => {
       console.log('Successfully signed up to Hive and added to segment.');
@@ -138,7 +156,7 @@ export class HiveService {
 
   sendToHiveCTA(formElement: any) {
     console.log('Sending signup form to Hive...', formElement);
-    return this.runHiveSdk('submitSignupForm', formElement);
+    return this.signupWithSiteSegment('submitSignupForm', formElement);
   }
 
   addProperty(property: string, value: any) {

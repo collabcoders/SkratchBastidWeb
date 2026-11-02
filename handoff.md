@@ -5,6 +5,16 @@ snapshot rather than one session's notes._
 
 Skratch Bastid's membership/tour site — Angular SPA, CLI project name `skratchbastid`.
 
+## 2026-11-02 — Hive site-wide segment plumbing
+
+- `Config.hiveSiteSegment` (src/app/_shared/config.ts) — every Hive signup path (free-trial form, BBQ form,
+  footer + /newsletter, member registration) now also adds the contact to this segment via
+  `HiveService.signupWithSiteSegment`. Ships as `''` = OFF (no behaviour change).
+- Waiting on the CLIENT: he is creating the segment in Hive and sending the exact name. Then set the
+  string (byte-exact), build, push, tag. Segment-add failure is logged, never fails the signup.
+- Hive SDK only runs on domains Hive whitelisted for brand 133267 — client must ask support@hive.co
+  for skratchbastid.johnnyja.com + the final prod domain.
+
 ## State
 
 Branch `main`, **clean and fully pushed** to `github.com/collabcoders/SkratchBastidWeb`.

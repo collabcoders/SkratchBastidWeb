@@ -103,3 +103,10 @@ Read both before any work.
 ## People
 
 - Commit history: Johnny Arguelles + Ali Abdul Wahid.
+
+## Hive CRM (hive.co)
+- Integration = Hive JS SDK in the browser (no backend/key), brand id `Config.hiveSwid` 133267, all calls via
+  `_shared/services/hive.service.ts`. Segments: free-trial form → `Signup Form - Homepage`; BBQ form →
+  `BBQ Buyers - <city>` (its hidden addToSegment inputs are dead — sendToHive passes an object, not the form);
+  site-wide → `Config.hiveSiteSegment` (empty = off; name comes from the client, byte-exact).
+- Footer newsletter: button `(click)=subscribeNewsletter()` does the work; form `(ngSubmit)=onNewsletterSubmit()` is a log-only stub (Enter fires the button click, so it works).

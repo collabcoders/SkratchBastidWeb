@@ -10,6 +10,9 @@ export const Config = {
 
     // Hive (hive.co) SWID for skratchbastid — used by the signup form + newsletter.
     hiveSwid: 133267,
+    // Hive segment every website signup is added to (in addition to any form-specific segment).
+    // Must match the segment name in Hive EXACTLY (client creates it). Empty = off.
+    hiveSiteSegment: '',
 
     facebook: 'https://www.facebook.com/skratchbastid',
     instagram: 'https://www.instagram.com/skratchbastid',
