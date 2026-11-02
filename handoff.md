@@ -154,3 +154,22 @@ is a user dotfile and does not travel.
 - Next steps: next tag v1.0.014.
 - Blockers: none.
 
+## 2026-11-02 — Johnny5 (videos list: "Download Audio" overlay replaces music icon)
+- What changed: client didn't like the green music-note icon next to video titles on /videos. Removed it.
+  Added a "Download Audio" badge (download icon + text) at the thumbnail's bottom-left, styled like the
+  duration badge at bottom-right (bg-black/70, 13px, same 8px insets and 24px height). Clicking it opens
+  the same No Mic / With Mic chooser (opens upward so the overflow-hidden thumbnail can't clip it). If a
+  video has only one audio source, it downloads directly. The choice now DOWNLOADS through
+  AudioService.downloadTrack (/api/download, same as the player bar) instead of playing in the bar.
+  The download version comes from the choice (No Mic=audio, With Mic=audio1), no longer inferred from the
+  URL. Video 2726 has the same file in audio and audio1, and URL matching sent version=audio1 for No Mic.
+- Verified: prod build exit 0 (3 known font warnings). Ran the build locally against an XHR mock fed with real
+  /api/videos data, with real mouse clicks. Badge matches the duration badge (computed font, height, bg,
+  insets), no overlap at 4-col 1280px. Both-source video: chooser → No Mic sends version=audio, With Mic sends
+  version=audio1. audio-only and audio1-only videos download directly. Outside click closes, the badge click
+  doesn't open the video, and clicking the card still opens the video flow (VIP gate for guests). Screenshot
+  checked by eye.
+- Current state: pushed to main, NOT deployed (live v1.0.013).
+- Next steps: tag v1.0.014 when Johnny says ship. The video-player modal's audio chooser still plays (unchanged).
+- Blockers: none.
+

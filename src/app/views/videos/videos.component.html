@@ -96,36 +96,23 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"></path>
                 </svg>
               </div>
-              @if (video.duration) {
-                <div class="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-[13px] font-medium leading-none text-white pointer-events-none">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{{ video.duration }}</span>
-                </div>
-              }
-            </div>
-            <div class="mt-2 flex items-start gap-2">
               @if (hasAudio(video)) {
-                <div class="group/note relative shrink-0">
+                <div class="absolute bottom-2 left-2 z-20">
                   <button
                     type="button"
-                    class="p-0.5 text-[#85C541] transition-transform hover:scale-110"
-                    (click)="onAudioNoteClick(video, $event)"
-                    aria-label="Recorded Audio">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
-                      <path d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .658.122Z" />
+                    class="download-audio-btn flex items-center gap-1 rounded bg-black/70 px-2 py-1 !text-[13px] font-medium !leading-none !text-white hover:bg-black/90 transition"
+                    (click)="onDownloadAudioClick(video, $event)"
+                    aria-label="Download Audio">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                     </svg>
+                    <span>Download Audio</span>
                   </button>
-                  <!-- Hover tooltip -->
-                  <div role="tooltip"
-                    class="pointer-events-none absolute bottom-full left-0 z-[60] mb-1 hidden whitespace-nowrap rounded bg-black/90 px-2 py-1 text-[11px] font-medium text-white shadow-md group-hover/note:block">
-                    Recorded Audio
-                  </div>
                   @if (audioChoiceVideo?.videoId === video.videoId) {
                     <!-- transparent backdrop closes the menu on any outside click -->
                     <div class="fixed inset-0 z-40" (click)="closeAudioChoice(); $event.stopPropagation()"></div>
-                    <div class="absolute left-0 top-full z-50 mt-1 w-28 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
+                    <!-- opens upward so the image container's overflow-hidden can't clip it -->
+                    <div class="audio-choice-menu absolute left-0 bottom-full z-50 mb-1 w-28 overflow-hidden rounded-lg border border-gray-200 bg-white py-1 shadow-lg"
                       (click)="$event.stopPropagation()">
                       <button type="button"
                         class="block w-full px-3 py-1.5 text-left text-[13px] text-gray-700 hover:bg-[#85C541] hover:text-white"
@@ -137,6 +124,16 @@
                   }
                 </div>
               }
+              @if (video.duration) {
+                <div class="absolute bottom-2 right-2 z-10 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-[13px] font-medium leading-none text-white pointer-events-none">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{{ video.duration }}</span>
+                </div>
+              }
+            </div>
+            <div class="mt-2 flex items-start gap-2">
               <div class="min-w-0 flex-1">
                 <div class="font-semibold truncate text-[14px]">{{ video.title }}</div>
                 <div class="mt-0.5 text-[12px] text-gray-600 leading-snug space-y-0.5">

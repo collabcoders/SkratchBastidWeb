@@ -126,8 +126,9 @@ export class VideosComponent implements OnInit, OnDestroy {
     return !!(video.audio?.trim() || video.audio1?.trim());
   }
 
-  // Note-icon click: route to direct playback or the No Mic / With Mic chooser.
-  onAudioNoteClick(video: Video, event: Event): void {
+  // "Download Audio" overlay click (replaces the old music-note icon by client
+  // request): one source downloads directly, both open the No Mic / With Mic chooser.
+  onDownloadAudioClick(video: Video, event: Event): void {
     event.preventDefault();
     event.stopPropagation();
 
@@ -135,13 +136,11 @@ export class VideosComponent implements OnInit, OnDestroy {
     const withMic = video.audio1?.trim();
 
     if (noMic && withMic) {
-      // Both available — toggle the No Mic / With Mic chooser dropdown.
       this.audioChoiceVideo = this.audioChoiceVideo?.videoId === video.videoId ? null : video;
     } else if (noMic) {
-      this.playAudio(video, noMic, 'No Mic');
+      this.downloadAudio(video, noMic, 'No Mic', 'audio');
     } else if (withMic) {
-      // Only the with-mic track exists — play it directly.
-      this.playAudio(video, withMic, 'With Mic');
+      this.downloadAudio(video, withMic, 'With Mic', 'audio1');
     }
   }
 
@@ -153,7 +152,7 @@ export class VideosComponent implements OnInit, OnDestroy {
     const video = this.audioChoiceVideo;
     this.audioChoiceVideo = null;
     if (video?.audio?.trim()) {
-      this.playAudio(video, video.audio.trim(), 'No Mic');
+      this.downloadAudio(video, video.audio.trim(), 'No Mic', 'audio');
     }
   }
 
@@ -163,7 +162,7 @@ export class VideosComponent implements OnInit, OnDestroy {
     const video = this.audioChoiceVideo;
     this.audioChoiceVideo = null;
     if (video?.audio1?.trim()) {
-      this.playAudio(video, video.audio1.trim(), 'With Mic');
+      this.downloadAudio(video, video.audio1.trim(), 'With Mic', 'audio1');
     }
   }
 
@@ -171,11 +170,19 @@ export class VideosComponent implements OnInit, OnDestroy {
     this.audioChoiceVideo = null;
   }
 
-  // Build a Music track from a video + audio url and hand it to the player bar.
-  private playAudio(video: Video, url: string, label: string): void {
+  // Download one of a video's audio versions through the LegendsOnly /api/download
+  // endpoint (server renames, logs, and counts it) -- same path as the player bar's download.
+  // The version comes from the user's choice, not from matching the URL: some videos
+  // carry the same file in audio and audio1, and URL matching then sent version=audio1 for "No Mic".
+  private downloadAudio(video: Video, url: string, label: string, version: 'audio' | 'audio1'): void {
+    this.audioService.downloadTrack(this.buildAudioTrack(video, url, label, version));
+  }
+
+  // Build a Music track from a video + audio url.
+  private buildAudioTrack(video: Video, url: string, label: string, version: 'audio' | 'audio1'): Music {
     const title = label ? `${video.title} (${label})` : video.title;
     const track = new Music(
-      video.videoId,            // musicId (unique per card for play/pause toggle)
+      video.videoId,            // musicId
       video.featuring ?? '',    // artist
       title,                    // title
       '',                       // genre
@@ -193,15 +200,9 @@ export class VideosComponent implements OnInit, OnDestroy {
       url,                      // url
     );
     // Tag the real backing media so the download hits /api/download with the
-    // correct type/id/version (musicId above is the videoId for card toggling).
-    const a1 = video.audio1?.trim();
-    const a2 = video.audio2?.trim();
-    track.mediaRef = {
-      type: 'video',
-      id: video.videoId,
-      version: url === a1 ? 'audio1' : url === a2 ? 'audio2' : 'audio',
-    };
-    this.audioService.playTrack(track, 'video-audio');
+    // correct type/id/version.
+    track.mediaRef = { type: 'video', id: video.videoId, version };
+    return track;
   }
 
   ngOnInit(): void {

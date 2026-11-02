@@ -60,6 +60,19 @@ Read both before any work.
 
 ## Gotchas
 
+- Bootstrap's unlayered `button { font-size/line-height: inherit }` beats Tailwind v4's layered utilities,
+  so `text-[13px]` / `leading-none` on a `<button>` silently do nothing. Use `!text-[..]` / `!leading-none`
+  on buttons, and verify computed `fontSize`.
+- Video audio fields: ~210 videos have only `audio1` (With Mic), ~200 have both, a few only `audio`; at least
+  one (2726) has identical URLs in both. Derive /api/download `version` from the user's choice, never by
+  matching URLs.
+- /videos grid "Download Audio" badge (bottom-left on the thumbnail) replaced the music-note icon by client
+  request (2026-11-02). It downloads; the video modal's chooser plays.
+- Headless QA on /videos: the prod build calls api.legendsonly.tv, which sends no CORS headers for
+  127.0.0.1. Mock XHR in-page with real data captured via `curl -H "X-App: skratchbastid" .../api/videos`, and
+  stub `appendChild` for `/api/download` iframes so QA never logs real downloads. Window scroll is inert
+  (`scrollIntoView` doesn't move the page); use `Emulation.setDeviceMetricsOverride` with a tall height.
+
 - Auth modals (`#loginModal`, `#registerModal`) use a `.modal-light` theme whose component SCSS
   forces `.text-gray-400/.text-white/...` to `rgb(17,24,39)` !important on a near-white input.
   `text-white` / `hover:text-white` inside them either has no effect or makes an icon disappear on hover; check the computed colour.
