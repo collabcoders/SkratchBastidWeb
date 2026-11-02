@@ -146,3 +146,11 @@ is a user dotfile and does not travel.
 - Next steps: tag v1.0.013 when Johnny says ship.
 - Blockers: none.
 
+## 2026-11-02 — Johnny5 (ship v1.0.013)
+- What changed: tagged v1.0.013 on b3a5180, and the deploy run (41432712742) passed the fixed downgrade guard.
+  version.json at https://skratchbastid.johnnyja.com now reads 1.0.013+b3a5180 (live at 11:08 UTC, ~12 min after
+  the tag). On the live site the show-password eye goes password→text→password with real clicks (3 toggles present).
+- Current state: live == main == v1.0.013.
+- Next steps: next tag v1.0.014.
+- Blockers: none.
+

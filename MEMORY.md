@@ -55,8 +55,8 @@ Read both before any work.
 ## Deploy
 
 - Tag-triggered FTPS mirror to IIS — `.github/workflows/deploy-production.yml`, on `v*` tags or
-  manual dispatch. Tag format is `v1.0.0NN` (latest `v1.0.012`, deployed 2026-07-23, green).
-  Next tag: `v1.0.013`. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
+  manual dispatch. Tag format is `v1.0.0NN` (latest `v1.0.013`, deployed 2026-11-02, green; ~12-13 min tag→live,
+  mostly the FTPS step). Next tag: `v1.0.014`. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
 
 ## Gotchas
 
