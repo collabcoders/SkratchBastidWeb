@@ -55,10 +55,13 @@ Read both before any work.
 ## Deploy
 
 - Tag-triggered FTPS mirror to IIS — `.github/workflows/deploy-production.yml`, on `v*` tags or
-  manual dispatch. Tag format is `v1.0.0NN` (latest `v1.0.013`, deployed 2026-11-02, green; ~12-13 min tag→live,
-  mostly the FTPS step). Next tag: `v1.0.014`. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
+  manual dispatch. Tag format is `v1.0.0NN` (latest `v1.0.014`, deployed 2026-11-03, green; ~12-13 min tag→live,
+  mostly the FTPS step). Next tag: `v1.0.015`. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
 
 ## Gotchas
+
+- Other Hermes sessions also push to `main` here. `git pull` before tagging, and list `git log <your-last>..HEAD`
+  so the ship report names everything the tag carries.
 
 - Bootstrap's unlayered `button { font-size/line-height: inherit }` beats Tailwind v4's layered utilities,
   so `text-[13px]` / `leading-none` on a `<button>` silently do nothing. Use `!text-[..]` / `!leading-none`

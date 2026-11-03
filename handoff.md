@@ -183,3 +183,11 @@ is a user dotfile and does not travel.
 - Next steps: tag v1.0.014 when Johnny says ship. The video-player modal's audio chooser still plays (unchanged).
 - Blockers: none.
 
+## 2026-11-03 — Johnny5 (ship v1.0.014)
+- What changed: tagged v1.0.014 on 3822ed8. The tag also carries the Hive site-segment commit from a
+  parallel session, which does nothing while Config.hiveSiteSegment is ''. CI build passed.
+  version.json = 1.0.014+3822ed8 (live at 20:30 UTC, ~12 min after the tag). Live /videos: 44 of 60 cards
+  show the "Download Audio" badge (13px) and no music-note icons remain.
+- Current state: live == v1.0.014. Next tag v1.0.015.
+- Blockers: none.
+
