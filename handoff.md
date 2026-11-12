@@ -201,3 +201,13 @@ is a user dotfile and does not travel.
   0 spec files), the known failure in the committed baseline.
 - Next steps: none from this pass.
 - Blockers: none.
+
+## 2026-11-12 (2) — dev (Hermes subagent, RUN_LOCAL.md truth pass)
+- What changed: docs only. `RUN_LOCAL.md`: the "start LegendsOnlyAPI" block is now
+  `dotnet run --launch-profile https` (a bare `dotnet run` there takes the `http` profile,
+  `http://localhost:5119` only, so `https://localhost:7039` never answered); added the 🚨 that the local
+  API and `api.legendsonly.tv` are both production data; Node floor 22.22 → 22.22.3 (the CLI's `engines`).
+  Checked and unchanged: `npm install` (lockfile gitignored), `npm run build` = harness gate, no specs,
+  VS Code config name.
+- Current state: main, nothing tagged. Harness not run (docs only).
+- Blockers: none.
