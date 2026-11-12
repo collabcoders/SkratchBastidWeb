@@ -4,18 +4,15 @@
   "toolchain": "node+angular",
   "gates": {
     "typecheck": "./node_modules/.bin/tsc -p tsconfig.app.json --noEmit",
-    "test": "npm test -- --watch=false --browsers=ChromeHeadless",
     "build": "npm run build"
   },
   "gate_order": [
     "typecheck",
-    "build",
-    "test"
+    "build"
   ],
   "heavy": [
     "typecheck",
-    "build",
-    "test"
+    "build"
   ],
   "sandboxed": [],
   "e2e": {
@@ -35,9 +32,7 @@
   },
   "baseline": {
     "tests": null,
-    "known_failures": [
-      "test"
-    ]
+    "known_failures": []
   },
   "worktree_root": "../.harness-wt"
 }

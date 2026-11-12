@@ -211,3 +211,9 @@ is a user dotfile and does not travel.
   VS Code config name.
 - Current state: main, nothing tagged. Harness not run (docs only).
 - Blockers: none.
+
+## 2026-11-12 (3) — dev (Hermes subagent, chore(harness): drop the dead `test` gate, fable-5.2 pass)
+- What changed: `.harness.json` — `test` gate removed from `gates` / `gate_order` / `heavy`, `baseline.known_failures` `["test"]` → `[]`. The repo has 0 `*.spec.ts` and `angular.json` has no `test` target, so the gate (`npm test -- --watch=false --browsers=ChromeHeadless`) could only ever print `Error: Unknown arguments: watch, browsers`. As a permanent known failure it made every `harness doctor` exit 1 and would have hidden a real test failure behind the same name.
+- Verified: `harness doctor` before → `typecheck PASS, build PASS, test FAIL (known_failures)`, exit 1; after → `typecheck PASS, build PASS`, exit 0.
+- `MEMORY.md` Tests line updated to match. No source change; nothing to ship, no tag.
+- Next: if specs are ever added, add a gate literally named `test`. Blockers: none.

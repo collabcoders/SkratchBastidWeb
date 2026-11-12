@@ -40,7 +40,7 @@
 - `npm install --no-audit --no-fund` → ok.
 - `npx ng build --configuration production --output-path <dir>` → exit 0, initial total 5.27 MB raw / 1.26 MB transfer, 3 pre-existing benign warnings (missing `/assets/fonts/{CircularStdBook,DrukWideBold,VolkolakGrotesqueBold}.css`).
 - `./node_modules/.bin/tsc -p tsconfig.app.json --noEmit` → exit 0 (~2 s).
-- Tests: **none.** 0 `*.spec.ts` files and Karma is not in devDependencies, so `npm test` cannot run. `.harness.json` records `test` as a known failure; the build is the gate.
+- Tests: **none.** 0 `*.spec.ts` files and Karma is not in devDependencies, so `npm test` cannot run (`angular.json` has no `test` target: `ng test --watch=false --browsers=ChromeHeadless` → `Error: Unknown arguments: watch, browsers`). `.harness.json` has no `test` gate (removed 2026-11-12 — it could never pass and sat in `known_failures`, which made every `harness doctor` exit 1); gates are `typecheck` + `build`, `known_failures` = `[]`. If specs are ever added, add a gate literally named `test` so the harness counts them.
 - On the box, put build output under `/opt/data/cache/scratch/`, not in the repo.
 
 ### Deploy
