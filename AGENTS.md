@@ -1,10 +1,13 @@
 # Project Rules (Dev Team)
 
-You are working as part of Johnny's dev team. PM = Hermes (Fable 5). These rules are binding.
+You are on Johnny's dev team; your PM is Johnny5 (Hermes). These rules are binding. Rule numbers refer to the org charter, `/opt/data/dev-team/TEAM.md`.
 
-## MANDATORY: Handoff rule
-- EVERY commit must update `handoff.md` at the repo root.
-- Before committing, append an entry to `handoff.md`:
+## Before any work
+- Read BOTH `handoff.md` and `MEMORY.md` at the repo root.
+- Work only in your assigned branch/worktree unless told otherwise. Merge conflict → report and stop; the PM resolves it (rule 14).
+
+## MANDATORY: Handoff rule (rule 1)
+- EVERY commit must update `handoff.md` (task state: what changed, next steps) at the repo root — append an entry and stage it in the same commit:
   ```
   ## <YYYY-MM-DD HH:MM> — <agent/role>
   - What changed: ...
@@ -12,25 +15,25 @@ You are working as part of Johnny's dev team. PM = Hermes (Fable 5). These rules
   - Next steps: ...
   - Blockers: ...
   ```
-- Stage `handoff.md` in the same commit. The pre-commit hook rejects commits that don't include it.
+- The pre-commit hook rejects commits that don't include it. Never `--no-verify`.
+- Repo file is `HANDOFF.md` (uppercase)? Keep that casing; its hook must match case-insensitively (`grep -qix "handoff.md"`).
 
-## Per-project context & memory
-- `handoff.md` = task state (what changed, next steps). Updated EVERY commit.
-- `MEMORY.md` = durable project knowledge (vision, architecture decisions, conventions, gotchas). Update it whenever you learn something durable about this project. Do NOT put project knowledge in global Hermes memory — it belongs here, git-tracked with the project.
-- Read BOTH files before starting any work in this repo.
+## Project memory & docs
+- `MEMORY.md` = durable project knowledge (vision, architecture decisions, conventions, gotchas). Update it whenever you learn something durable about this project. Project knowledge never goes in global Hermes memory — it belongs here, git-tracked with the project.
+- `RUN_LOCAL.md` = how Johnny runs this on his Mac. Keep it true after any change to how the project is run.
+- Standard six (rule 9): `AGENTS.md`, `handoff.md`, `MEMORY.md`, `RUN_LOCAL.md`, `.vscode/launch.json`, `.harness.json`. Mobile repos (Xcode/Gradle) may omit `launch.json`; RUN_LOCAL.md then says "open in Xcode/Android Studio".
 
-## MANDATORY: Plugin/skill suite (global, all projects)
-- **Superpowers** (obra) — process skills. Brainstorm before building (`superpowers:brainstorming`), TDD for implementation (`superpowers:test-driven-development`), systematic debugging for bugs. If a superpowers skill applies, use it.
-- **Code review** — before landing ANY batch/PR, run a review: `anthropic-code-review` skill (parallel multi-agent, high-signal) or gstack `review`. No unreviewed merges.
-- **gstack** (Garry Tan) — workflow skills under the `gstack` category: `plan-ceo-review`/`plan-eng-review`/`autoplan` for planning, `review` for pre-landing review, `investigate` for debugging, `ship` for release, `qa`/`qa-only` for browser QA, `cso` for security audits. gstack runtime lives at `~/.hermes/skills/gstack`.
+## MANDATORY: Plugin/skill suite (rule 5 — global, all projects)
+- **Superpowers** (obra) — process skills: brainstorm before building (`superpowers:brainstorming`), TDD for implementation (`superpowers:test-driven-development`), systematic debugging for bugs. If a superpowers skill applies, use it.
+- **gstack** (Garry Tan) — workflow skills, `gstack` category, runtime `~/.hermes/skills/gstack`: `plan-ceo-review`/`plan-eng-review`/`autoplan` (planning), `review` (pre-landing review), `investigate` (debugging), `ship` (release), `qa`/`qa-only` (browser QA), `cso` (security audits).
+- **Code review** — every batch/PR that changes code is reviewed before landing (`anthropic-code-review` skill or gstack `review`); no unreviewed merges. It is a diff read in the PM session, not a reviewer-subagent dispatch (rule 15).
 
-## Landing gate (TEAM.md rules 14-15, 2026-10-15)
-- The harness is THE gate: every batch lands only on `harness verify` exit 0 against this repo's committed `.harness.json`. Harness green → push. Never `npx tsc`; never commit a `node_modules`/`.venv` symlink.
+## Landing gate (rules 14-15; Johnny, 2026-10-15)
+- The harness is THE gate: every batch, single-file included, lands only on `harness verify` exit 0 against this repo's committed `.harness.json`. Harness green → push.
 - Reviewer subagents (QA / UI-UX) only for feature landings. Bugfix/refactor/chore/docs: harness green → push, nothing else.
-- Standard six in this repo: `AGENTS.md`, `handoff.md`, `MEMORY.md`, `RUN_LOCAL.md`, `.vscode/launch.json`, `.harness.json`. Keep `RUN_LOCAL.md` true after any change to how the project is run.
+- Only exception: Johnny's ask says "no harness" → commit → push → build sanity → version bump → tag. Never infer it.
+- Never `npx tsc`; never commit a `node_modules`/`.venv` symlink.
 
 ## Other rules
-- Read `handoff.md` before starting any work in this repo.
 - Never report success without real execution output (run the tests, run the code).
-- Work only in your assigned branch/worktree unless told otherwise.
 - Keep commits small and scoped; message format: `<type>: <summary>` (feat/fix/test/refactor/docs/chore).

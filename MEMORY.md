@@ -1,115 +1,63 @@
-# MEMORY.md — SkratchBastidWeb
+# Project Memory — SkratchBastidWeb
 
-Durable operating facts for agents working this repo. Session state lives in `handoff.md`.
-Read both before any work.
+> Durable project knowledge, git-tracked. Read with handoff.md before any work. Facts and rules, one line each, with the why; task progress goes in handoff.md.
 
-## Identity
+## Vision & core functionality (set by Executive — do not change without Executive approval)
+- Skratch Bastid membership / tour site (Top Grillin', Bastid's BBQ, mixes, videos, livestream). Angular CLI project name: `skratchbastid`.
 
-- Skratch Bastid membership / tour site (Top Grillin', Bastid's BBQ, mixes, videos, livestream).
-  Angular CLI project name: `skratchbastid`.
-- Home channel: **Slack `#skratchbastid-web` (C0CDGPAPBF1)** — task source, full autonomy
-  (Slack-originated asks are not Trello approval-gated).
-- Hosted agent clone: `/opt/data/projects/skratchbastid/SkratchBastidWeb` (full clone).
-  Johnny's Mac: `~/Documents/SkratchBastidWeb` (siblings under `~/Documents`).
-
-## Stack
-
-- Angular 22.0.2 / TypeScript 6 / Tailwind 4 + Bootstrap 5 + SCSS. NgModule style
-  (`standalone: false`), declared in `app.module.ts`.
+## Architecture decisions
+- Stack: Angular 22.0.2 / TypeScript 6 / Tailwind 4 + Bootstrap 5 + SCSS. NgModule style (`standalone: false`), declared in `app.module.ts`.
 - jQuery/bootbox imperative modals, Stripe (ngx-stripe), mux-player, video.js, plyr, wavesurfer.
-- Views: `src/app/views/*` (home, videos, audios, topgrillin, bastidbbq, livestream, newsletter,
-  profile, upgrade, rotw-detail, bbq-recaps). Many paths (`join`, `login`, `events`, policies)
-  map to `HomeComponent`. Routes: `src/app/app-routing.module.ts`.
+- Views: `src/app/views/*` (home, videos, audios, topgrillin, bastidbbq, livestream, newsletter, profile, upgrade, rotw-detail, bbq-recaps). Many paths (`join`, `login`, `events`, policies) map to `HomeComponent`. Routes: `src/app/app-routing.module.ts`.
 - ~270 MB of media is committed in-repo (`public/videos` 184 MB, `src/assets` 64 MB).
-
-## Backend
-
-- Shared multi-tenant **LegendsOnlyAPI** (`environment.legendsApi`, tenant via `X-App` header,
-  services under `src/app/_shared/services/legends/`). Same API serves DJJazzyJeffWeb +
-  LegendsOnlyWeb — any API/DTO change is cross-cutting; say so before proposing one.
-  API clone on the box: `/opt/data/projects/legendsonly/LegendsOnlyAPI`.
+- Backend = shared multi-tenant **LegendsOnlyAPI** (`environment.legendsApi`, tenant via `X-App` header, services under `src/app/_shared/services/legends/`). The same API serves DJJazzyJeffWeb + LegendsOnlyWeb — any API/DTO change is cross-cutting; say so before proposing one.
 - Dev `environment.ts` → `https://localhost:7039` (local API); prod → `https://api.legendsonly.tv`.
-- `InterceptorService` attaches the member Bearer token to outgoing requests — any new off-domain
-  HttpClient call must opt out or it leaks the token (this bit DJJazzyJeffWeb twice).
 - Top Grillin' signup links out to `wp.skratchbastid.com/register/...` (WordPress, live).
+- Committed client keys in `src/environments/` (Stripe `pk_live`, reCAPTCHA site key) are public by design. `prodId` (`prod_RvMADg6RCwpL34`) is hardcoded — a Stripe product change is a code change. No server-side secrets found in the repo (scanned 2026-11-01).
+
+### Hive CRM (hive.co)
+- Integration = Hive JS SDK in the browser (no backend/key), brand id `Config.hiveSwid` 133267, all calls via `_shared/services/hive.service.ts`.
+- Segments: free-trial form → `Signup Form - Homepage`; BBQ form → `BBQ Buyers - <city>` (its hidden addToSegment inputs are dead — sendToHive passes an object, not the form); site-wide → `Config.hiveSiteSegment` (empty = off; name comes from the client, byte-exact).
+- Footer newsletter: button `(click)=subscribeNewsletter()` does the work; form `(ngSubmit)=onNewsletterSubmit()` is a log-only stub (Enter fires the button click, so it works).
+
+### Hidden by decision
+- **Share is HIDDEN by Johnny's call (2026-11-01).** `AudioPlayerComponent.shareEnabled = false` gates both share buttons. Do not re-enable until both blockers are fixed: the share URL still points at the dead `magmob.skratchbastid.com` host, and there is no single-track deep-link route.
+- Share was already unreachable on live v1.0.012: `AudioPlayerComponent` isn't rendered anywhere today (only `app-audio-player-bar` is), and the `#urlShareSocialMediaModal` it opens doesn't exist in this repo. The flag keeps it hidden if the player gets reused.
+- `check-image.pipe.ts:12` default avatar also uses the dead host (cosmetic, untouched).
 
 ## Conventions
+- **Branch policy: `main` only.** The remote has no `dev` branch — do NOT dual-push here. Standing push approval on `main`.
+- Home channel: **Slack `#skratchbastid-web` (C0CDGPAPBF1)** — task source, full autonomy (Slack-originated asks are not Trello approval-gated).
+- `package-lock.json` is gitignored → `npm install`, never `npm ci` (CI does the same). `.npmrc` sets `legacy-peer-deps=true`.
+- Show-password toggles are a component signal per field, reset on `hidden.bs.modal`. Keep that pattern for any new password field (changePasswordModal doesn't have one yet).
+- /videos grid "Download Audio" badge (bottom-left on the thumbnail) replaced the music-note icon by client request (2026-11-02). It downloads; the video modal's chooser plays.
 
-- **Branch policy: `main` only.** The remote has no `dev` branch — do NOT dual-push here.
-  Standing push approval on `main`.
-- Every commit must update `handoff.md` — enforced by `.git/hooks/pre-commit`.
-- `package-lock.json` is gitignored → `npm install`, never `npm ci` (CI does the same).
-  `.npmrc` sets `legacy-peer-deps=true`.
+## Environment & how-to
+- Hosted agent clone: `/opt/data/projects/skratchbastid/SkratchBastidWeb` (full clone). Johnny's Mac: `~/Documents/SkratchBastidWeb` (siblings under `~/Documents`).
+- LegendsOnlyAPI clone on the box: `/opt/data/projects/legendsonly/LegendsOnlyAPI`.
 
-## Verified commands (VPS, 2026-11-01, Node 26.12.1)
-
+### Verified commands (VPS, 2026-11-01, Node 26.12.1)
 - `npm install --no-audit --no-fund` → ok.
-- `npx ng build --configuration production --output-path <dir>` → exit 0, initial total
-  5.27 MB raw / 1.26 MB transfer, 3 pre-existing benign warnings (missing
-  `/assets/fonts/{CircularStdBook,DrukWideBold,VolkolakGrotesqueBold}.css`).
+- `npx ng build --configuration production --output-path <dir>` → exit 0, initial total 5.27 MB raw / 1.26 MB transfer, 3 pre-existing benign warnings (missing `/assets/fonts/{CircularStdBook,DrukWideBold,VolkolakGrotesqueBold}.css`).
 - `./node_modules/.bin/tsc -p tsconfig.app.json --noEmit` → exit 0 (~2 s).
-- Tests: **none.** 0 `*.spec.ts` files and Karma is not in devDependencies, so `npm test`
-  cannot run. `.harness.json` records `test` as a known failure; the build is the gate.
+- Tests: **none.** 0 `*.spec.ts` files and Karma is not in devDependencies, so `npm test` cannot run. `.harness.json` records `test` as a known failure; the build is the gate.
 - On the box, put build output under `/opt/data/cache/scratch/`, not in the repo.
 
-## Deploy
-
-- Tag-triggered FTPS mirror to IIS — `.github/workflows/deploy-production.yml`, on `v*` tags or
-  manual dispatch. Tag format is `v1.0.0NN` (latest `v1.0.014`, deployed 2026-11-03, green; ~12-13 min tag→live,
-  mostly the FTPS step). Next tag: `v1.0.015`. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
-
-## Gotchas
-
-- Other Hermes sessions also push to `main` here. `git pull` before tagging, and list `git log <your-last>..HEAD`
-  so the ship report names everything the tag carries.
-
-- Bootstrap's unlayered `button { font-size/line-height: inherit }` beats Tailwind v4's layered utilities,
-  so `text-[13px]` / `leading-none` on a `<button>` silently do nothing. Use `!text-[..]` / `!leading-none`
-  on buttons, and verify computed `fontSize`.
-- Video audio fields: ~210 videos have only `audio1` (With Mic), ~200 have both, a few only `audio`; at least
-  one (2726) has identical URLs in both. Derive /api/download `version` from the user's choice, never by
-  matching URLs.
-- /videos grid "Download Audio" badge (bottom-left on the thumbnail) replaced the music-note icon by client
-  request (2026-11-02). It downloads; the video modal's chooser plays.
-- Headless QA on /videos: the prod build calls api.legendsonly.tv, which sends no CORS headers for
-  127.0.0.1. Mock XHR in-page with real data captured via `curl -H "X-App: skratchbastid" .../api/videos`, and
-  stub `appendChild` for `/api/download` iframes so QA never logs real downloads. Window scroll is inert
-  (`scrollIntoView` doesn't move the page); use `Emulation.setDeviceMetricsOverride` with a tall height.
-
-- Auth modals (`#loginModal`, `#registerModal`) use a `.modal-light` theme whose component SCSS
-  forces `.text-gray-400/.text-white/...` to `rgb(17,24,39)` !important on a near-white input.
-  `text-white` / `hover:text-white` inside them either has no effect or makes an icon disappear on hover; check the computed colour.
-- Show-password toggles are a component signal per field, reset on `hidden.bs.modal`. Keep that pattern
-  for any new password field (changePasswordModal doesn't have one yet).
-- Headless QA trap: bootstrap `hide()` then `show()` within ~1 s can leave two modals stacked, and real
-  clicks then hit the upper modal. Wait ≥2 s between them, and assert `.modal.show` count == 1 before clicking.
-
-- **Live app host: `https://skratchbastid.johnnyja.com`** (IIS 10, confirmed by Johnny 2026-11-01;
-  `/version.json` there = the deployed tag). `skratchbastid.com` / `www.` is a separate
-  Cloudflare-fronted **Nuxt** site — NOT this app; never use it to check a deploy.
-- Deploy downgrade guard reads `https://skratchbastid.johnnyja.com/version.json` (fixed 2026-11-01;
-  it used to curl skratchbastid.com without `-L`, got 301 HTML, and silently passed every deploy;
-  its line-based `sed` also could not parse the multi-line JSON — now `grep -o`). Simulated against
-  live 1.0.012: v1.0.013 OK, v1.0.012 refused (same), v1.0.011 refused (downgrade).
+### Deploy
+- Tag-triggered FTPS mirror to IIS — `.github/workflows/deploy-production.yml`, on `v*` tags or manual dispatch. Secrets FTP_HOST/USERNAME/PASSWORD/REMOTE_DIR are set on the repo.
+- Tag format is `v1.0.0NN`. Latest `v1.0.014` (deployed 2026-11-03, green; ~12-13 min tag→live, mostly the FTPS step). Next tag: `v1.0.015`.
+- **Live app host: `https://skratchbastid.johnnyja.com`** (IIS 10, confirmed by Johnny 2026-11-01; `/version.json` there = the deployed tag). `skratchbastid.com` / `www.` is a separate Cloudflare-fronted **Nuxt** site — NOT this app; never use it to check a deploy.
 - Confirm a deploy landed by polling that `version.json` for the new tag, not by a green run.
-- **Share is HIDDEN by Johnny's call (2026-11-01).** `AudioPlayerComponent.shareEnabled = false`
-  gates both share buttons. The share URL still points at the dead `magmob.skratchbastid.com`
-  host and there is no single-track deep-link route, so do not re-enable it until both are fixed.
-  `AudioPlayerComponent` isn't rendered anywhere today (only `app-audio-player-bar` is), and the
-  `#urlShareSocialMediaModal` it opens doesn't exist in this repo, so share was already unreachable
-  on live v1.0.012. The flag keeps it hidden if the player gets reused.
-  `check-image.pipe.ts:12` default avatar also uses the dead host (cosmetic, untouched).
-- Committed client keys in `src/environments/` (Stripe `pk_live`, reCAPTCHA site key) are public by
-  design. `prodId` (`prod_RvMADg6RCwpL34`) is hardcoded — a Stripe product change is a code change.
-  No server-side secrets found in the repo (scanned 2026-11-01).
+- Deploy downgrade guard reads `https://skratchbastid.johnnyja.com/version.json` and extracts the version with `grep -o`. Fixed 2026-11-01: it used to curl skratchbastid.com without `-L`, got 301 HTML and silently passed every deploy, and its line-based `sed` could not parse the multi-line JSON. Simulated against live 1.0.012: v1.0.013 OK, v1.0.012 refused (same), v1.0.011 refused (downgrade).
+- Other Hermes sessions also push to `main` here. `git pull` before tagging, and list `git log <your-last>..HEAD` so the ship report names everything the tag carries.
 
-## People
+## Gotchas / lessons learned
+- `InterceptorService` attaches the member Bearer token to outgoing requests — any new off-domain HttpClient call must opt out or it leaks the token (this bit DJJazzyJeffWeb twice).
+- Bootstrap's unlayered `button { font-size/line-height: inherit }` beats Tailwind v4's layered utilities, so `text-[13px]` / `leading-none` on a `<button>` silently do nothing. Use `!text-[..]` / `!leading-none` on buttons, and verify computed `fontSize`.
+- Video audio fields: ~210 videos have only `audio1` (With Mic), ~200 have both, a few only `audio`; at least one (2726) has identical URLs in both. Derive /api/download `version` from the user's choice, never by matching URLs.
+- Auth modals (`#loginModal`, `#registerModal`) use a `.modal-light` theme whose component SCSS forces `.text-gray-400/.text-white/...` to `rgb(17,24,39)` !important on a near-white input. `text-white` / `hover:text-white` inside them either has no effect or makes an icon disappear on hover; check the computed colour.
+- Headless QA on /videos: the prod build calls api.legendsonly.tv, which sends no CORS headers for 127.0.0.1. Mock XHR in-page with real data captured via `curl -H "X-App: skratchbastid" .../api/videos`, and stub `appendChild` for `/api/download` iframes so QA never logs real downloads. Window scroll is inert (`scrollIntoView` doesn't move the page); use `Emulation.setDeviceMetricsOverride` with a tall height.
+- Headless QA trap: bootstrap `hide()` then `show()` within ~1 s can leave two modals stacked, and real clicks then hit the upper modal. Wait ≥2 s between them, and assert `.modal.show` count == 1 before clicking.
 
+## People / integrations / external context
 - Commit history: Johnny Arguelles + Ali Abdul Wahid.
-
-## Hive CRM (hive.co)
-- Integration = Hive JS SDK in the browser (no backend/key), brand id `Config.hiveSwid` 133267, all calls via
-  `_shared/services/hive.service.ts`. Segments: free-trial form → `Signup Form - Homepage`; BBQ form →
-  `BBQ Buyers - <city>` (its hidden addToSegment inputs are dead — sendToHive passes an object, not the form);
-  site-wide → `Config.hiveSiteSegment` (empty = off; name comes from the client, byte-exact).
-- Footer newsletter: button `(click)=subscribeNewsletter()` does the work; form `(ngSubmit)=onNewsletterSubmit()` is a log-only stub (Enter fires the button click, so it works).

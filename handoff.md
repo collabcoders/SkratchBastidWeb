@@ -191,3 +191,13 @@ is a user dotfile and does not travel.
 - Current state: live == v1.0.014. Next tag v1.0.015.
 - Blockers: none.
 
+## 2026-11-12 — dev (Hermes subagent, docs pass)
+- What changed: docs only, no product code. AGENTS.md replaced verbatim with the current team template.
+  MEMORY.md regrouped into the template section order (Vision / Architecture decisions / Conventions /
+  Environment & how-to / Gotchas / People); every fact kept, deploy facts (live host, version.json poll,
+  downgrade guard, tag format) pulled together under Deploy, share-hidden decision under its own heading.
+- Current state: main, live still v1.0.014, next tag v1.0.015 (nothing tagged). harness doctor (VPS):
+  typecheck PASS 3.91s, build PASS 32.38s, test FAIL ("Unknown arguments: watch, browsers" — no Karma,
+  0 spec files), the known failure in the committed baseline.
+- Next steps: none from this pass.
+- Blockers: none.
